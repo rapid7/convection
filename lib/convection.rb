@@ -7,11 +7,11 @@ module Convection
       Model::Template.new(&block)
     end
 
-    def stack(name, region = nil, credentials = nil)
-      Model::Stack.new(name, region, credentials)
+    def stack(name, template, options = {})
+      Model::Stack.new(name, template, options)
     end
   end
 end
 
-require_relative "convection/version"
+require_relative 'convection/version'
 require_relative 'convection/model'
