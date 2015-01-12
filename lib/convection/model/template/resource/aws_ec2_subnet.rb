@@ -8,6 +8,7 @@ module Convection
         # AWS::EC2::Subnet
         ##
         class EC2Subnet < Resource
+          include Model::Mixin::CIDRBlock
           include Model::Mixin::Taggable
 
           def initialize(*args)
@@ -17,10 +18,6 @@ module Convection
 
           def availability_zone(value)
             property('AvailabilityZone', value)
-          end
-
-          def cidr_block(value)
-            property('CidrBlock', value)
           end
 
           def vpc_id(value)
@@ -41,7 +38,7 @@ module Convection
     ## Add DSL method to template namespace
     module Template
       def ec2_subnet(name, &block)
-        r = Model::Template::Resource::EC2Subnet.new
+        r = Model::Template::Resource::EC2Subnet.new(name, self)
         r.instance_exec(&block) if block
 
         resources[name] = r

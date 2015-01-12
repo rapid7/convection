@@ -104,7 +104,7 @@ end
 ### Conditions
 http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html
 
-TODO...
+Not implemented yet.
 
 ### Resources
 http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html

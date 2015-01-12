@@ -1,6 +1,5 @@
 require_relative '../dsl/helpers'
 require_relative '../dsl/intrinsic_functions'
-require_relative 'stack'
 require 'json'
 
 module Convection
@@ -10,14 +9,14 @@ module Convection
     ##
     module Template
       def parameter(name, &block)
-        pa = Model::Template::Parameter.new
+        pa = Model::Template::Parameter.new(name, self)
         pa.instance_exec(&block) if block
 
         parameters[name] = pa
       end
 
       def mapping(name, &block)
-        m = Model::Template::Mapping.new
+        m = Model::Template::Mapping.new(name, self)
         m.instance_exec(&block) if block
 
         mappings[name] = m
@@ -31,14 +30,14 @@ module Convection
       # end
 
       def resource(name, &block)
-        r = Model::Template::Resource.new
+        r = Model::Template::Resource.new(name, self)
         r.instance_exec(&block) if block
 
         resources[name] = r
       end
 
       def output(name, &block)
-        o = Model::Template::Output.new
+        o = Model::Template::Output.new(name, self)
         o.instance_exec(&block) if block
 
         outputs[name] = o
@@ -69,7 +68,6 @@ module Convection
       extend DSL::Helpers
 
       include DSL::IntrinsicFunctions
-      include DSL::Stack
       include DSL::Template
 
       DEFAULT_VERSION = '2010-09-09'
@@ -118,7 +116,6 @@ module Convection
       def to_json(stack = nil)
         JSON.pretty_generate(render(stack))
       end
-
     end
   end
 end

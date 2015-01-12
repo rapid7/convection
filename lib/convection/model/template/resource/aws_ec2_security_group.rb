@@ -5,7 +5,7 @@ module Convection
     ## Add DSL method to template namespace
     module Template
       def ec2_security_group(name, &block)
-        r = Model::Template::Resource::EC2SecurityGroup.new
+        r = Model::Template::Resource::EC2SecurityGroup.new(name, self)
         r.instance_exec(&block) if block
 
         resources[name] = r
@@ -17,14 +17,14 @@ module Convection
         ##
         module EC2SecurityGroup
           def ingress_rule(&block)
-            r = Model::Template::Resource::EC2SecurityGroup::Rule.new
+            r = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }IngressGroupRule", @template)
             r.instance_exec(&block) if block
 
             security_group_ingress << r
           end
 
           def egress_rule(&block)
-            r = Model::Template::Resource::EC2SecurityGroup::Rule.new
+            r = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }EgressGroupRule", @template)
             r.instance_exec(&block) if block
 
             security_group_egress << r

@@ -15,7 +15,10 @@ module Convection
         attribute :description
         attr_reader :allowed_values
 
-        def initialize
+        def initialize(name, template)
+          @name = name
+          @template = template
+
           @type = 'String'
           @default = ''
           @allowed_values = []

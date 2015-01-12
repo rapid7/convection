@@ -1,4 +1,5 @@
-$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+#!/usr/bin/env ruby
+# $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 require 'convection'
 
 test_template = Convection.template do
@@ -26,8 +27,10 @@ test_template = Convection.template do
     item 'us-west-1', 'test', 'cf-test-keys'
   end
 
-  ec2_vpc 'TargetVPC' do
-    cidr_block '10.42.0.0/16'
+  target_vpc = ec2_vpc 'TargetVPC' do
+    network '100.65.0.0/18'
+    subnet_length 25
+
     tag 'Name', 'test-vpc-foo'
   end
 
@@ -51,22 +54,29 @@ test_template = Convection.template do
     tag 'Name', join('-', 'LousySecurityGroup', ref('AWS::StackName'))
   end
 
-  availability_zones do |az, i|
-    ec2_subnet "TestSubnet#{ i }" do
+  stack.availability_zones do |az, i|
+    az_subnet = target_vpc.subnet "Test#{ i }" do
       availability_zone az
-      cidr_block "10.42.#{ i }.0/24"
-      vpc_id ref('TargetVPC')
 
       tag 'Name', "Test-#{ az }"
       tag 'Service', 'Foo'
     end
+
+    # ec2_subnet "TestSubnet#{ i }" do
+    #   availability_zone az
+    #   cidr_block "10.42.#{ i }.0/24"
+    #   vpc_id ref('TargetVPC')
+    #
+    #   tag 'Name', "Test-#{ az }"
+    #   tag 'Service', 'Foo'
+    # end
 
     ec2_instance "TestInstanceFoo#{ i }" do
       image_id find_in_map('RegionalAMIs', ref('AWS::Region'), 'hvm')
       instance_type ref('InstanceSize')
       key_name find_in_map('RegionalKeys', ref('AWS::Region'), 'test')
       security_group ref('LousySecurityGroup')
-      subnet ref("TestSubnet#{ i }")
+      subnet ref(az_subnet.name)
 
       tag 'Service', 'Foo'
       tag 'Version', '0.0.1'

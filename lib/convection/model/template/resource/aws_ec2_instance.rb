@@ -59,7 +59,7 @@ module Convection
     ## Add DSL method to template namespace
     module Template
       def ec2_instance(name, &block)
-        r = Model::Template::Resource::EC2Instance.new
+        r = Model::Template::Resource::EC2Instance.new(name, self)
         r.instance_exec(&block) if block
 
         resources[name] = r

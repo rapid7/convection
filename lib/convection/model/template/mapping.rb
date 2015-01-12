@@ -22,7 +22,10 @@ module Convection
 
         attr_reader :items
 
-        def initialize
+        def initialize(name, template)
+          @name = name
+          @template = template
+
           @items = Smash.new
         end
 

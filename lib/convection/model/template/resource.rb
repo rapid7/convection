@@ -1,4 +1,5 @@
 require_relative '../../dsl/intrinsic_functions'
+require_relative '../mixin/cidr_block'
 require_relative '../mixin/conditional'
 require_relative '../mixin/taggable'
 
@@ -14,9 +15,13 @@ module Convection
         include Model::Mixin::Conditional
 
         attribute :type
+        attr_reader :name
         attr_reader :properties
 
-        def initialize
+        def initialize(name, template)
+          @name = name
+          @template = template
+
           @type = ''
           @properties = {}
         end
