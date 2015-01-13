@@ -27,7 +27,13 @@ module Convection
         end
 
         def property(key, value)
-          properties[key] = value
+          properties[key] = value.is_a?(Model::Template::Resource) ? value.reference : value
+        end
+
+        def reference
+          {
+            'Ref' => name
+          }
         end
 
         def render
@@ -44,6 +50,11 @@ module Convection
 end
 
 require_relative 'resource/aws_ec2_instance'
+require_relative 'resource/aws_ec2_internet_gateway'
+require_relative 'resource/aws_ec2_route'
+require_relative 'resource/aws_ec2_route_table'
 require_relative 'resource/aws_ec2_security_group'
 require_relative 'resource/aws_ec2_subnet'
+require_relative 'resource/aws_ec2_subnet_route_table_association'
 require_relative 'resource/aws_ec2_vpc'
+require_relative 'resource/aws_ec2_vpc_gateway_attachment'

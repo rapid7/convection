@@ -7,8 +7,8 @@ module Convection
       # Add condition helpers
       ##
       module CIDRBlock
-        def network(address = nil)
-          @network = NetAddr::CIDR.create(address) unless address.nil?
+        def network(*args)
+          @network = NetAddr::CIDR.create(*args) unless args.empty?
           property('CidrBlock', @network.to_s)
         end
       end

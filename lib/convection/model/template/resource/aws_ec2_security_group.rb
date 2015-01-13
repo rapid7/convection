@@ -6,8 +6,8 @@ module Convection
     module Template
       def ec2_security_group(name, &block)
         r = Model::Template::Resource::EC2SecurityGroup.new(name, self)
-        r.instance_exec(&block) if block
 
+        r.instance_exec(&block) if block
         resources[name] = r
       end
 

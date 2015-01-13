@@ -60,8 +60,8 @@ module Convection
     module Template
       def ec2_instance(name, &block)
         r = Model::Template::Resource::EC2Instance.new(name, self)
-        r.instance_exec(&block) if block
 
+        r.instance_exec(&block) if block
         resources[name] = r
       end
     end

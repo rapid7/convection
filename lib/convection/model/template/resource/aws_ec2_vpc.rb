@@ -1,5 +1,4 @@
 require_relative '../resource'
-require_relative 'aws_ec2_subnet'
 
 module Convection
   module DSL
@@ -7,8 +6,8 @@ module Convection
     module Template
       def ec2_vpc(name, &block)
         r = Model::Template::Resource::EC2VPC.new(name, self)
-        r.instance_exec(&block) if block
 
+        r.instance_exec(&block) if block
         resources[name] = r
       end
 
@@ -17,9 +16,32 @@ module Convection
         # DSL For VPC sub-entities
         ##
         module EC2VPC
-          def subnet(name, &block)
-            s = Model::Template::Resource::EC2Subnet.new("#{ self.name }Subnet#{ name}", @template)
-            s.vpc_id(ref(self.name))
+          def stack
+            @template.stack
+          end
+
+          def add_internet_gateway(&block)
+            g = Model::Template::Resource::EC2InternetGateway.new("#{ name }IG", @template)
+            g.attach_to_vpc(self)
+            g.tag('Name', "#{ name }InternetGateway")
+
+            g.instance_exec(&block) if block
+            @template.resources[g.name] = g
+          end
+
+          def add_route_table(name, &block)
+            r = Model::Template::Resource::EC2RouteTable.new("#{ self.name }Table#{ name }", @template)
+            r.vpc_id(self)
+            r.tag('Name', r.name)
+
+            r.instance_exec(&block) if block
+            @template.resources[r.name] = r
+          end
+
+          def add_subnet(name, &block)
+            s = Model::Template::Resource::EC2Subnet.new("#{ self.name }Subnet#{ name }", @template)
+            s.tag('Name', s.name)
+            s.vpc_id(self)
 
             ## Allocate the next available subnet
             @subnet_allocated += 1
@@ -39,7 +61,7 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::EC2::Subnet
+        # AWS::EC2::VPC
         ##
         class EC2VPC < Resource
           include DSL::Template::Resource::EC2VPC

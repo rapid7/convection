@@ -61,7 +61,7 @@ module Convection
       end
 
       def exist?
-        stacks.include?(name) && !deleted?
+        stacks.include?(name)
       end
 
       def complete?
@@ -75,12 +75,12 @@ module Convection
          UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
-      def deleted?
-        status == DELETE_COMPLETE
-      end
-
       def render
         template.render(self)
+      end
+
+      def to_json
+        template.to_json(self)
       end
 
       def apply
@@ -89,15 +89,16 @@ module Convection
         if exist?
           @cf_client.update_stack(
             :stack_name => name,
-            :template_body => JSON.pretty_generate(render),
-            :parameters => cf_parameters,
-            :tags => cf_tags
+            :template_body => to_json,
+            :parameters => cf_parameters
           )
         else
           @cf_client.create_stack(
             :stack_name => name,
-            :template_body => JSON.pretty_generate(render),
-            :parameters => cf_parameters
+            :template_body => to_json,
+            :parameters => cf_parameters,
+            :tags => cf_tags,
+            :on_failure => 'DELETE'
           )
         end
       end
@@ -122,6 +123,7 @@ module Convection
         @stacks ||= {}.tap do |stacks_|
           stacks__ = @cf_client.list_stacks.stack_summaries rescue []
           stacks__.each do |s|
+            next if s.stack_status == DELETE_COMPLETE
             stacks_[s.stack_name] = s
           end
         end

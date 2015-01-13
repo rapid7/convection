@@ -1,13 +1,12 @@
 require_relative '../resource'
-require_relative 'aws_ec2_subnet_route_table_association'
 
 module Convection
 
   module DSL
     ## Add DSL method to template namespace
     module Template
-      def ec2_subnet(name, &block)
-        r = Model::Template::Resource::EC2Subnet.new(name, self)
+      def ec2_route_table(name, &block)
+        r = Model::Template::Resource::EC2RouteTable.new(name, self)
 
         r.instance_exec(&block) if block
         resources[name] = r
@@ -15,12 +14,12 @@ module Convection
 
       module Resource
         ##
-        # Add DSL for RouteTableAssocaition
-        module EC2Subnet
-          def associate_route_table(table, &block)
-            r = Model::Template::Resource::EC2SubnetRouteTableAssociation.new("#{ name }RouteTableAssociation#{ table.name }", @tamplate)
-            r.route_table(table.reference)
-            r.subnet(reference)
+        # DSL For routes
+        ##
+        module EC2RouteTable
+          def route(name, &block)
+            r = Model::Template::Resource::EC2Route.new("#{ self.name }Route#{ name }", @template)
+            r.route_table_id(reference)
 
             r.instance_exec(&block) if block
             @template.resources[r.name] = r
@@ -34,20 +33,15 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::EC2::Subnet
+        # AWS::EC2::RouteTable
         ##
-        class EC2Subnet < Resource
-          include DSL::Template::Resource::EC2Subnet
-          include Model::Mixin::CIDRBlock
+        class EC2RouteTable < Resource
+          include DSL::Template::Resource::EC2RouteTable
           include Model::Mixin::Taggable
 
           def initialize(*args)
             super
-            type 'AWS::EC2::Subnet'
-          end
-
-          def availability_zone(value)
-            property('AvailabilityZone', value)
+            type 'AWS::EC2::RouteTable'
           end
 
           def vpc_id(value)

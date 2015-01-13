@@ -153,15 +153,15 @@ All intrinsic functions are available as helper methods:
  * get_azs(region)
  * join(delimiter, values...)
  * select(index, objects...)
- * ref(resource)
+ * fn_ref(resource)
 
 ```ruby
 ec2_instance "TestInstanceFoo#{ i }" do
-  image_id find_in_map('RegionalAMIs', ref('AWS::Region'), 'hvm')
+  image_id find_in_map('RegionalAMIs', fn_ref('AWS::Region'), 'hvm')
   instance_type 'm3.medium'
-  key_name find_in_map('RegionalKeys', ref('AWS::Region'), 'test')
-  security_group ref('LousySecurityGroup')
-  subnet ref("TestSubnet")
+  key_name find_in_map('RegionalKeys', fn_ref('AWS::Region'), 'test')
+  security_group fn_ref('LousySecurityGroup')
+  subnet fn_ref("TestSubnet")
 end
 ```
 

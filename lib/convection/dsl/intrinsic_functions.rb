@@ -69,7 +69,7 @@ module Convection
         }
       end
 
-      def ref(resource)
+      def fn_ref(resource)
         {
           'Ref' => resource
         }

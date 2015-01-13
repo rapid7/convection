@@ -10,15 +10,15 @@ module Convection
     module Template
       def parameter(name, &block)
         pa = Model::Template::Parameter.new(name, self)
-        pa.instance_exec(&block) if block
 
+        pa.instance_exec(&block) if block
         parameters[name] = pa
       end
 
       def mapping(name, &block)
         m = Model::Template::Mapping.new(name, self)
-        m.instance_exec(&block) if block
 
+        m.instance_exec(&block) if block
         mappings[name] = m
       end
 
@@ -31,15 +31,15 @@ module Convection
 
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
-        r.instance_exec(&block) if block
 
+        r.instance_exec(&block) if block
         resources[name] = r
       end
 
       def output(name, &block)
         o = Model::Template::Output.new(name, self)
-        o.instance_exec(&block) if block
 
+        o.instance_exec(&block) if block
         outputs[name] = o
       end
     end
