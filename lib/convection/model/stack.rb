@@ -31,6 +31,7 @@ module Convection
       UPDATE_ROLLBACK_FAILED = 'UPDATE_ROLLBACK_FAILED'
       UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS'
       UPDATE_ROLLBACK_COMPLETE = 'UPDATE_ROLLBACK_COMPLETE'
+      CAPABILITIES = %w(CAPABILITY_IAM)
 
       ## Internal status
       NOT_CREATED = 'NOT_CREATED'
@@ -90,7 +91,8 @@ module Convection
           @cf_client.update_stack(
             :stack_name => name,
             :template_body => to_json,
-            :parameters => cf_parameters
+            :parameters => cf_parameters,
+            :capabilities => CAPABILITIES
           )
         else
           @cf_client.create_stack(
@@ -98,14 +100,16 @@ module Convection
             :template_body => to_json,
             :parameters => cf_parameters,
             :tags => cf_tags,
-            :on_failure => 'DELETE'
+            :on_failure => 'DELETE',
+            :capabilities => CAPABILITIES
           )
         end
       end
 
       def delete
         @cf_client.delete_stack(
-          :stack_name => name
+          :stack_name => name,
+          :capabilities => CAPABILITIES
         )
       end
 
