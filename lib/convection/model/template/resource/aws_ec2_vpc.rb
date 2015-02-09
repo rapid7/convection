@@ -27,15 +27,30 @@ module Convection
 
             g.instance_exec(&block) if block
             @template.resources[g.name] = g
+
+            ## Store the gateway for later reference
+            @internet_gateway = g
           end
 
-          def add_route_table(name, &block)
-            r = Model::Template::Resource::EC2RouteTable.new("#{ self.name }Table#{ name }", @template)
-            r.vpc_id(self)
-            r.tag('Name', r.name)
+          def add_route_table(name, options = {}, &block)
+            route_table = Model::Template::Resource::EC2RouteTable.new("#{ self.name }Table#{ name }", @template)
+            route_table.vpc_id(self)
+            route_table.tag('Name', route_table.name)
 
-            r.instance_exec(&block) if block
-            @template.resources[r.name] = r
+            route_table.instance_exec(&block) if block
+
+            @template.resources[route_table.name] = route_table
+            return route_table unless options[:gateway_route]
+
+            ## Create and associate an InterntGateway
+            add_internet_gateway if @internet_gateway.nil?
+
+            ## Create a route to the VPC's InternetGateway
+            vpc_default_route = route_table.route('Default')
+            vpc_default_route.destination('0.0.0.0/0')
+            vpc_default_route.gateway(@internet_gateway)
+
+            route_table
           end
 
           def add_subnet(name, &block)
@@ -76,6 +91,8 @@ module Convection
             type 'AWS::EC2::VPC'
             @subnet_allocated = 0
             @subnet_length = 24
+
+            @internet_gateway = nil
           end
 
           def enable_dns(value)

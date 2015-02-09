@@ -1,3 +1,5 @@
+require 'json'
+
 module Convection
   module Model
     ##
@@ -7,8 +9,8 @@ module Convection
       def render
         map do |t|
           {
-            'Key' => t[0],
-            'Value' => t[1]
+            :Key => t[0].to_s,
+            :Value => t[1]
           }
         end
       end
@@ -25,6 +27,14 @@ module Convection
 
         def tag(key, value)
           tags[key] = value
+        end
+
+        ## Helper for Asgard
+        def immutable_metadata(purpose, target = '')
+          tag('immutable_metadata', JSON.generate(
+            :purpose => purpose,
+            :target => target
+          ))
         end
 
         def render_tags(resource)
