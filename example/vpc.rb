@@ -82,4 +82,4 @@ stack_w1 = Convection.stack('TestStackW1B2', test_template, :region => 'us-west-
 puts stack_w1.to_json
 
 puts "Status #{ stack_w1.status }"
-puts stack_w1.apply
+# puts stack_w1.apply
