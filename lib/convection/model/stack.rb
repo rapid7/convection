@@ -98,6 +98,7 @@ module Convection
           o[:stack_name] = name
           o[:template_body] = to_json
           o[:parameters] = cf_parameters
+          o[:capabilities] = capabilities
         end
 
         return @cf_client.update_stack(request_options) if exist?
