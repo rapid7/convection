@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 require 'convection'
 
 test_template = Convection.template do
@@ -33,15 +32,10 @@ test_template = Convection.template do
     subnet_length 25
 
     ## Add an InternetGateway
-    vpc_gateway = add_internet_gateway
+    add_internet_gateway
 
     ## Add a default routing table
-    public_table = add_route_table 'Public' do
-      route 'Default' do
-        destination '0.0.0.0/0'
-        gateway vpc_gateway
-      end
-    end
+    public_table = add_route_table('Public', :gateway_route => true)
 
     ## Define Subnets and Insatnces in each availability zone
     stack.availability_zones do |zone, i|
