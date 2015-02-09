@@ -18,10 +18,10 @@ test_iam_role_template = Convection.template do
     type 'String'
     default '/'
   end
-  
+
   iam_policy 'RolePolicy' do
     role fn_ref('NewRole')
-    # You can choose between multiple 'role' attributes 
+    # You can choose between multiple 'role' attributes
     # or build out an array with multiple values.
     name 'NewPolicy'
     # Note the move to fat colons below:
@@ -59,12 +59,5 @@ test_iam_role_template = Convection.template do
 
 end
 
-# Uncomment the following line to output the cloudformation json template:
-
-#puts test_iam_role_template.to_json
-
-# Uncomment the following line to output the cloudformation json template as 
-# as well as build the stack in the given region:
-
-#puts Convection.stack('YourStackNameHere', test_iam_role_template, :region => 'us-east-1').apply
-
+puts test_iam_role_template.to_json
+# puts Convection.stack('IAMTestStack', test_iam_role_template, :region => 'us-west-1').apply
