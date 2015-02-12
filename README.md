@@ -24,7 +24,7 @@ The core DSL provides all of the available JSON primatives of CloudFormation in 
 ```ruby
 require 'convection'
 
-## Define a
+## Create a new instance of Convection::Model::Template
 Convection.template do
   description 'An example template'
 
