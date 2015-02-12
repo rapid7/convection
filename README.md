@@ -168,25 +168,25 @@ end
 ## Stack Control
 The `Stack` class provides a state wrapper for CloudFormation Stacks. It tracks the state of the managed stack, and creates/updates accordingly. `Stack` is also region-aware, and can be used within a template to define resources that depend upon availability-zones or other region-specific neuances that cannot be represented as maps or require iteration.
 
-### `.new(name, template, options = {})`
-* _name_ CloudFormation Stack name
-* _template_ Instance of Convection::Model::Template
-* _options_ - Hash
-  * _region_ - AWS region, format `us-east-1`. Default us-east-1
-  * _credentials_ - Optional instance of AWS::Credentials. See the [AWS-SDK Documentation](http://docs.aws.amazon.com/sdkforruby/api/frames.html)
-  * _parameters_ - Stack parameters, as a `Hash` of `{ key => value }`
-  * _tags_ - Stack tags, as a `Hash` of `{ key => value }`
-  * _on_failure_ - Create failure action. Default `DELETE`
-  * _capabilities_ - See the [AWS-SDK Documentation](http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method)
-  * Additional options will be passed directly to `create_stack` and `update_stack`
+* `.new(name, template, options = {})`
+  * _name_ CloudFormation Stack name
+  * _template_ Instance of Convection::Model::Template
+  * _options_ - Hash
+    * _region_ - AWS region, format `us-east-1`. Default us-east-1
+    * _credentials_ - Optional instance of AWS::Credentials. See the [AWS-SDK Documentation](http://docs.aws.amazon.com/sdkforruby/api/frames.html)
+    * _parameters_ - Stack parameters, as a `Hash` of `{ key => value }`
+    * _tags_ - Stack tags, as a `Hash` of `{ key => value }`
+    * _on_failure_ - Create failure action. Default `DELETE`
+    * _capabilities_ - See the [AWS-SDK Documentation](http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method)
+    * Additional options will be passed directly to `create_stack` and `update_stack`
 
-### `#status` - Returns the stack status
-### `#exist?` - Returns true if the stack exists and is not in a DELETED state
-### `#complete?`
-### `#rollback?`
-### `#fail?`
-### `#render` - Populates the provided template with any environment data included in the stack (e.g. availability zones). Returns a `Hash`
-### `#to_json` - Render template and transofrm to a pretty-generated JSON `String`
-### `#apply` - Renter template and create/update CloudFormation Stack
-### `#delete` - Delete CloudFormation Stack
-### `#availability_zones(&block)` - Return an array of strings representing the region's availability zones. Provided codeblock will be called for each AZ.
+* `#status` - Returns the stack status
+* `#exist?` - Returns true if the stack exists and is not in a DELETED state
+* `#complete?`
+* `#rollback?`
+* `#fail?`
+* `#render` - Populates the provided template with any environment data included in the stack (e.g. availability zones). Returns a `Hash`
+* `#to_json` - Render template and transofrm to a pretty-generated JSON `String`
+* `#apply` - Renter template and create/update CloudFormation Stack
+* `#delete` - Delete CloudFormation Stack
+* `#availability_zones(&block)` - Return an array of strings representing the region's availability zones. Provided codeblock will be called for each AZ.
