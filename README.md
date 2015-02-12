@@ -168,6 +168,7 @@ end
 ## Stack Control
 The `Stack` class provides a state wrapper for CloudFormation Stacks. It tracks the state of the managed stack, and creates/updates accordingly. `Stack` is also region-aware, and can be used within a template to define resources that depend upon availability-zones or other region-specific neuances that cannot be represented as maps or require iteration.
 
+### Class `Convection::Control::Stack`
 * `.new(name, template, options = {})`
   * _name_ CloudFormation Stack name
   * _template_ Instance of Convection::Model::Template
