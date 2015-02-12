@@ -8,10 +8,11 @@ module Convection
     end
 
     def stack(name, template, options = {})
-      Model::Stack.new(name, template, options)
+      Control::Stack.new(name, template, options)
     end
   end
 end
 
 require_relative 'convection/version'
-require_relative 'convection/model'
+require_relative 'convection/model/template'
+require_relative 'convection/control/stack'

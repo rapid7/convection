@@ -2,7 +2,7 @@ require 'aws-sdk'
 require 'json'
 
 module Convection
-  module Model
+  module Control
     ##
     # Instantiation of a template in an account/region
     ##
@@ -84,6 +84,10 @@ module Convection
          UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
+      def fail?
+        [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)
+      end
+
       def render
         template.render(self)
       end
@@ -129,7 +133,7 @@ module Convection
       private
 
       def cf_get_stacks
-        {}.tap do |col|
+        @stacks = {}.tap do |col|
           cf_stacks = @cf_client.list_stacks.stack_summaries rescue []
           cf_stacks.each do |s|
             next if s.stack_status == DELETE_COMPLETE

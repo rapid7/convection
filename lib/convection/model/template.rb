@@ -83,7 +83,7 @@ module Convection
       attr_reader :resources
       attr_reader :outputs
 
-      def initialize(stack = Model::Stack.new('default', self), &block)
+      def initialize(stack = Control::Stack.new('default', self), &block)
         @definition = block
         @stack = stack
 
