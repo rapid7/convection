@@ -12,7 +12,7 @@ module Convection
 
           def initialize(*args)
             super
-            type AWS::RDS::DBSecurityGroup
+            type 'AWS::RDS::DBSecurityGroup'
           end
 
           def ec2_vpc_id(value)
