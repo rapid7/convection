@@ -13,14 +13,15 @@ module Convection
           def initialize(*args)
             super
             type AWS::RDS::DBSubnetGroup
+            @properties['SubnetIds'] = []
           end
 
           def db_subnet_group_description(value)
               property('DBSubnetGroupDescription', value)
           end
 
-          def subnet_ids(value)
-              property('SubnetIds', value)
+          def subnet_id(value)
+            @properties['SubnetIds'] << value
           end
 
           def render(*args)
