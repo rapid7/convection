@@ -33,6 +33,10 @@ module Convection
           @description = ''
         end
 
+        def stack
+          @template.stack
+        end
+
         def allow(value)
           allowed_values << value
         end

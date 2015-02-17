@@ -69,7 +69,7 @@ module Convection
                 rule['CidrIp'] = cidr_ip unless cidr_ip.nil?
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
                 rule['SourceSecurityGroupId'] = source_group unless source_group.nil?
-                rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group.nil?
+                rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group_owner.nil?
               end
             end
           end

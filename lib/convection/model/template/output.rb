@@ -23,6 +23,10 @@ module Convection
           @properties = {}
         end
 
+        def stack
+          @template.stack
+        end
+
         def render
           {
             'Value' => value,

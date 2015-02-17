@@ -29,6 +29,10 @@ module Convection
           @items = Smash.new
         end
 
+        def stack
+          @template.stack
+        end
+
         def item(key_1, key_2, value)
           items[key_1][key_2] = value
         end
