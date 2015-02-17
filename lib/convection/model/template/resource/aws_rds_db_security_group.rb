@@ -40,7 +40,7 @@ module Convection
   module DSL
     ## Add DSL method to template namespace
     module Template
-      def parameter_group(name, &block)
+      def db_security_group(name, &block)
         r = Model::Template::Resource::RDSDBSecurityGroup.new(name, self)
 
         r.instance_exec(&block) if block
