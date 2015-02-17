@@ -17,7 +17,7 @@ module Convection
           end
 
           def db_subnet_group_description(value)
-              property('DBSubnetGroupDescription', value)
+            property('DBSubnetGroupDescription', value)
           end
 
           def subnet_id(value)

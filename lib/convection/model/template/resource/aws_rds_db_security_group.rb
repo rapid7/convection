@@ -16,15 +16,15 @@ module Convection
           end
 
           def ec2_vpc_id(value)
-              property('EC2VpcId', value)
+            property('EC2VpcId', value)
           end
 
           def db_security_group_ingress(value)
-              property('DBSecurityGroupIngress', value)
+            property('DBSecurityGroupIngress', value)
           end
 
           def group_description(value)
-              property('GroupDescription', value)
+            property('GroupDescription', value)
           end
 
           def render(*args)
