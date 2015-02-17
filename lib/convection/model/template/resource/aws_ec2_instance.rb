@@ -10,6 +10,13 @@ module Convection
         class EC2Instance < Resource
           include Model::Mixin::Taggable
 
+          property :availability_zone, 'AvailabilityZone'
+          property :image_id, 'ImageId'
+          property :instance_type, 'InstanceType'
+          property :key_name, 'KeyName'
+          property :subnet, 'SubnetId'
+          property :user_data, 'UserData'
+
           def initialize(*args)
             super
 
@@ -17,32 +24,9 @@ module Convection
             @properties['SecurityGroupIds'] = []
           end
 
-          def availability_zone(value)
-            property('AvailabilityZone', value)
-          end
-
-          def image_id(value)
-            property('ImageId', value)
-          end
-
-          def instance_type(value)
-            property('InstanceType', value)
-          end
-
-          def key_name(value)
-            property('KeyName', value)
-          end
-
+          ## Accumulate SecurityGroups
           def security_group(value)
             @properties['SecurityGroupIds'] << value
-          end
-
-          def subnet(value)
-            property('SubnetId', value)
-          end
-
-          def user_data(value)
-            property('UserData', value)
           end
 
           def render(*args)

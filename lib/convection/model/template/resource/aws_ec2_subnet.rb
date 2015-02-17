@@ -17,13 +17,22 @@ module Convection
         ##
         # Add DSL for RouteTableAssocaition
         module EC2Subnet
-          def associate_route_table(table, &block)
-            r = Model::Template::Resource::EC2SubnetRouteTableAssociation.new("#{ name }RouteTableAssociation#{ table.name }", @tamplate)
-            r.route_table(table.reference)
-            r.subnet(reference)
+          def route_table(table, &block)
+            assoc = Model::Template::Resource::EC2SubnetRouteTableAssociation.new("#{ name }RouteTableAssociation#{ table.name }", @tamplate)
+            assoc.route_table(table)
+            assoc.subnet(self)
 
-            r.instance_exec(&block) if block
-            @template.resources[r.name] = r
+            assoc.instance_exec(&block) if block
+            @template.resources[assoc.name] = assoc
+          end
+
+          def acl(acl_entity, &block)
+            assoc = Model::Template::Resource::EC2SubnetNetworkACLAssociation.new("#{ name }ACLAssociation#{ acl_entity.name }", self)
+            assoc.acl(acl_entity)
+            assoc.subnet(self)
+
+            assoc.instance_exec(&block) if block
+            @template.resources[assoc.name] = assoc
           end
         end
       end
@@ -41,17 +50,12 @@ module Convection
           include Model::Mixin::CIDRBlock
           include Model::Mixin::Taggable
 
+          property :availability_zone, 'AvailabilityZone'
+          property :vpc, 'VpcId'
+
           def initialize(*args)
             super
             type 'AWS::EC2::Subnet'
-          end
-
-          def availability_zone(value)
-            property('AvailabilityZone', value)
-          end
-
-          def vpc_id(value)
-            property('VpcId', value)
           end
 
           def render(*args)

@@ -20,43 +20,32 @@ test_iam_role_template = Convection.template do
   end
 
   iam_policy 'RolePolicy' do
-    role fn_ref('NewRole')
-    # You can choose between multiple 'role' attributes
-    # or build out an array with multiple values.
     name 'NewPolicy'
-    # Note the move to fat colons below:
-    policy_document({
-    "Statement"=> [
-        {
-          "Effect"=> "Allow",
-          "Action"=> [
-              "s3:GetObject"
-          ],
-          "Resource"=> [
-              "arn:aws:s3:::some.bucket.name.here/*"
-          ]
-        }
-      ]
-    })
+    role fn_ref(:NewRole)
+
+    policy(
+      :Statement => [{
+        :Effect => 'Allow',
+        :Action => ['s3:GetObject'],
+        :Resource => ['arn:aws:s3:::some.bucket.name.here/*']
+      }]
+    )
   end
 
   iam_role 'NewRole' do
-    path fn_ref('Path')
-    # This is a contrived example of an instance role for aws.
-    assume_role_policy_document({
-      "Statement" => [
-      {
-        "Sid" => "",
-        "Effect" => "Allow",
-        "Principal" => {
-          "Service" => "ec2.amazonaws.com"
-        },
-        "Action" => "sts:AssumeRole"
-      }
-     ]
-   })
-  end
+    path fn_ref(:Path)
 
+    # EC2 Instance Role
+    trust_relationship(
+      :Statement => [{
+        :Effect => 'Allow',
+        :Principal => {
+          :Service => 'ec2.amazonaws.com'
+        },
+        :Action => 'sts:AssumeRole'
+      }]
+    )
+  end
 end
 
 puts test_iam_role_template.to_json

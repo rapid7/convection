@@ -8,18 +8,12 @@ module Convection
         # AWS::S3::BucketPolicy
         ##
         class S3BucketPolicy < Resource
+          property :bucket, 'Bucket'
+          property :policy, 'PolicyDocument'
 
           def initialize(*args)
             super
             type 'AWS::S3::BucketPolicy'
-          end
-
-          def bucket(value)
-            property('Bucket', value)
-          end
-
-          def policy_document(value)
-            property('PolicyDocument', value)
           end
         end
       end

@@ -16,10 +16,6 @@ module Convection
         # DSL For VPC sub-entities
         ##
         module EC2VPC
-          def stack
-            @template.stack
-          end
-
           def add_internet_gateway(&block)
             g = Model::Template::Resource::EC2InternetGateway.new("#{ name }IG", @template)
             g.attach_to_vpc(self)
@@ -32,9 +28,18 @@ module Convection
             @internet_gateway = g
           end
 
+          def add_network_acl(name, &block)
+            network_acl = Model::Template::Resource::EC2NetworkACL.new("#{ self.name }ACL#{ name }", @template)
+            network_acl.vpc(self)
+            network_acl.tag('Name', network_acl.name)
+
+            network_acl.instance_exec(&block) if block
+            @template.resources[network_acl.name] = network_acl
+          end
+
           def add_route_table(name, options = {}, &block)
             route_table = Model::Template::Resource::EC2RouteTable.new("#{ self.name }Table#{ name }", @template)
-            route_table.vpc_id(self)
+            route_table.vpc(self)
             route_table.tag('Name', route_table.name)
 
             route_table.instance_exec(&block) if block
@@ -56,7 +61,7 @@ module Convection
           def add_subnet(name, &block)
             s = Model::Template::Resource::EC2Subnet.new("#{ self.name }Subnet#{ name }", @template)
             s.tag('Name', s.name)
-            s.vpc_id(self)
+            s.vpc(self)
 
             ## Allocate the next available subnet
             @subnet_allocated += 1
@@ -84,6 +89,7 @@ module Convection
           include Model::Mixin::Taggable
 
           attribute :subnet_length
+          property :instance_tenancy, 'InstanceTenancy'
 
           def initialize(*args)
             super
@@ -98,10 +104,6 @@ module Convection
           def enable_dns(value)
             property('EnableDnsSupport', value)
             property('EnableDnsHostnames', value)
-          end
-
-          def instance_tenancy(value)
-            property('InstanceTenancy', value)
           end
 
           def render(*args)

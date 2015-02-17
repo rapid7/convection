@@ -20,6 +20,9 @@ module Convection
         # AWS::IAM::Role
         ##
         class IAMRole < Resource
+          property :path, 'Path'
+          property :trust_relationship, 'AssumeRolePolicyDocument'
+
           def initialize(*args)
             super
 
@@ -27,16 +30,8 @@ module Convection
             @properties['Policies'] = []
           end
 
-          def path(value)
-            property('Path', value)
-          end
-
-          def policies(value)
+          def policy(value)
             @properties['Policies'] << value
-          end
-
-          def assume_role_policy_document(value)
-            property('AssumeRolePolicyDocument', value)
           end
         end
       end

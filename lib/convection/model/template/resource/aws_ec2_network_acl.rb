@@ -1,12 +1,11 @@
 require_relative '../resource'
 
 module Convection
-
   module DSL
     ## Add DSL method to template namespace
     module Template
-      def ec2_route_table(name, &block)
-        r = Model::Template::Resource::EC2RouteTable.new(name, self)
+      def ec2_network_acl(name, &block)
+        r = Model::Template::Resource::EC2NetworkACL.new(name, self)
 
         r.instance_exec(&block) if block
         resources[name] = r
@@ -14,15 +13,15 @@ module Convection
 
       module Resource
         ##
-        # DSL For routes
+        # Add DSL helpers to EC2NetworkACL
         ##
-        module EC2RouteTable
-          def route(name, &block)
-            r = Model::Template::Resource::EC2Route.new("#{ self.name }Route#{ name }", @template)
-            r.route_table_id(reference)
+        module EC2NetworkACL
+          def entry(name, &block)
+            acl_entry = Model::Template::Resource::EC2NetworkACLEntry.new("#{ self.name }Entry#{ name }", @template)
+            acl_entry.acl(self)
 
-            r.instance_exec(&block) if block
-            @template.resources[r.name] = r
+            acl_entry.instance_exec(&block) if block
+            @template.resources[acl_entry.name] = acl_entry
           end
         end
       end
@@ -33,17 +32,17 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::EC2::RouteTable
+        # AWS::EC2::NetworkACL
         ##
-        class EC2RouteTable < Resource
-          include DSL::Template::Resource::EC2RouteTable
+        class EC2NetworkACL < Resource
+          include DSL::Template::Resource::EC2NetworkACL
           include Model::Mixin::Taggable
 
           property :vpc, 'VpcId'
 
           def initialize(*args)
             super
-            type 'AWS::EC2::RouteTable'
+            type 'AWS::EC2::NetworkAcl'
           end
 
           def render(*args)

@@ -8,33 +8,16 @@ module Convection
         # AWS::EC2::Route
         ##
         class EC2Route < Resource
+          property :route_table_id, 'RouteTableId'
+          property :destination, 'DestinationCidrBlock'
+          property :gateway, 'GatewayId'
+          property :instance, 'InstanceId'
+          property :interface, 'NetworkInterfaceId'
+          property :peer, 'VpcPeeringConnectionId'
+
           def initialize(*args)
             super
             type 'AWS::EC2::Route'
-          end
-
-          def route_table_id(value)
-            property('RouteTableId', value)
-          end
-
-          def destination(value)
-            property('DestinationCidrBlock', value)
-          end
-
-          def gateway(value)
-            property('GatewayId', value)
-          end
-
-          def instance(value)
-            property('InstanceId', value)
-          end
-
-          def interface(value)
-            property('NetworkInterfaceId', value)
-          end
-
-          def peer(value)
-            property('VpcPeeringConnectionId', value)
           end
         end
       end

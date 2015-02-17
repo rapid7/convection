@@ -8,21 +8,13 @@ module Convection
         # AWS::EC2::VPCGatewayAttachment
         ##
         class EC2VPCGatewayAttachment < Resource
+          property :vpc, 'VpcId'
+          property :internet_gateway, 'InternetGatewayId'
+          property :vpn_gateway, 'VpnGatewayId'
+
           def initialize(*args)
             super
             type 'AWS::EC2::VPCGatewayAttachment'
-          end
-
-          def vpc_id(value)
-            property('VpcId', value)
-          end
-
-          def internet_gateway(value)
-            property('InternetGatewayId', value)
-          end
-
-          def vpn_gateway(value)
-            property('VpnGatewayId', value)
           end
         end
       end

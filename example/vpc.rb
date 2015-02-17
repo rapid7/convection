@@ -41,7 +41,7 @@ test_template = Convection.template do
     stack.availability_zones do |zone, i|
       add_subnet "Test#{ i }" do
         availability_zone zone
-        associate_route_table public_table
+        route_table public_table
 
         tag 'Service', 'Foo'
       end
@@ -65,7 +65,7 @@ test_template = Convection.template do
     end
 
     description 'Allow SSH traffic from all of the places'
-    vpc_id fn_ref('TargetVPC')
+    vpc fn_ref(:TargetVPC)
 
     tag 'Name', join('-', fn_ref('AWS::StackName'), 'BetterSecurityGroup')
   end

@@ -17,7 +17,7 @@ module Convection
         module EC2InternetGateway
           def attach_to_vpc(vpc, &block)
             a = Model::Template::Resource::EC2VPCGatewayAttachment.new("#{ name }VPCAttachment#{ vpc.name }", self)
-            a.vpc_id(vpc)
+            a.vpc(vpc)
             a.internet_gateway(self)
 
             a.instance_exec(&block) if block

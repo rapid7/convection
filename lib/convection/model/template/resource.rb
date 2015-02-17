@@ -1,6 +1,7 @@
 require_relative '../../dsl/intrinsic_functions'
 require_relative '../mixin/cidr_block'
 require_relative '../mixin/conditional'
+require_relative '../mixin/protocol'
 require_relative '../mixin/taggable'
 
 module Convection
@@ -14,6 +15,15 @@ module Convection
         include DSL::IntrinsicFunctions
         include Model::Mixin::Conditional
 
+        class << self
+          ## Class::property - Helper for adding property accessors
+          def property(accesor, name)
+            define_method(accesor) do |value|
+              property(name, value) ## Call Instance#property
+            end
+          end
+        end
+
         attribute :type
         attr_reader :name
         attr_reader :properties
@@ -24,6 +34,10 @@ module Convection
 
           @type = ''
           @properties = {}
+        end
+
+        def stack
+          @template.stack
         end
 
         def property(key, value)
@@ -51,10 +65,13 @@ end
 
 require_relative 'resource/aws_ec2_instance'
 require_relative 'resource/aws_ec2_internet_gateway'
+require_relative 'resource/aws_ec2_network_acl'
+require_relative 'resource/aws_ec2_network_acl_entry'
 require_relative 'resource/aws_ec2_route'
 require_relative 'resource/aws_ec2_route_table'
 require_relative 'resource/aws_ec2_security_group'
 require_relative 'resource/aws_ec2_subnet'
+require_relative 'resource/aws_ec2_subnet_network_acl_association'
 require_relative 'resource/aws_ec2_subnet_route_table_association'
 require_relative 'resource/aws_ec2_vpc'
 require_relative 'resource/aws_ec2_vpc_gateway_attachment'

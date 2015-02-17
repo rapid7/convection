@@ -20,6 +20,9 @@ module Convection
         # AWS::IAM::Policy
         ##
         class IAMPolicy < Resource
+          property :policy_name, 'PolicyName'
+          property :policy, 'PolicyDocument'
+
           def initialize(*args)
             super
 
@@ -29,14 +32,6 @@ module Convection
 
           def role(value)
             @properties['Roles'] << value
-          end
-
-          def name(value)
-            property('PolicyName', value)
-          end
-
-          def policy_document(value)
-            property('PolicyDocument', value)
           end
         end
       end

@@ -74,20 +74,15 @@ module Convection
             end
           end
 
+          property :description, 'GroupDescription'
+          property :vpc, 'VpcId'
+
           def initialize(*args)
             super
 
             type 'AWS::EC2::SecurityGroup'
             @security_group_ingress = []
             @security_group_egress = []
-          end
-
-          def description(value)
-            property('GroupDescription', value)
-          end
-
-          def vpc_id(value)
-            property('VpcId', value)
           end
 
           def render(*args)

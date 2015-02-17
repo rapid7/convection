@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['jmanero@rapid7.com']
   spec.summary       = Convection::SUMMARY
   spec.description   = Convection::DESCRIPTION
-  spec.homepage      = ''
+  spec.homepage      = 'https://github.com/rapid7/convection'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")

@@ -10,37 +10,17 @@ module Convection
         class S3Bucket < Resource
           include Model::Mixin::Taggable
 
+          property :bucket_name, 'BucketName'
+          property :access_control, 'AccessControl'
+          property :cors_configurationm, 'CorsConfiguration'
+          property :lifecycle_configuration, 'LifecycleConfiguration'
+          property :logging_configuration, 'LoggingConfiguration'
+          property :notification_configuration, 'NotificationConfiguration'
+          property :version_configuration, 'VersionConfiguration'
+
           def initialize(*args)
             super
             type 'AWS::S3::Bucket'
-          end
-
-          def access_control(value)
-            property('AccessControl', value)
-          end
-
-          def bucket_name(value)
-            property('BucketName', value)
-          end
-
-          def cors_configuration(value)
-            property('CorsConfiguration', value)
-          end
-
-          def lifecycle_configuration(value)
-            property('LifecycleConfiguration', value)
-          end
-
-          def logging_configuration(value)
-            property('LoggingConfiguration', value) 
-          end
-
-          def notification_configuration(value)
-            property('NotificationConfiguration', value)
-          end
-
-          def version_configuration(value)
-            property('VersionConfiguration', value)
           end
 
           def render(*args)
