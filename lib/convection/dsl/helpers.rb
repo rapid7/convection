@@ -5,6 +5,7 @@ module Convection
     ##
     module Helpers
       def attribute(name)
+        attr_writer name
         define_method(name) do |value = nil|
           instance_variable_set("@#{ name }", value) unless value.nil?
           instance_variable_get("@#{ name }")

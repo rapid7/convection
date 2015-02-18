@@ -16,18 +16,25 @@ module Convection
         # DSL For EC2SecurityGroup rules
         ##
         module EC2SecurityGroup
-          def ingress_rule(&block)
-            r = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }IngressGroupRule", @template)
-            r.instance_exec(&block) if block
+          def ingress_rule(protocol = nil, port = nil, source = nil, &block)
+            rule = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }IngressGroupRule", @template)
+            rule.protocol = protocol unless protocol.nil?
+            rule.from = port unless port.nil?
+            rule.to = port unless port.nil?
+            rule.source = source unless source.nil?
 
-            security_group_ingress << r
+            rule.instance_exec(&block) if block
+            security_group_ingress << rule
           end
 
-          def egress_rule(&block)
-            r = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }EgressGroupRule", @template)
-            r.instance_exec(&block) if block
+          def egress_rule(protocol = nil, port = nil, &block)
+            rule = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }EgressGroupRule", @template)
+            rule.protocol = protocol unless protocol.nil?
+            rule.from = port unless port.nil?
+            rule.to = port unless port.nil?
 
-            security_group_egress << r
+            rule.instance_exec(&block) if block
+            security_group_egress << rule
           end
         end
       end
@@ -55,7 +62,7 @@ module Convection
             attribute :to
             attribute :protocol
 
-            attribute :cidr_ip
+            attribute :source
             attribute :destination_group
             attribute :source_group
             attribute :source_group_owner
@@ -66,7 +73,7 @@ module Convection
                 'FromPort' => from,
                 'ToPort' => to
               }.tap do |rule|
-                rule['CidrIp'] = cidr_ip unless cidr_ip.nil?
+                rule['CidrIp'] = source unless source.nil?
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
                 rule['SourceSecurityGroupId'] = source_group unless source_group.nil?
                 rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group_owner.nil?
