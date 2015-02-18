@@ -13,6 +13,8 @@ module Convection
           def initialize(*args)
             super
             type 'AWS::RDS::DBInstance'
+            @properties['DBSecurityGroups'] = []
+            @properties['VPCSecurityGroups'] = []
           end
 
           def allocated_storage(value)
@@ -52,7 +54,7 @@ module Convection
           end
 
           def db_security_groups(value)
-            property('DBSecurityGroups', value)
+            @properties['DBSecurityGroups'] << value
           end
 
           def db_snapshot_identifier(value)
@@ -120,7 +122,7 @@ module Convection
           end
 
           def vpc_security_groups(value)
-            property('VPCSecurityGroups', value)
+            @properties['VPCSecurityGroups'] << value
           end
 
           def render(*args)

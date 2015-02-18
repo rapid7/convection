@@ -12,7 +12,8 @@ module Convection
 
           def initialize(*args)
             super
-            type AWS::RDS::DBSecurityGroup
+            type 'AWS::RDS::DBSecurityGroup'
+            @properties['DBSecurityGroupIngress'] = []
           end
 
           def ec2_vpc_id(value)
@@ -20,7 +21,7 @@ module Convection
           end
 
           def db_security_group_ingress(value)
-            property('DBSecurityGroupIngress', value)
+            @properties['DBSecurityGroupIngress'] << value
           end
 
           def group_description(value)
