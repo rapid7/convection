@@ -25,6 +25,7 @@ module Convection
         end
 
         attribute :type
+        attribute :depends_on
         attr_reader :name
         attr_reader :properties
 
@@ -34,6 +35,7 @@ module Convection
 
           @type = ''
           @properties = {}
+          @depends_on = ''
         end
 
         def stack
@@ -51,10 +53,12 @@ module Convection
         end
 
         def render
-          {
+          resource = {
             'Type' => type,
-            'Properties' => properties
-          }.tap do |resource|
+            'Properties' => properties,
+          }
+          resource.merge!({'DependsOn' => depends_on}) unless depends_on.empty?
+          resource.tap do |resource|
             render_condition(resource)
           end
         end
