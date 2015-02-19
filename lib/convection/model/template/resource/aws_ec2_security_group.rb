@@ -58,9 +58,11 @@ module Convection
           # Ingress/Egress Rule
           #
           class Rule < Resource
+            extend Model::Mixin::Protocol
+
             attribute :from
             attribute :to
-            attribute :protocol
+            protocol_property
 
             attribute :source
             attribute :destination_group
@@ -69,7 +71,7 @@ module Convection
 
             def render
               {
-                'IpProtocol' => protocol,
+                'IpProtocol' => protocol, # From protocol_property
                 'FromPort' => from,
                 'ToPort' => to
               }.tap do |rule|

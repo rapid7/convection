@@ -9,7 +9,7 @@ module Convection
         ##
         class EC2NetworkACLEntry < Resource
           include Model::Mixin::CIDRBlock
-          include Model::Mixin::Protocol
+          extend Model::Mixin::Protocol
 
           property :acl, 'NetworkAclId'
           property :action, 'RuleAction'
@@ -17,10 +17,17 @@ module Convection
           property :egress, 'Egress'
           property :icmp, 'Icmp'
           property :range, 'PortRange'
+          protocol_property
 
           def initialize(*args)
             super
             type 'AWS::EC2::NetworkAclEntry'
+          end
+
+          def render(*args)
+            super.tap do |resource|
+              resource['Properties']['Protocol'] = protocol # From protocol_property
+            end
           end
         end
       end
