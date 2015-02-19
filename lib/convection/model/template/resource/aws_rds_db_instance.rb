@@ -13,8 +13,8 @@ module Convection
           def initialize(*args)
             super
             type 'AWS::RDS::DBInstance'
-            @properties['DBSecurityGroups'] = []
-            @properties['VPCSecurityGroups'] = []
+            @db_security_groups = []
+            @vpc_security_groups = []
           end
 
           def allocated_storage(value)
@@ -54,7 +54,7 @@ module Convection
           end
 
           def db_security_groups(value)
-            @properties['DBSecurityGroups'] << value
+            @db_security_groups << value
           end
 
           def db_snapshot_identifier(value)
@@ -122,12 +122,14 @@ module Convection
           end
 
           def vpc_security_groups(value)
-            @properties['VPCSecurityGroups'] << value
+            @vpc_security_groups << value
           end
 
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
+              @properties['DBSecurityGroups'] = @db_security_groups unless @db_security_groups.empty?
+              @properties['VPCSecurityGroups'] = @vpc_security_groups unless @vpc_security_groups.empty?
             end
           end
         end
