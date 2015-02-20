@@ -56,12 +56,11 @@ module Convection
         end
 
         def render
-          resource = {
+          {
             'Type' => type,
             'Properties' => properties,
-          }
-          resource.tap do |resource|
-            resource.merge!({'DependsOn' => @depends_on}) unless @depends_on.empty?
+          }.tap do |resource|
+            resource['DependsOn'] = @depends_on unless @depends_on.empty?
             render_condition(resource)
           end
         end
