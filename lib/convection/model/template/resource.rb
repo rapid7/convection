@@ -34,6 +34,7 @@ module Convection
 
           @type = ''
           @properties = {}
+          @depends_on = []
         end
 
         def stack
@@ -42,6 +43,10 @@ module Convection
 
         def property(key, value)
           properties[key] = value.is_a?(Model::Template::Resource) ? value.reference : value
+        end
+
+        def depends_on(resource)
+          @depends_on << resource
         end
 
         def reference
@@ -53,8 +58,9 @@ module Convection
         def render
           {
             'Type' => type,
-            'Properties' => properties
+            'Properties' => properties,
           }.tap do |resource|
+            resource['DependsOn'] = @depends_on unless @depends_on.empty?
             render_condition(resource)
           end
         end
