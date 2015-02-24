@@ -8,22 +8,19 @@ module Convection
         # AWS::SQS::QueuePolicy
         ##
         class SQSQueuePolicy < Resource
-          property :policy, 'PolicyDocument'
+          property :policy_document, 'PolicyDocument'
 
           def initialize(*args)
             super
 
             type 'AWS::SQS::QueuePolicy'
-            @queues = []
+            @properties['Queues'] = []
           end
 
-          def render(*args)
-            super.tap do |resource|
-              resource['Properties']['Queues'] = queues.map(&:render)
-              render_tags(resource)
-            end
+          def queue(value)
+            @properties['Queues'] << value
           end
-
+          
         end
       end
     end
