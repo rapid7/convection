@@ -20,7 +20,7 @@ test_iam_role_template = Convection.template do
   end
 
   iam_policy 'RolePolicy' do
-    name 'NewPolicy'
+    policy_name 'NewPolicy'
     role fn_ref(:NewRole)
 
     policy(
