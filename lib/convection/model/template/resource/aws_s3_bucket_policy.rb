@@ -9,7 +9,7 @@ module Convection
         ##
         class S3BucketPolicy < Resource
           property :bucket, 'Bucket'
-          property :policy, 'PolicyDocument'
+          property :policy_document, 'PolicyDocument'
 
           def initialize(*args)
             super
