@@ -17,9 +17,16 @@ module Convection
 
         class << self
           ## Class::property - Helper for adding property accessors
-          def property(accesor, name)
-            define_method(accesor) do |value|
-              property(name, value) ## Call Instance#property
+          def property(accesor, name, type=:string)
+            if type == :string
+              define_method(accesor) do |value|
+                property(name, value) ## Call Instance#property
+              end
+            elsif type == :array
+              define_method(accesor) do |value|
+                @properties[name] = [] if @properties[name].nil? || @properties[name].empty?
+                @properties[name] << value
+              end
             end
           end
         end
