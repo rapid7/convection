@@ -14,7 +14,6 @@ module Convection
             super
             type 'AWS::ElasticLoadBalancing::LoadBalancer'
             @app_cookie_stickiness_policy = []
-            #@availability_zones = []
             @instances = []
             @lb_cookie_stickiness_policy = []
             @listeners = []
@@ -80,14 +79,13 @@ module Convection
           end
           
           def subnets(value)
-            @subnets << value
+            property :subnets, 'Subnets', :array
           end
           
          def render(*args)
             super.tap do |resource|
               render_tags(resource)
               @properties['AppCookieStickinessPolicy'] = @app_cookie_stickiness_policy unless @app_cookie_stickiness_policy.empty?
-              #@properties['AvailabilityZones'] = @availability_zones unless @availability_zones.empty?
               @properties['Instances'] = @instances unless @instances.empty?
               @properties['LBCookieStickinessPolicy'] = @lb_cookie_stickiness_policy unless @lb_cookie_stickiness_policy.empty?
               @properties['Listeners'] = @listeners unless @listeners.empty?
