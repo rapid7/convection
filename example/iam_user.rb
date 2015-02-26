@@ -22,7 +22,7 @@ test_iam_user_template = Convection.template do
     )
   end
 
-  iam_role 'NewUser' do
+  iam_user 'NewUser' do
     path fn_ref(:Path)
   end
 end
