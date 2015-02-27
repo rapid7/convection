@@ -74,13 +74,8 @@ module Convection
             property('Scheme', value)
           end
           
-          def security_groups(value)
-            @security_groups << value
-          end
-          
-          def subnets(value)
-            property :subnets, 'Subnets', :array
-          end
+          property :security_groups, 'SecurityGroups', :array
+          property :subnets, 'Subnets', :array
           
          def render(*args)
             super.tap do |resource|
