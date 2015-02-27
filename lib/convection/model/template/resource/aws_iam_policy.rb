@@ -29,6 +29,7 @@ module Convection
             type 'AWS::IAM::Policy'
             @properties['Groups'] = []
             @properties['Roles'] = []
+            @properties['Users'] = []
           end
 
           def group(value)
@@ -37,6 +38,10 @@ module Convection
 
           def role(value)
             @properties['Roles'] << value
+          end
+
+          def user(value)
+            @properties['Users'] << value
           end
         end
       end
