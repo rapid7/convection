@@ -11,6 +11,7 @@
 *.so
 *.o
 *.a
+.DS_Store
 mkmf.log
 
 keys
