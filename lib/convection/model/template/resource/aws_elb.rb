@@ -22,71 +22,25 @@ module Convection
             @subnets = []
           end
 
-          def access_logging_policy(value)
-            property('AccessLoggingPolicy', value)
-          end
-          
-          def app_cookie_stickiness_policy(value)
-            @app_cookie_stikiness_policy << value
-          end
-          
-          def availability_zones(value)
-            property('AvailabilityZones', value)
-          end
-          
-          def connection_draining_policy(value)
-            property('ConnectionDrainingPolicy', value)
-          end
-          
-          def connection_settings(value)
-            property('ConnectionSettings', value)
-          end
-          
-          def cross_zone(value)
-            property('CrossZone', value)
-          end
+          property :access_logging_policy, 'AccessLoggingPolicy'
+          property :app_cookie_stickiness_policy, 'AppCookieStickinessPolicy', :array
+          property :lb_cookie_stickiness_policy, 'LBCookieStickinessPolicy', :array
+          property :availability_zone, 'AvailabilityZones', :array
+          property :connection_draining_policy, 'ConnectionDrainingPolicy'
+          property :connection_settings, 'ConnectionSettings'
+          property :cross_zone, 'CrossZone'
+          property :health_check, 'HealthCheck'
+          property :instance, 'Instances', :array
+          property :load_balancer_name, 'LoadBalancerName'
+          property :listener, 'Listeners', :array
+          property :policy, 'Policies', :array
+          property :scheme, 'Scheme'
+          property :security_group, 'SecurityGroups', :array
+          property :subnet, 'Subnets', :array
 
-          def health_check(value)
-            property('HealthCheck', value)
-          end
-          
-          def instances(value)
-            @instances << value
-          end
-          
-          def lb_cookie_stickiness_policy(value)
-            @lb_cookie_stickiness_policy << value
-          end
-          
-          def load_balancer_name(value)
-            property('LoadBalancerName', value)
-          end
-          
-          def listeners(value)
-            @listeners << value
-          end
-          
-          def policies(value)
-            @policies << value
-          end
-          
-          def scheme(value)
-            property('Scheme', value)
-          end
-          
-          property :security_groups, 'SecurityGroups', :array
-          property :subnets, 'Subnets', :array
-          
-         def render(*args)
+          def render(*args)
             super.tap do |resource|
               render_tags(resource)
-              @properties['AppCookieStickinessPolicy'] = @app_cookie_stickiness_policy unless @app_cookie_stickiness_policy.empty?
-              @properties['Instances'] = @instances unless @instances.empty?
-              @properties['LBCookieStickinessPolicy'] = @lb_cookie_stickiness_policy unless @lb_cookie_stickiness_policy.empty?
-              @properties['Listeners'] = @listeners unless @listeners.empty?
-              @properties['Policies'] = @policies unless @policies.empty?
-              @properties['SecurityGroups'] = @security_groups unless @security_groups.empty?
-              @properties['Subnets'] = @subnets unless @subnets.empty?
             end
           end
         end

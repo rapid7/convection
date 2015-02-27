@@ -17,16 +17,21 @@ module Convection
 
         class << self
           ## Class::property - Helper for adding property accessors
-          def property(accesor, name, type=:string)
-            if type == :string
-              define_method(accesor) do |value|
-                property(name, value) ## Call Instance#property
+          def property(accesor, name, type = :string)
+            case type.to_sym
+            when :string
+              define_method(accesor) do |value = nil|
+                ## Call Instance#property
+                return property(name) if value.nil?
+                property(name, value)
               end
-            elsif type == :array
-              define_method(accesor) do |value|
-                @properties[name] = [] if @properties[name].nil? || @properties[name].empty?
-                @properties[name] << value
+            when :array
+              define_method(accesor) do |*value|
+                @properties[name] = [] unless @properties[name].is_a?(Array)
+                @properties[name].push(*value)
               end
+            else
+              fail TypeError, "Property must be defined with type `string` or `array`, not #{ type }"
             end
           end
         end
@@ -48,7 +53,8 @@ module Convection
           @template.stack
         end
 
-        def property(key, value)
+        def property(key, value = nil)
+          return properties[key] if value.nil?
           properties[key] = value.is_a?(Model::Template::Resource) ? value.reference : value
         end
 
@@ -65,7 +71,7 @@ module Convection
         def render
           {
             'Type' => type,
-            'Properties' => properties,
+            'Properties' => properties
           }.tap do |resource|
             resource['DependsOn'] = @depends_on unless @depends_on.empty?
             render_condition(resource)
@@ -100,5 +106,6 @@ require_relative 'resource/aws_rds_db_instance'
 require_relative 'resource/aws_rds_db_parameter_group'
 require_relative 'resource/aws_rds_db_subnet_group.rb'
 require_relative 'resource/aws_rds_db_security_group.rb'
+require_relative 'resource/aws_route53_recordset.rb'
 require_relative 'resource/aws_sqs_queue'
 require_relative 'resource/aws_sqs_queue_policy'

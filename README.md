@@ -195,6 +195,9 @@ The `Stack` class provides a state wrapper for CloudFormation Stacks. It tracks 
 * `#delete` - Delete CloudFormation Stack
 * `#availability_zones(&block)` - Return an array of strings representing the region's availability zones. Provided codeblock will be called for each AZ.
 
+## Futures
+*
+
 ## License
 _Copyright (c) 2015 John Manero, Rapid7 LLC._
 
