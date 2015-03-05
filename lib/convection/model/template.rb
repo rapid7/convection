@@ -114,7 +114,7 @@ module Convection
       end
 
       def to_json(stack = nil)
-        JSON.pretty_generate(render(stack))
+        JSON.generate(render(stack))
       end
     end
   end
