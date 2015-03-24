@@ -89,6 +89,10 @@ module Convection
         @errors << e
       end
 
+      def include?(key)
+        @attributes.include?(name, key)
+      end
+
       def [](key)
         @attributes.get(name, key)
       end

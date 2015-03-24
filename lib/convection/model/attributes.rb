@@ -13,6 +13,10 @@ module Convection
           @parameters = {}
         end
 
+        def include?(key)
+          @parameters.include?(key) || @outputs.include?(key)
+        end
+
         def [](key)
           @parameters[key.to_s] || @outputs[key.to_s]
         end
@@ -28,6 +32,10 @@ module Convection
         @stacks = Hash.new do |hash, key|
           hash[key] = Stack.new
         end
+      end
+
+      def include?(stack, key)
+        @stacks.include?(stack) && @stacks[stack].include?(key)
       end
 
       def get(stack, key)
