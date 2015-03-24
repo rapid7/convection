@@ -83,7 +83,7 @@ module Convection
       attr_reader :resources
       attr_reader :outputs
 
-      def initialize(stack = Control::Stack.new('default', self), &block)
+      def initialize(stack = nil, &block)
         @definition = block
         @stack = stack
 
@@ -97,9 +97,9 @@ module Convection
         @outputs = Collection.new
       end
 
-      def render(stack = nil)
+      def render(stack_ = nil)
         ## Instantiate a new template with the definition block and an other stack
-        return Template.new(stack, &@definition).render unless stack.nil?
+        return Template.new(stack_, &@definition).render unless stack_.nil?
 
         instance_exec(&@definition)
         {
@@ -113,8 +113,8 @@ module Convection
         }
       end
 
-      def to_json(stack = nil)
-        JSON.generate(render(stack))
+      def to_json(stack_)
+        JSON.generate(render(stack_))
       end
     end
   end
