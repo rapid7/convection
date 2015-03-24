@@ -82,6 +82,7 @@ module Convection
   end
 end
 
+require_relative 'resource/aws_cloud_watch_alarm'
 require_relative 'resource/aws_ec2_instance'
 require_relative 'resource/aws_ec2_internet_gateway'
 require_relative 'resource/aws_ec2_network_acl'
@@ -108,5 +109,6 @@ require_relative 'resource/aws_rds_db_parameter_group'
 require_relative 'resource/aws_rds_db_subnet_group.rb'
 require_relative 'resource/aws_rds_db_security_group.rb'
 require_relative 'resource/aws_route53_recordset.rb'
+require_relative 'resource/aws_sns_topic'
 require_relative 'resource/aws_sqs_queue'
 require_relative 'resource/aws_sqs_queue_policy'
