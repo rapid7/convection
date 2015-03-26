@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require 'thor'
+require_relative '../lib/convection/control/cloud'
+
+module Convection
+  ##
+  # Convection CLI
+  ##
+  class CLI < Thor
+    class_option :cloudfile, :type => :string, :default => 'Cloudfile'
+    def initialize(*args)
+      super
+      @cloud = Control::Cloud.new
+      @cwd = Dir.getwd
+    end
+
+    desc 'halp', 'Get Halp!'
+    def halp
+      say 'RTFM Fool.'
+    end
+
+    desc 'converge', 'Converge your cloud'
+    def converge
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      @cloud.converge { |event| say_status(*event.to_thor) }
+    end
+  end
+end
+
+Convection::CLI.start(ARGV)

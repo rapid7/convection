@@ -18,6 +18,7 @@ module Convection
 
       ## AWS-SDK
       attr_accessor :region
+      attr_accessor :cloud
       attr_reader :capabilities
       attr_accessor :credentials
       attr_reader :parameters
@@ -61,6 +62,7 @@ module Convection
         @errors = []
 
         @region = options.delete(:region) { |_| 'us-east-1' }
+        @cloud = options.delete(:cloud)
         @credentials = options.delete(:credentials)
         @parameters = options.delete(:parameters) { |_| {} } # Default empty hash
         @tags = options.delete(:tags) { |_| {} } # Default empty hash
@@ -68,7 +70,7 @@ module Convection
         options.delete(:disable_rollback) # There can be only one...
         @capabilities = options.delete(:capabilities) { |_| ['CAPABILITY_IAM'] }
 
-        @attributes = options.delete(:attributes) { |_| Convection::Model::Attributes.new }
+        @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
 
         client_options = {}.tap do |opt|
@@ -79,18 +81,23 @@ module Convection
         @cf_client = Aws::CloudFormation::Client.new(client_options)
 
         ## Get initial state
-        cf_get_stack(name)
+        cf_get_stack(cloud_name)
 
         ## Get last-seen event ID
         @last_event_seen = nil
         cf_get_events(1) unless @id.nil?
-
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
 
-      def include?(key)
-        @attributes.include?(name, key)
+      def cloud_name
+        return name if cloud.nil?
+        "#{ cloud }-#{ name }"
+      end
+
+      def include?(stack, key = nil)
+        return @attributes.include?(name, stack) if key.nil?
+        @attributes.include?(stack, key)
       end
 
       def [](key)
@@ -99,6 +106,10 @@ module Convection
 
       def []=(key, value)
         @attributes.set(name, key, value)
+      end
+
+      def get(stack, key)
+        @attributes.get(stack, key)
       end
 
       def status
@@ -162,12 +173,13 @@ module Convection
         else
           ## Create
           @cf_client.create_stack(request_options.tap do |o|
-            o[:stack_name] = name
+            o[:stack_name] = cloud_name
+
             o[:tags] = cf_tags
             o[:on_failure] = on_failure
           end)
 
-          cf_get_stack(name) # Get ID of new stack
+          cf_get_stack(cloud_name) # Get ID of new stack
         end
 
         watch(&block) if block # Block execution on stack status

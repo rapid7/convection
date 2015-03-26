@@ -3,6 +3,7 @@ require_relative '../mixin/cidr_block'
 require_relative '../mixin/conditional'
 require_relative '../mixin/protocol'
 require_relative '../mixin/taggable'
+require_relative './output'
 
 module Convection
   module Model
@@ -66,6 +67,14 @@ module Convection
           {
             'Ref' => name
           }
+        end
+
+        def with_output(output_name = name, value = reference, &block)
+          o = Model::Template::Output.new(output_name, @template)
+          o.value = value
+
+          o.instance_exec(&block) if block
+          @template.outputs[name] = o
         end
 
         def render

@@ -8,6 +8,16 @@ module Convection
     # Template DSL
     ##
     module Template
+      extend DSL::Helpers
+
+      attribute :name
+      attribute :version
+      attribute :description
+
+      def depends(other)
+        dependencies << other
+      end
+
       def parameter(name, &block)
         pa = Model::Template::Parameter.new(name, self)
 
@@ -21,13 +31,6 @@ module Convection
         m.instance_exec(&block) if block
         mappings[name] = m
       end
-
-      # def condition(name, &block)
-      #   c = Model::Template::Condition.new
-      #   c.instance_exec(&block) if block
-      #
-      #   conditions[name] = c
-      # end
 
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
@@ -65,18 +68,13 @@ module Convection
     # Template container class
     ##
     class Template
-      extend DSL::Helpers
-
       include DSL::IntrinsicFunctions
       include DSL::Template
 
       DEFAULT_VERSION = '2010-09-09'
 
-      attribute :version
-      attribute :description
-      attribute :region
-
       attr_reader :stack
+      attr_reader :dependencies
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
@@ -86,13 +84,13 @@ module Convection
       def initialize(stack = nil, &block)
         @definition = block
         @stack = stack
+        @dependencies = []
 
         @version = DEFAULT_VERSION
         @description = ''
 
         @parameters = Collection.new
         @mappings = Collection.new
-        @conditions = Collection.new
         @resources = Collection.new
         @outputs = Collection.new
       end
@@ -107,7 +105,6 @@ module Convection
           'Description' => description,
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
-          'Conditions' => conditions.map(&:render),
           'Resources' => resources.map(&:render),
           'Outputs' => outputs.map(&:render)
         }
@@ -122,6 +119,5 @@ end
 
 require_relative 'template/parameter'
 require_relative 'template/mapping'
-# require_relative 'template/condition'
 require_relative 'template/resource'
 require_relative 'template/output'

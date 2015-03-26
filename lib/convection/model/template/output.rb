@@ -31,8 +31,8 @@ module Convection
           {
             'Value' => value,
             'Description' => description
-          }.tap do |resource|
-            render_condition(resource)
+          }.tap do |output|
+            render_condition(output)
           end
         end
       end
