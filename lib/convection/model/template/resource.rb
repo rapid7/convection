@@ -92,6 +92,7 @@ module Convection
 end
 
 require_relative 'resource/aws_auto_scaling_auto_scaling_group.rb'
+require_relative 'resource/aws_auto_scaling_launch_configuration.rb'
 require_relative 'resource/aws_cloud_watch_alarm'
 require_relative 'resource/aws_ec2_instance'
 require_relative 'resource/aws_ec2_internet_gateway'
