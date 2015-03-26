@@ -28,7 +28,7 @@ module Convection
 
           def initialize(*args)
             super
-            type AWS::AutoScaling::AutoScalingGroup
+            type 'AWS::AutoScaling::AutoScalingGroup'
           end
 
           def render(*args)

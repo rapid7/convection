@@ -26,7 +26,7 @@ module Convection
 
           def initialize(*args)
             super
-            type AWS::AutoScaling::LaunchConfiguration
+            type 'AWS::AutoScaling::LaunchConfiguration'
           end
         end
       end
