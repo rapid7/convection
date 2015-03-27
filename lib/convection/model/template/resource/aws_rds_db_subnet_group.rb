@@ -10,6 +10,8 @@ module Convection
         class RDSDBSubnetGroup < Resource
           include Model::Mixin::Taggable
 
+          property :subnet, :type => :array
+
           def initialize(*args)
             super
             type 'AWS::RDS::DBSubnetGroup'
@@ -18,10 +20,6 @@ module Convection
 
           def db_subnet_group_description(value)
             property('DBSubnetGroupDescription', value)
-          end
-
-          def subnet_id(value)
-            @properties['SubnetIds'] << value
           end
 
           def render(*args)

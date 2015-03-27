@@ -9,8 +9,8 @@ module Convection
       def render
         map do |t|
           {
-            :Key => t[0].to_s,
-            :Value => t[1]
+            'Key' => t[0].to_s,
+            'Value' => t[1]
           }
         end
       end

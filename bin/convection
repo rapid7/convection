@@ -14,15 +14,28 @@ module Convection
       @cwd = Dir.getwd
     end
 
-    desc 'halp', 'Get Halp!'
-    def halp
-      say 'RTFM Fool.'
+    desc 'converge STACK', 'Converge your cloud'
+    def converge(stack = nil)
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      @cloud.converge(stack) do |event, errors|
+        say_status(*event.to_thor)
+        errors.each do |error|
+          say "* #{ error.message }"
+          error.backtrace.each { |b| say "    #{ b }" }
+        end unless errors.nil?
+      end
     end
 
-    desc 'converge', 'Converge your cloud'
-    def converge
+    desc 'diff', 'Show changes that will be applied by converge'
+    def diff
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge { |event| say_status(*event.to_thor) }
+      @cloud.diff { |d| say_status(*d.to_thor) }
+    end
+
+    desc 'print STACK', 'Print the rendered template for STACK'
+    def print(stack)
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      puts @cloud.stacks[stack].to_json(true)
     end
   end
 end

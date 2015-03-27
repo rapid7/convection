@@ -14,6 +14,7 @@ module Convection
       attr_reader :attributes
       attr_reader :errors
       attr_reader :options
+      attr_reader :resources
       attr_reader :outputs
 
       ## AWS-SDK
@@ -58,11 +59,13 @@ module Convection
 
       def initialize(name, template, options = {})
         @name = name
-        @template = template
+        @template = template.clone(self)
         @errors = []
 
-        @region = options.delete(:region) { |_| 'us-east-1' }
         @cloud = options.delete(:cloud)
+        @cloud_name = options.delete(:cloud_name)
+
+        @region = options.delete(:region) { |_| 'us-east-1' }
         @credentials = options.delete(:credentials)
         @parameters = options.delete(:parameters) { |_| {} } # Default empty hash
         @tags = options.delete(:tags) { |_| {} } # Default empty hash
@@ -91,6 +94,7 @@ module Convection
       end
 
       def cloud_name
+        return @cloud_name unless @cloud_name.nil?
         return name if cloud.nil?
         "#{ cloud }-#{ name }"
       end
@@ -108,8 +112,8 @@ module Convection
         @attributes.set(name, key, value)
       end
 
-      def get(stack, key)
-        @attributes.get(stack, key)
+      def get(*args)
+        @attributes.get(*args)
       end
 
       def status
@@ -149,11 +153,11 @@ module Convection
       end
 
       def render
-        template.render(self)
+        template.render
       end
 
-      def to_json
-        template.to_json(self)
+      def to_json(pretty = false)
+        template.to_json(nil, pretty)
       end
 
       def apply(&block)
@@ -164,7 +168,11 @@ module Convection
         end
 
         if exist?
-          return if render == cf_get_template
+          if diff.empty? ## No Changes. Just get resources and move on
+            block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
+            cf_get_stack
+            return
+          end
 
           ## Update
           @cf_client.update_stack(request_options.tap do |o|
@@ -187,12 +195,16 @@ module Convection
         @errors << e
       end
 
+      def diff
+        @template.diff(cf_get_template)
+      end
+
       def watch(poll = 2, &block)
         cf_get_stack
 
         loop do
           cf_get_events.reverse.each do |event|
-            block.call(status, event)
+            block.call(Model::Event.from_cf(event))
           end if block
 
           break unless in_progress?
@@ -229,18 +241,35 @@ module Convection
 
       def cf_get_stack(stack_name = id)
         @remote = @cf_client.describe_stacks(:stack_name => stack_name).stacks.first
-
         @id = @remote.stack_id
+
+        @resources = {}
+        @cf_client.describe_stack_resources(:stack_name => @id).stack_resources.each do |resource|
+          next unless @template.attribute_mappings.include?(resource[:logical_resource_id])
+
+          attribute_map = @template.attribute_mappings[resource[:logical_resource_id]]
+          case attribute_map[:type].to_sym
+          when :string
+            @resources[attribute_map[:name]] = resource[:physical_resource_id]
+          when :array
+            @resources[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
+            @resources[attribute_map[:name]].push(resource[:physical_resource_id])
+          else
+            fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
+          end
+        end
+
         @outputs = Hash[@remote.outputs.map do |output|
-          [output[:output_key].to_s, output[:output_value]]
+          [output[:output_key].to_s, (JSON.parse(output[:output_value]) rescue output[:output_value])]
         end]
 
         ## Add outputs to attribute set
-        @attributes.outputs(self)
+        @attributes.stack(self)
 
-      rescue Aws::CloudFormation::Errors::ValidationError => e # Stack does not exist
+      rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
         @remote = nil
         @id = nil
+        @resources = {}
         @outputs = {}
       end
 
@@ -293,3 +322,5 @@ module Convection
     end
   end
 end
+
+require_relative '../model/event'

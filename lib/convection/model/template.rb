@@ -1,5 +1,6 @@
 require_relative '../dsl/helpers'
 require_relative '../dsl/intrinsic_functions'
+require_relative './diff'
 require 'json'
 
 module Convection
@@ -13,10 +14,6 @@ module Convection
       attribute :name
       attribute :version
       attribute :description
-
-      def depends(other)
-        dependencies << other
-      end
 
       def parameter(name, &block)
         pa = Model::Template::Parameter.new(name, self)
@@ -65,6 +62,37 @@ module Convection
     end
 
     ##
+    # Add generic diff(other) and properties to Hash
+    ##
+    class ::Hash
+      ## Use flattened properties to calculate a diff
+      def diff(other = {})
+        our_properties = properties
+        their_properties = other.properties
+
+        (our_properties.keys + their_properties.keys).uniq.inject({}) do |memo, key|
+          next memo if our_properties[key] == their_properties[key]
+
+          memo[key] = [our_properties[key], their_properties[key]]
+          memo
+        end
+      end
+
+      ## Recursivly flatten a hash into 1st order key/value pairs
+      def properties(memo = {}, path = '')
+        keys.each do |key|
+          if self[key].is_a?(Hash)
+            self[key].properties(memo, "#{path}.#{key}")
+          else
+            memo["#{path}.#{key}"] = self[key]
+          end
+        end
+
+        memo
+      end
+    end
+
+    ##
     # Template container class
     ##
     class Template
@@ -74,7 +102,8 @@ module Convection
       DEFAULT_VERSION = '2010-09-09'
 
       attr_reader :stack
-      attr_reader :dependencies
+      attr_reader :attribute_mappings
+
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
@@ -84,7 +113,7 @@ module Convection
       def initialize(stack = nil, &block)
         @definition = block
         @stack = stack
-        @dependencies = []
+        @attribute_mappings = {}
 
         @version = DEFAULT_VERSION
         @description = ''
@@ -95,9 +124,13 @@ module Convection
         @outputs = Collection.new
       end
 
+      def clone(stack_)
+        Template.new(stack_, &@definition)
+      end
+
       def render(stack_ = nil)
         ## Instantiate a new template with the definition block and an other stack
-        return Template.new(stack_, &@definition).render unless stack_.nil?
+        return clone(stack_).render unless stack_.nil?
 
         instance_exec(&@definition)
         {
@@ -110,8 +143,13 @@ module Convection
         }
       end
 
-      def to_json(stack_)
-        JSON.generate(render(stack_))
+      def diff(other, stack_ = nil)
+        render(stack_).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+      end
+
+      def to_json(stack_ = nil, pretty = false)
+        return JSON.generate(render(stack_)) unless pretty
+        JSON.pretty_generate(render(stack_))
       end
     end
   end

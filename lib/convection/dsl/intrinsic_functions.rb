@@ -70,8 +70,6 @@ module Convection
       end
 
       def fn_ref(resource)
-        return stack.parameters[resource] if stack.parameters.include?(resource)
-
         {
           'Ref' => resource
         }

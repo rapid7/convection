@@ -72,9 +72,17 @@ module Convection
         def with_output(output_name = name, value = reference, &block)
           o = Model::Template::Output.new(output_name, @template)
           o.value = value
+          o.description = "Resource #{ type }/#{ name }"
 
           o.instance_exec(&block) if block
-          @template.outputs[name] = o
+          @template.outputs[output_name] = o
+        end
+
+        def as_attribute(attr_name, attr_type = :string)
+          @template.attribute_mappings[name] = {
+            :name => attr_name,
+            :type => attr_type
+          }
         end
 
         def render

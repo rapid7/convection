@@ -1,3 +1,4 @@
+require 'json'
 require_relative '../../dsl/intrinsic_functions'
 require_relative '../mixin/conditional'
 
@@ -12,6 +13,7 @@ module Convection
         include DSL::IntrinsicFunctions
         include Model::Mixin::Conditional
 
+        attribute :name
         attribute :value
         attribute :description
 
@@ -29,7 +31,7 @@ module Convection
 
         def render
           {
-            'Value' => value,
+            'Value' => value.is_a?(Array) ? JSON.generate(value) : value,
             'Description' => description
           }.tap do |output|
             render_condition(output)
