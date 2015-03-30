@@ -10,21 +10,12 @@ module Convection
         class IAMUser < Resource
           property :path, 'Path'
           property :login_profile, 'LoginProfile'
+          property :group, 'Groups', :array
+          property :policy, 'Policies', :array
 
           def initialize(*args)
             super
-
             type 'AWS::IAM::User'
-            @properties['Groups'] = []
-            @properties['Policies'] = []
-          end
-
-          def policy(value)
-            @properties['Policies'] << value
-          end
-
-          def group(value)
-            @properties['Groups'] << value
           end
         end
       end
