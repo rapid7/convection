@@ -9,7 +9,7 @@ module Convection
     # Template DSL
     ##
     module Template
-      extend DSL::Helpers
+      include DSL::Helpers
 
       attribute :name
       attribute :version
@@ -62,7 +62,25 @@ module Convection
     end
 
     ##
-    # Add generic diff(other) and properties to Hash
+    # HACK: Add generic diff(other) and properties to Hash and Array
+    ##
+    class ::Array
+      ## Recursivly flatten an array into 1st order key/value pairs
+      def properties(memo = {}, path = '')
+        each_with_index do |elm, i|
+          if elm.is_a?(Hash) || elm.is_a?(Array)
+            elm.properties(memo, "#{path}.#{i}")
+          else
+            memo["#{path}.#{i}"] = elm
+          end
+        end
+
+        memo
+      end
+    end
+
+    ##
+    # HACK: Add generic diff(other) and properties to Hash and Array
     ##
     class ::Hash
       ## Use flattened properties to calculate a diff
@@ -73,6 +91,14 @@ module Convection
         (our_properties.keys + their_properties.keys).uniq.inject({}) do |memo, key|
           next memo if our_properties[key] == their_properties[key]
 
+          ## HACK: String/Number/Symbol comparison
+          if our_properties[key].is_a?(Numeric) ||
+             their_properties[key].is_a?(Numeric) ||
+             our_properties[key].is_a?(Symbol) ||
+             their_properties[key].is_a?(Symbol)
+            next memo if our_properties[key].to_s == their_properties[key].to_s
+          end
+
           memo[key] = [our_properties[key], their_properties[key]]
           memo
         end
@@ -81,7 +107,7 @@ module Convection
       ## Recursivly flatten a hash into 1st order key/value pairs
       def properties(memo = {}, path = '')
         keys.each do |key|
-          if self[key].is_a?(Hash)
+          if self[key].is_a?(Hash) || self[key].is_a?(Array)
             self[key].properties(memo, "#{path}.#{key}")
           else
             memo["#{path}.#{key}"] = self[key]
