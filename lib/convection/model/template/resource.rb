@@ -1,6 +1,7 @@
 require_relative '../../dsl/intrinsic_functions'
 require_relative '../mixin/cidr_block'
 require_relative '../mixin/conditional'
+# require_relative '../mixin/policy'
 require_relative '../mixin/protocol'
 require_relative '../mixin/taggable'
 require_relative './output'
@@ -12,30 +13,34 @@ module Convection
       # Resource
       ##
       class Resource
-        extend DSL::Helpers
-        include DSL::IntrinsicFunctions
-        include Model::Mixin::Conditional
 
-        class << self
-          ## Class::property - Helper for adding property accessors
-          def property(accesor, name, type = :string)
+        ##
+        # Helpers for defining Resource DSLs
+        ##
+        module Helpers
+          def property(accesor, property_name, type = :string)
             case type.to_sym
             when :string
               define_method(accesor) do |value = nil|
                 ## Call Instance#property
-                return property(name) if value.nil?
-                property(name, value)
+                return property(property_name) if value.nil?
+                property(property_name, value)
               end
             when :array
               define_method(accesor) do |*value|
-                @properties[name] = [] unless @properties[name].is_a?(Array)
-                @properties[name].push(*value)
+                @properties[property_name] = [] unless @properties[property_name].is_a?(Array)
+                @properties[property_name].push(*value.flatten)
               end
             else
               fail TypeError, "Property must be defined with type `string` or `array`, not #{ type }"
             end
           end
         end
+
+        include DSL::Helpers
+        include DSL::IntrinsicFunctions
+        include Model::Mixin::Conditional
+        extend Resource::Helpers
 
         attribute :type
         attr_reader :name
@@ -48,10 +53,6 @@ module Convection
           @type = ''
           @properties = {}
           @depends_on = []
-        end
-
-        def stack
-          @template.stack
         end
 
         def property(key, value = nil)

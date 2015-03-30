@@ -9,7 +9,7 @@ module Convection
       # Resource
       ##
       class Output
-        extend DSL::Helpers
+        include DSL::Helpers
         include DSL::IntrinsicFunctions
         include Model::Mixin::Conditional
 
@@ -23,10 +23,6 @@ module Convection
 
           @type = ''
           @properties = {}
-        end
-
-        def stack
-          @template.stack
         end
 
         def render

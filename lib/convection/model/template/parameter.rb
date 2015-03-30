@@ -7,7 +7,7 @@ module Convection
       # Template Parameter
       ##
       class Parameter
-        extend DSL::Helpers
+        include DSL::Helpers
         include DSL::IntrinsicFunctions
 
         attribute :type
@@ -31,10 +31,6 @@ module Convection
           @default = ''
           @allowed_values = []
           @description = ''
-        end
-
-        def stack
-          @template.stack
         end
 
         def allow(value)

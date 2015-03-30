@@ -18,6 +18,7 @@ module Convection
       # Mapping
       ##
       class Mapping
+        include DSL::Helpers
         include DSL::IntrinsicFunctions
 
         attr_reader :items
@@ -27,10 +28,6 @@ module Convection
           @template = template
 
           @items = Smash.new
-        end
-
-        def stack
-          @template.stack
         end
 
         def item(key_1, key_2, value)
