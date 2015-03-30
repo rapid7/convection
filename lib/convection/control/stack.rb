@@ -84,6 +84,7 @@ module Convection
         @cf_client = Aws::CloudFormation::Client.new(client_options)
 
         ## Get initial state
+        render
         cf_get_stack(cloud_name)
 
         ## Get last-seen event ID
