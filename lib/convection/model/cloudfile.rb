@@ -9,7 +9,7 @@ module Convection
     # DSL for Cloudfile
     ##
     module Cloudfile
-      extend DSL::Helpers
+      include DSL::Helpers
 
       attribute :name
       attribute :region
