@@ -10,22 +10,14 @@ module Convection
         class RDSDBSecurityGroup < Resource
           include Model::Mixin::Taggable
 
+          property :description, 'GroupDescription'
+          property :vpc, 'EC2VpcId'
+          property :security_group_ingress, 'DBSecurityGroupIngress'
+
+
           def initialize(*args)
             super
             type 'AWS::RDS::DBSecurityGroup'
-            @properties['DBSecurityGroupIngress'] = []
-          end
-
-          def ec2_vpc_id(value)
-            property('EC2VpcId', value)
-          end
-
-          def db_security_group_ingress(value)
-            @properties['DBSecurityGroupIngress'] << value
-          end
-
-          def group_description(value)
-            property('GroupDescription', value)
           end
 
           def render(*args)
@@ -41,7 +33,7 @@ module Convection
   module DSL
     ## Add DSL method to template namespace
     module Template
-      def db_security_group(name, &block)
+      def rds_security_group(name, &block)
         r = Model::Template::Resource::RDSDBSecurityGroup.new(name, self)
 
         r.instance_exec(&block) if block

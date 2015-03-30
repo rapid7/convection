@@ -10,16 +10,13 @@ module Convection
         class RDSDBSubnetGroup < Resource
           include Model::Mixin::Taggable
 
-          property :subnet, :type => :array
+          property :subnet, 'SubnetIds', :array
+          property :description, 'DBSubnetGroupDescription'
 
           def initialize(*args)
             super
             type 'AWS::RDS::DBSubnetGroup'
             @properties['SubnetIds'] = []
-          end
-
-          def db_subnet_group_description(value)
-            property('DBSubnetGroupDescription', value)
           end
 
           def render(*args)
@@ -35,7 +32,7 @@ module Convection
   module DSL
     ## Add DSL method to template namespace
     module Template
-      def db_subnet_group(name, &block)
+      def rds_subnet_group(name, &block)
         r = Model::Template::Resource::RDSDBSubnetGroup.new(name, self)
 
         r.instance_exec(&block) if block
