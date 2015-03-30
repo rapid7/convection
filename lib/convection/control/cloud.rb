@@ -36,9 +36,13 @@ module Convection
 
       def diff(&block)
         @cloudfile.deck.each do |stack|
-          block.call(Model::Event.new(:diff, "Compare local state of #{ stack.name } (#{ stack.cloud_name }) with remote template", :status))
-          next stack.diff.each { |diff| block.call(diff) } if stack.exist?
-          block.call(Model::Event.new(:create, "Stack #{ stack.cloud_name } is not yet defined", :info))
+          block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
+          next block.call(Model::Event.new(:create, "Stack #{ stack.cloud_name } is not yet defined", :info)) unless stack.exist?
+
+          difference = stack.diff
+          next block.call(Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)) if difference.empty?
+
+          difference.each { |diff| block.call(diff) }
         end
       end
     end
