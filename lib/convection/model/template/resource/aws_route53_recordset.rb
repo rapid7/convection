@@ -8,12 +8,20 @@ module Convection
         # AWS::EC2::Instance
         ##
         class Route53RecordSet < Resource
+          property :alias_target, 'AliasTarget'
           property :comment, 'Comment'
+          property :failover, 'Failover'
+          property :geo_location, 'GeoLocation', :array
+          property :health_check_id, 'HealthCheckId'
           property :zone, 'HostedZoneId'
+          property :zone_name, 'HostedZoneName'
           property :record_name, 'Name'
+          property :region, 'Region'
           property :record, 'ResourceRecords', :array
+          property :set_identifier, 'SetIdentifier'
           property :ttl, 'TTL'
           property :record_type, 'Type'
+          property :weight, 'Weight'
 
           def initialize(*args)
             super
