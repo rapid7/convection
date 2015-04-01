@@ -20,6 +20,11 @@ module Convection
       end
 
       def converge(to_stack, &block)
+        unless to_stack.nil? || stacks.include?(to_stack)
+          block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
+          return
+        end
+
         deck.each do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
