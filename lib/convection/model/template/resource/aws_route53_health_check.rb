@@ -7,7 +7,7 @@ module Convection
         ##
         # AWS::Route53::HealthCheck
         ##
-        class Rout53HealthCheck < Resource
+        class Route53HealthCheck < Resource
 
           property :health_check_config, 'HealthCheckConfig'
 
@@ -24,7 +24,7 @@ module Convection
     ## Add DSL method to template namespace
     module Template
       def route53_health_check(name, &block)
-        r = Model::Template::Resource::Rout53HealthCheck.new(name, self)
+        r = Model::Template::Resource::Route53HealthCheck.new(name, self)
 
         r.instance_exec(&block) if block
         resources[name] = r
