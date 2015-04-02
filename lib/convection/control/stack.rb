@@ -38,6 +38,7 @@ module Convection
       ROLLBACK_IN_PROGRESS = 'ROLLBACK_IN_PROGRESS'
       UPDATE_COMPLETE = 'UPDATE_COMPLETE'
       UPDATE_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS'
+      UPDATE_FAILED = 'UPDATE_FAILED'
       UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'
       UPDATE_ROLLBACK_COMPLETE = 'UPDATE_ROLLBACK_COMPLETE'
       UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS'
@@ -46,16 +47,6 @@ module Convection
 
       ## Internal status
       NOT_CREATED = 'NOT_CREATED'
-
-      class << self
-        def status_color(status)
-          case status
-          when CREATE_COMPLETE, UPDATE_COMPLETE then :green
-          when CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED then :red
-          else :yellow
-          end
-        end
-      end
 
       def initialize(name, template, options = {})
         @name = name

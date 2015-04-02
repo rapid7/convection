@@ -14,9 +14,11 @@ module Convection
       attr_accessor :level
       attr_accessor :timestamp
       colorize :level,
-               :green => [:info, :success, Control::Stack::CREATE_COMPLETE, Control::Stack::UPDATE_COMPLETE],
+               :green => [:info, :success, Control::Stack::CREATE_COMPLETE, Control::Stack::UPDATE_COMPLETE, Control::Stack::UPDATE_ROLLBACK_COMPLETE],
                :red => [:error, :fail, Control::Stack::CREATE_FAILED, Control::Stack::ROLLBACK_FAILED,
-                        Control::Stack::DELETE_FAILED, Control::Stack::UPDATE_ROLLBACK_FAILED],
+                        Control::Stack::DELETE_FAILED, Control::Stack::UPDATE_FAILED,
+                        Control::Stack::UPDATE_ROLLBACK_IN_PROGRESS, Control::Stack::UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS,
+                        Control::Stack::UPDATE_ROLLBACK_FAILED],
                :default => :yellow
 
       class << self
