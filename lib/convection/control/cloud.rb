@@ -34,6 +34,8 @@ module Convection
             return
           end
 
+          return unless stack.success?
+
           ## Stop here
           return if !to_stack.nil? && stack.name == to_stack
         end

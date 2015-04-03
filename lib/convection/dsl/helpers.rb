@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Convection
   module DSL
     ##
@@ -36,6 +38,9 @@ module Convection
     # Helper methods for creating templates
     ##
     module Helpers
+      extend Forwardable
+      def_delegators :@template, :stack, :parameters, :mappings, :resources, :outputs
+
       class << self
         def included(mod)
           mod.extend(DSL::ClassHelpers)
@@ -44,10 +49,6 @@ module Convection
 
       def camelize(str)
         str.split('-').map!(&:capitalize).join
-      end
-
-      def stack
-        @template.stack
       end
     end
   end

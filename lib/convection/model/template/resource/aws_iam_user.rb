@@ -1,6 +1,18 @@
 require_relative '../resource'
 
 module Convection
+  module DSL
+    ## Add DSL method to template namespace
+    module Template
+      def iam_user(name, &block)
+        r = Model::Template::Resource::IAMUser.new(name, self)
+
+        r.instance_exec(&block) if block
+        resources[name] = r
+      end
+    end
+  end
+
   module Model
     class Template
       class Resource
@@ -21,17 +33,4 @@ module Convection
       end
     end
   end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def iam_user(name, &block)
-        r = Model::Template::Resource::IAMUser.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-    end
-  end
-
 end

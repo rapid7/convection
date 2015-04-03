@@ -1,7 +1,7 @@
 require_relative '../../dsl/intrinsic_functions'
 require_relative '../mixin/cidr_block'
 require_relative '../mixin/conditional'
-# require_relative '../mixin/policy'
+require_relative '../mixin/policy'
 require_relative '../mixin/protocol'
 require_relative '../mixin/taggable'
 require_relative './output'
@@ -29,7 +29,9 @@ module Convection
             when :array
               define_method(accesor) do |*value|
                 @properties[property_name] = [] unless @properties[property_name].is_a?(Array)
-                @properties[property_name].push(*value.flatten)
+                @properties[property_name].push(*value.flatten.map do |entity|
+                  entity.is_a?(Resource) ? entity.reference : entity
+                end)
               end
             else
               fail TypeError, "Property must be defined with type `string` or `array`, not #{ type }"
@@ -57,11 +59,11 @@ module Convection
 
         def property(key, value = nil)
           return properties[key] if value.nil?
-          properties[key] = value.is_a?(Model::Template::Resource) ? value.reference : value
+          properties[key] = value.is_a?(Resource) ? value.reference : value
         end
 
         def depends_on(resource)
-          @depends_on << resource
+          @depends_on << (resource.is_a?(Resource) ? resource.name : resource)
         end
 
         def reference

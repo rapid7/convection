@@ -22,7 +22,8 @@ module Convection
         class IAMInstanceProfile < Resource
           property :path, 'Path'
 
-          # List of references to AWS::IAM::Roles. Currently, a maximum of one role can be assigned to an instance profile.
+          ## List of references to AWS::IAM::Roles.
+          ## Currently, a maximum of one role can be assigned to an instance profile.
           property :role, 'Roles', :array
 
           def initialize(*args)

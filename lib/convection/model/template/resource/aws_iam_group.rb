@@ -9,16 +9,12 @@ module Convection
         ##
         class IAMGroup < Resource
           property :path, 'Path'
+          property :policy, 'Policies', :array
 
           def initialize(*args)
             super
 
             type 'AWS::IAM::Group'
-            @properties['Policies'] = []
-          end
-
-          def policy(value)
-            @properties['Policies'] << value
           end
         end
       end
