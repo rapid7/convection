@@ -8,7 +8,6 @@ module Convection
       ##
       class Parameter
         include DSL::Helpers
-        include DSL::IntrinsicFunctions
 
         attribute :type
         attribute :default

@@ -19,7 +19,6 @@ module Convection
       ##
       class Mapping
         include DSL::Helpers
-        include DSL::IntrinsicFunctions
 
         attr_reader :items
 

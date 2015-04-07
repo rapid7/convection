@@ -26,12 +26,19 @@ module Convection
                 return property(property_name) if value.nil?
                 property(property_name, value)
               end
+
+              define_method("#{ accesor }=") do |value|
+                ## Call Instance#property
+                property(property_name, value)
+              end
             when :array
               define_method(accesor) do |*value|
                 @properties[property_name] = [] unless @properties[property_name].is_a?(Array)
                 @properties[property_name].push(*value.flatten.map do |entity|
                   entity.is_a?(Resource) ? entity.reference : entity
                 end)
+
+                @properties[property_name]
               end
             else
               fail TypeError, "Property must be defined with type `string` or `array`, not #{ type }"
@@ -40,7 +47,6 @@ module Convection
         end
 
         include DSL::Helpers
-        include DSL::IntrinsicFunctions
         include Model::Mixin::Conditional
         extend Resource::Helpers
 

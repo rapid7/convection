@@ -1,4 +1,5 @@
 require 'forwardable'
+require_relative './intrinsic_functions'
 
 module Convection
   module DSL
@@ -39,6 +40,8 @@ module Convection
     ##
     module Helpers
       extend Forwardable
+      include DSL::IntrinsicFunctions
+
       def_delegators :@template, :stack, :parameters, :mappings, :resources, :outputs
 
       class << self

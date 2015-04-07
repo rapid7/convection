@@ -10,7 +10,6 @@ module Convection
       ##
       class Output
         include DSL::Helpers
-        include DSL::IntrinsicFunctions
         include Model::Mixin::Conditional
 
         attribute :name
