@@ -15,7 +15,7 @@ module Convection
         ## Role DSL
         module IAMRole
           def policy(policy_name, &block)
-            add_policy = Model::Mixin::Policy.new(policy_name, @template)
+            add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
 
             @policies << add_policy
@@ -34,7 +34,7 @@ module Convection
 
           ## Add a canned trust policy for EC2 instnces
           def trust_ec2_instances(&block)
-            @trust_relationship = Model::Mixin::Policy.new('trust-ec2-instances', @template)
+            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-ec2-instances', :template => @template)
             trust_relationship.allow do
               action 'sts:AssumeRole'
               principal :Service => 'ec2.amazonaws.com'

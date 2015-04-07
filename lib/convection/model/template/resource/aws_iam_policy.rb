@@ -11,15 +11,6 @@ module Convection
 
         resources[name] = r
       end
-
-      module Resource
-        ## IAMPolicy DSL
-        module IAMPolicy
-          def allow(&block)
-
-          end
-        end
-      end
     end
   end
 
@@ -31,13 +22,8 @@ module Convection
         ##
         class IAMPolicy < Resource
           extend Forwardable
-          include DSL::Template::Resource::IAMPolicy
 
           attr_reader :document
-          attr_reader :groups
-          attr_reader :roles
-          attr_reader :users
-
           def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
 
@@ -45,7 +31,7 @@ module Convection
             super
 
             type 'AWS::IAM::Policy'
-            @document = Model::Mixin::Policy.new('shared-policy', @template)
+            @document = Model::Mixin::Policy.new(:template => @template)
 
             @properties['Groups'] = []
             @properties['Roles'] = []
