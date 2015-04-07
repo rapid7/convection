@@ -14,12 +14,12 @@ module Convection
         attribute :version
         list :statement
 
-        def initialize(name = SecureRandom.uuid, template = nil)
-          @name = name
+        def initialize(options = {})
+          @name = options.fetch(:name) { SecureRandom.uuid }
           @version = DEFAULT_VERSION
           @statement = []
 
-          @template = template
+          @template = options[:template]
         end
 
         def allow(sid = nil, &block)
@@ -39,7 +39,7 @@ module Convection
 
         def render(parent = {})
           parent.tap do |resource|
-            resource['PolicyName'] = name
+            resource['PolicyName'] = name unless name.is_a?(FalseClass)
             resource['PolicyDocument'] = document
           end
         end
@@ -56,6 +56,11 @@ module Convection
           attribute :condition
           list :action
           list :resource
+
+          def s3_resource(bucket, path = nil)
+            return resource "arn:aws:s3:::#{ bucket }/#{ path }" unless path.nil?
+            resource "arn:aws:s3:::#{ bucket }"
+          end
 
           def initialize(effect = 'Allow', template = nil)
             @effect = effect
