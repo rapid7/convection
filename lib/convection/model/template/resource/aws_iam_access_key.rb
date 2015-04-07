@@ -15,6 +15,9 @@ module Convection
           def initialize(*args)
             super
             type 'AWS::IAM::AccessKey'
+
+            @properties['Serial'] = 0
+            @properties['Status'] = 'Active'
           end
         end
       end
