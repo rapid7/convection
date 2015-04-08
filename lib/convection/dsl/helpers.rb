@@ -50,8 +50,19 @@ module Convection
         end
       end
 
-      def camelize(str)
-        str.split('-').map!(&:capitalize).join
+      ## Convert various casings to CamelCase
+      def camel_case(str)
+        str.downcase.split(/[\.\-_]/).map(&:capitalize).join
+      end
+
+      ## Convert various casings to snake_case
+      def snake_case(str)
+        str.downcase.split(/[\.\-_]/).join('_')
+      end
+
+      ## Convert various casings to SCREAMING_SNAKE_CASE
+      def screaming_snake_case(str)
+        str.upcase.split(/[\.\-_]/).join('_')
       end
     end
   end
