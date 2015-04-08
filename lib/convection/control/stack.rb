@@ -125,11 +125,7 @@ module Convection
       end
 
       def complete?
-        [CREATE_COMPLETE, UPDATE_COMPLETE].include?(status)
-      end
-
-      def rollback?
-        [ROLLBACK_COMPLETE, UPDATE_ROLLBACK_COMPLETE].include?(status)
+        [CREATE_COMPLETE, ROLLBACK_COMPLETE, UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
       def fail?
