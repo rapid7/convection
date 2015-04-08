@@ -5,7 +5,7 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::SNS::Topic 
+        # AWS::SNS::Topic
         ##
         class SNSTopic < Resource
           property :display_name, 'DisplayName'
@@ -28,7 +28,7 @@ module Convection
         r = Model::Template::Resource::SNSTopic.new(name, self)
 
         r.instance_exec(&block) if block
-        resources[name] = r 
+        resources[name] = r
       end
     end
   end

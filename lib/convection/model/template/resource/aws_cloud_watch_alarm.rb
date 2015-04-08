@@ -5,7 +5,7 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::CloudWatch::Alarm 
+        # AWS::CloudWatch::Alarm
         ##
         class CloudWatchAlarm < Resource
           property :actions_enabled, 'ActionsEnabled'
@@ -27,6 +27,8 @@ module Convection
           def initialize(*args)
             super
             type 'AWS::CloudWatch::Alarm'
+
+            @properties['ActionsEnabled'] = true
           end
         end
       end
@@ -40,7 +42,7 @@ module Convection
         r = Model::Template::Resource::CloudWatchAlarm.new(name, self)
 
         r.instance_exec(&block) if block
-        resources[name] = r 
+        resources[name] = r
       end
     end
   end
