@@ -56,7 +56,7 @@ module Convection
               action 'ec2:TerminateInstances'
               resource '*'
               condition :StringEquals => {
-                'ec2:InstanceProfile' => parent_role.instance_profile.reference
+                'ec2:InstanceProfile' => get_att(parent_role.instance_profile.name, 'Arn')
               }
             end
             term_policy.role(self)
