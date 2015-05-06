@@ -107,7 +107,18 @@ end
 ### Conditions
 http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html
 
-Not implemented yet.
+```ruby
+condition 'ThisCondition' do
+  fn_equals( fn_ref('SomeParameter'), 'value_x' )
+end
+
+condition 'ThatCondition' do
+  fn_or(
+    fn_equals( fn_ref('SomeParameter'), 'value_y' ),
+    fn_equals( fn_ref('SomeParameter'), 'value_z' )
+  )
+end
+```
 
 ### Resources
 http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
@@ -123,6 +134,17 @@ resource 'AnInstance' do
   property 'AvailabilityZone', 'us-east-1a'
   property 'ImageId', 'ami-76e27e1e' ## Ubuntu 14.04 hvm:ebs
   property 'KeyName', 'test'
+  ...
+end
+```
+
+Using a condition to set a resource property:
+
+```ruby
+resource 'MySQL' do
+  type 'AWS::RDS::DBInstance'
+  ...
+  property 'Iops', fn_if('ThisCondition', '1000', fn_ref('AWS::NoValue'))
   ...
 end
 ```

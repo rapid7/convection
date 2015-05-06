@@ -29,6 +29,13 @@ module Convection
         mappings[name] = m
       end
 
+      def condition(name, &block)
+        c = Model::Template::Condition.new(name, self)
+
+        c.instance_exec(&block) if block
+        conditions[name] = c
+      end
+
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
 
@@ -146,6 +153,7 @@ module Convection
 
         @parameters = Collection.new
         @mappings = Collection.new
+        @conditions = Collection.new
         @resources = Collection.new
         @outputs = Collection.new
       end
@@ -164,6 +172,7 @@ module Convection
           'Description' => description,
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
+          'Conditions' => conditions.map(&:render),
           'Resources' => resources.map(&:render),
           'Outputs' => outputs.map(&:render)
         }
@@ -183,5 +192,6 @@ end
 
 require_relative 'template/parameter'
 require_relative 'template/mapping'
+require_relative 'template/condition'
 require_relative 'template/resource'
 require_relative 'template/output'
