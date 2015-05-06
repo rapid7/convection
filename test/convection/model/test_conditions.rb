@@ -1,6 +1,4 @@
-gem 'minitest'
-require 'minitest/autorun'
-require 'minitest/spec'
+require 'test_helper'
 require 'json'
 require 'pp'
 
