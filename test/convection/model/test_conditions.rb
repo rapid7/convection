@@ -40,15 +40,6 @@ class TestConditions < Minitest::Test
         type "AWS::RDS::DBInstance"
         property 'Iops', fn_if('InProd', '1000', fn_ref('AWS::NoValue'))
       end
-
-=begin
-        "Iops" : {
-          "Fn::If" : [ "InProd",
-            "1000",
-            { "Ref" : "AWS::NoValue" }
-          ]
-        }
-=end
     end
   end
 
