@@ -135,8 +135,6 @@ resource 'AnInstance' do
   property 'ImageId', 'ami-76e27e1e' ## Ubuntu 14.04 hvm:ebs
   property 'KeyName', 'test'
   ...
-
-  # Conditionally setting a property
 end
 ```
 
