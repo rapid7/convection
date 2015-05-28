@@ -20,7 +20,6 @@ module Convection
 
           def parameter(key, value)
             @properties['Properties'][key] = value
-            #@properties[key] = value
           end
 
         end
