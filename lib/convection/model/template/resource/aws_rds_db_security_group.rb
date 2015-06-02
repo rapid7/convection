@@ -12,12 +12,27 @@ module Convection
 
           property :description, 'GroupDescription'
           property :vpc, 'EC2VpcId'
-          property :security_group_ingress, 'DBSecurityGroupIngress'
-
 
           def initialize(*args)
             super
             type 'AWS::RDS::DBSecurityGroup'
+            @properties['DBSecurityGroupIngress'] = []
+          end
+
+          def security_group_ingress(&block)
+            # A new code block defines a new ingress group
+            @properties['DBSecurityGroupIngress'] << {}
+            yield
+          end
+
+          def ec2_security_group(group, owner)
+            @properties['DBSecurityGroupIngress'].last.merge!(
+              { 'EC2SecurityGroupName': group, 'EC2SecurityGroupOwnerId': owner }
+            )
+          end
+
+          def cidr_ip(cidr_block)
+            @properties['DBSecurityGroupIngress'].last.merge!({ 'CIDRIP': cidr_block })
           end
 
           def render(*args)
@@ -39,6 +54,7 @@ module Convection
         r.instance_exec(&block) if block
         resources[name] = r
       end
+
     end
   end
 end
