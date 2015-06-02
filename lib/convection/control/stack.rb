@@ -225,6 +225,12 @@ module Convection
         @availability_zones
       end
 
+      def validate
+        result = @cf_client.validate_template(:template_body => template.to_json)
+        raise result.context.http_response.inspect unless result.successful?
+        puts "\nTemplate validated successfully"
+      end
+
       private
 
       def cf_get_stack(stack_name = id)

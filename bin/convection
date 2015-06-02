@@ -37,6 +37,12 @@ module Convection
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       puts @cloud.stacks[stack].to_json(true)
     end
+
+    desc 'validate STACK', 'Validate the rendered template for STACK'
+    def validate(stack)
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      @cloud.stacks[stack].validate
+    end
   end
 end
 

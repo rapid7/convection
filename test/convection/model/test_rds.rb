@@ -51,7 +51,7 @@ class TestRDS < Minitest::Test
   def test_rds_secgroup
     # Expected JSON: 
     json = from_json['Resources']['MyRDSSecGroup']
-    ingress_rules = json['Properties']['DBSecurityGroupsIngress']
+    ingress_rules = json['Properties']['DBSecurityGroupIngress']
 
     assert ingress_rules.is_a? Array
     assert_equal 2, ingress_rules.size
@@ -65,7 +65,6 @@ class TestRDS < Minitest::Test
       end
     end
 
-    perform_parameter_ref_comparison db_secgroups, 'MyRDSSecGroup', nil
   end
 
   private
