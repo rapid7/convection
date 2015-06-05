@@ -9,12 +9,12 @@ module Convection
         ##
         class ElastiCacheParameterGroup < Resource
 
+          type 'AWS::ElastiCache::ParameterGroup'
           property :cache_parameter_group_family, 'CacheParameterGroupFamily'
           property :description, 'Description'
 
           def initialize(*args)
             super
-            type 'AWS::ElastiCache::ParameterGroup'
             @properties['Properties'] = {}
           end
 
@@ -23,18 +23,6 @@ module Convection
           end
 
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def elasticache_parameter_group(name, &block)
-        r = Model::Template::Resource::ElastiCacheParameterGroup.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

@@ -8,41 +8,23 @@ module Convection
         # AWS::CloudWatch::Alarm
         ##
         class CloudWatchAlarm < Resource
-          property :actions_enabled, 'ActionsEnabled'
-          property :alarm_action, 'AlarmActions', :array
+          type 'AWS::CloudWatch::Alarm'
+          property :actions_enabled, 'ActionsEnabled', :default => true
+          property :alarm_action, 'AlarmActions', :type => :list
           property :alarm_description, 'AlarmDescription'
           property :alarm_name, 'AlarmName'
           property :comparison_operator, 'ComparisonOperator'
-          property :dimension, 'Dimensions', :array
+          property :dimension, 'Dimensions', :type => :list
           property :evaluation_periods, 'EvaluationPeriods'
-          property :insufficient_data_action, 'InsufficientDataActions', :array
+          property :insufficient_data_action, 'InsufficientDataActions', :type => :list
           property :metric_name, 'MetricName'
           property :namespace, 'Namespace'
-          property :ok_action, 'OKActions', :array
+          property :ok_action, 'OKActions', :type => :list
           property :period, 'Period'
           property :statistic, 'Statistic'
           property :threshold, 'Threshold'
           property :unit, 'Unit'
-
-          def initialize(*args)
-            super
-            type 'AWS::CloudWatch::Alarm'
-
-            @properties['ActionsEnabled'] = true
-          end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def cloud_watch_alarm(name, &block)
-        r = Model::Template::Resource::CloudWatchAlarm.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

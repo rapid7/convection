@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def iam_role(name, &block)
-        r = Model::Template::Resource::IAMRole.new(name, self)
-        r.instance_exec(&block) if block
-
-        resources[name] = r
-      end
-
       module Resource
         ## Role DSL
         module IAMRole
@@ -79,6 +71,7 @@ module Convection
         class IAMRole < Resource
           include DSL::Template::Resource::IAMRole
 
+          type 'AWS::IAM::Role'
           property :path, 'Path'
           attr_accessor :trust_relationship
           attr_reader :policies
@@ -88,8 +81,6 @@ module Convection
 
           def initialize(*args)
             super
-
-            type 'AWS::IAM::Role'
             @policies = []
           end
 
