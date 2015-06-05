@@ -1,18 +1,6 @@
 require_relative '../resource'
 
 module Convection
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def elb(name, &block)
-        r = Model::Template::Resource::ELB.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-    end
-  end
-
   module Model
     class Template
       class Resource
@@ -22,12 +10,7 @@ module Convection
         class ELB < Resource
           include Model::Mixin::Taggable
 
-          def initialize(*args)
-            super
-
-            type 'AWS::ElasticLoadBalancing::LoadBalancer'
-          end
-
+          type 'AWS::ElasticLoadBalancing::LoadBalancer'
           property :access_logging_policy, 'AccessLoggingPolicy'
           property :app_cookie_stickiness_policy, 'AppCookieStickinessPolicy', :array
           property :lb_cookie_stickiness_policy, 'LBCookieStickinessPolicy', :array

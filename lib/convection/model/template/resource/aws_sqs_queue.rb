@@ -10,6 +10,7 @@ module Convection
         class SQSQueue < Resource
           include Model::Mixin::Taggable
 
+          type 'AWS::SQS::Queue'
           property :delay_seconds, 'DelaySeconds'
           property :maximum_message_size, 'MaximumMessageSize'
           property :message_retention_period, 'MessageRetentionPeriod'
@@ -18,29 +19,12 @@ module Convection
           property :redrive_policy, 'RedrivePolicy'
           property :visibility_timeout, 'VisibilityTimeout'
 
-          def initialize(*args)
-            super
-            type 'AWS::SQS::Queue'
-          end
-
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
             end
           end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def sqs_queue(name, &block)
-        r = Model::Template::Resource::SQSQueue.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end
