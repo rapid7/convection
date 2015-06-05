@@ -276,10 +276,8 @@ module Convection
       ## Fetch current resources
       def get_resources
         @resources = {}.tap do |collection|
-          @cf_client.list_stack_resources(:stack_name => @id).each do |page|
-            page.stack_resource_summaries.each do |resource|
-              collection[resource[:logical_resource_id]] = resource
-            end
+          @cf_client.describe_stack_resources(:stack_name => @id).stack_resources.each do |resource|
+            collection[resource[:logical_resource_id]] = resource
           end
         end
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
@@ -330,7 +328,7 @@ module Convection
           when :string
             @attribute_mapping_values[attribute_map[:name]] = resource[:physical_resource_id]
           when :array
-            @attribute_mapping_values[attribute_map[:name]] = [] unless @attribute_mapping_values[attribute_map[:name]].is_a?(Array)
+            @attribute_mapping_values[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
             @attribute_mapping_values[attribute_map[:name]].push(resource[:physical_resource_id])
           else
             fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
