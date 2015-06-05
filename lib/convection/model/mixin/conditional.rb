@@ -11,9 +11,7 @@ module Convection
         end
 
         def render_condition(resource)
-          resource.tap do |r|
-            r['Condition'] = condition unless condition.nil?
-          end
+          resource['Condition'] = condition.render unless condition.nil?
         end
       end
     end
