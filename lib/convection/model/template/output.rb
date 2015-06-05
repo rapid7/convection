@@ -15,10 +15,11 @@ module Convection
         attribute :name
         attribute :value
         attribute :description
+        attr_reader :template
 
-        def initialize(name, template)
+        def initialize(name, parent)
           @name = name
-          @template = template
+          @template = parent.template
 
           @type = ''
           @properties = {}
