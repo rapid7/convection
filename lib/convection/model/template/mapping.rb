@@ -21,10 +21,11 @@ module Convection
         include DSL::Helpers
 
         attr_reader :items
+        attr_reader :template
 
-        def initialize(name, template)
+        def initialize(name, parent)
           @name = name
-          @template = template
+          @template = parent.template
 
           @items = Smash.new
         end
