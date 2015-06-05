@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def iam_user(name, &block)
-        r = Model::Template::Resource::IAMUser.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-
       module Resource
         ## Role DSL
         module IAMUser
@@ -49,6 +41,7 @@ module Convection
         class IAMUser < Resource
           include DSL::Template::Resource::IAMUser
 
+          type 'AWS::IAM::User'
           property :path, 'Path'
           property :login_profile, 'LoginProfile'
           property :group, 'Groups', :array
@@ -56,8 +49,6 @@ module Convection
 
           def initialize(*args)
             super
-
-            type 'AWS::IAM::User'
             @policies = []
           end
 
