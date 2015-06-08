@@ -12,6 +12,22 @@ module Convection
           extend Forwardable
 
           type 'AWS::IAM::Policy'
+          property :group, 'Groups', :type => :list,
+                                     :transform => proc { |resource|
+                                       depends_on(resource)
+                                       resource
+                                     }
+          property :role, 'Roles', :type => :list,
+                                   :transform => proc { |resource|
+                                     depends_on(resource)
+                                     resource
+                                   }
+          property :user, 'Users', :type => :list,
+                                   :transform => proc { |resource|
+                                     depends_on(resource)
+                                     resource
+                                   }
+
           attr_reader :document
           def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
@@ -19,30 +35,12 @@ module Convection
           def initialize(*args)
             super
             @document = Model::Mixin::Policy.new(:template => @template)
-
-            @properties['Groups'] = []
-            @properties['Roles'] = []
-            @properties['Users'] = []
-          end
-
-          def group(resource)
-            depends_on(resource)
-            @properties['Groups'] << (resource.is_a?(Resource) ? resource.reference : resource)
-          end
-
-          def role(resource)
-            depends_on(resource)
-            @properties['Roles'] << (resource.is_a?(Resource) ? resource.reference : resource)
-          end
-
-          def user(resource)
-            depends_on(resource)
-            @properties['Users'] << (resource.is_a?(Resource) ? resource.reference : resource)
           end
 
           def render
-            document.render(@properties)
-            super
+            super.tap do |r|
+              document.render(r['Properties'])
+            end
           end
         end
       end

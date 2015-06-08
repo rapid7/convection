@@ -24,8 +24,9 @@ module Convection
           end
 
           def render
-            document.render(@properties)
-            super
+            super.tap do |r|
+              document.render(r['Properties'])
+            end
           end
         end
       end

@@ -10,7 +10,7 @@ module Convection
         class IAMGroup < Resource
           type 'AWS::IAM::Group'
           property :path, 'Path'
-          property :policy, 'Policies', :array
+          property :policy, 'Policies', :type => :list
         end
       end
     end

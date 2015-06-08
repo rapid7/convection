@@ -10,7 +10,7 @@ module Convection
         class SNSTopic < Resource
           type 'AWS::SNS::Topic'
           property :display_name, 'DisplayName'
-          property :subscription, 'Subscription', :array
+          property :subscription, 'Subscription', :type => :list
           property :topic_name, 'TopicName'
         end
       end
