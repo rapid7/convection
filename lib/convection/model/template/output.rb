@@ -27,7 +27,7 @@ module Convection
 
         def render
           {
-            'Value' => value.is_a?(Array) ? JSON.generate(value) : value,
+            'Value' => value.respond_to?(:render) ? value.render : value,
             'Description' => description
           }.tap do |output|
             render_condition(output)
