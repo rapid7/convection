@@ -42,6 +42,11 @@ module Convection
           nodes = cf_type.split('::')
           nodes.shift # Remove AWS::
 
+          ## Cammel-case to snake-case
+          nodes.map! do |n|
+            n.split(/([A-Z0-9])(?![A-Z0-9])(?<!$)/).reject(&:empty?).reduce('') { |a, e| (e.length == 1 && !a.empty?) ? a += "_#{e}" : a += e }.downcase
+          end
+
           nodes.join('_').downcase
         end
       end
