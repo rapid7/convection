@@ -8,7 +8,7 @@ module Convection
         # AWS::Route53::HealthCheck
         ##
         class Route53HealthCheck < Resource
-          type 'AWS::Route53::HealthCheck'
+          type 'AWS::Route53::HealthCheck', :route53_healthcheck
           property :health_check_config, 'HealthCheckConfig'
         end
       end

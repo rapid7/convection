@@ -10,7 +10,7 @@ module Convection
         class RDSDBInstance < Resource
           include Model::Mixin::Taggable
 
-          type 'AWS::RDS::DBInstance'
+          type 'AWS::RDS::DBInstance', :rds_instance
           property :identifier, 'DBInstanceIdentifier'
           property :instance_class, 'DBInstanceClass'
           property :engine, 'Engine'
@@ -40,8 +40,8 @@ module Convection
           property :multi_az, 'MultiAZ'
           property :publicly_accessible, 'PubliclyAccessible'
           property :subnet_group, 'DBSubnetGroupName'
-          property :security_group, 'DBSecurityGroups', :array
-          property :vpc_security_group, 'VPCSecurityGroups', :array
+          property :security_group, 'DBSecurityGroups', :type => :list
+          property :vpc_security_group, 'VPCSecurityGroups', :type => :list
 
           def render(*args)
             super.tap do |resource|

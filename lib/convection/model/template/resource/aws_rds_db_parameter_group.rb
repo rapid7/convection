@@ -10,18 +10,10 @@ module Convection
         class RDSDBParameterGroup < Resource
           include Model::Mixin::Taggable
 
-          type 'AWS::RDS::DBParameterGroup'
+          type 'AWS::RDS::DBParameterGroup', :rds_parameter_group
           property :description, 'Description'
           property :family, 'Family'
-
-          def initialize(*args)
-            super
-            @properties['Parameters'] = {}
-          end
-
-          def parameter(key, value)
-            @properties['Parameters'][key] = value
-          end
+          property :parameter, 'Parameters', :type => :hash
 
           def render(*args)
             super.tap do |resource|

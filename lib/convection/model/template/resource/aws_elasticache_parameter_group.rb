@@ -9,19 +9,10 @@ module Convection
         ##
         class ElastiCacheParameterGroup < Resource
 
-          type 'AWS::ElastiCache::ParameterGroup'
+          type 'AWS::ElastiCache::ParameterGroup', :elasticache_parameter_group
           property :cache_parameter_group_family, 'CacheParameterGroupFamily'
           property :description, 'Description'
-
-          def initialize(*args)
-            super
-            @properties['Properties'] = {}
-          end
-
-          def parameter(key, value)
-            @properties['Properties'][key] = value
-          end
-
+          property :parameter, 'Properties', :type => :hash
         end
       end
     end

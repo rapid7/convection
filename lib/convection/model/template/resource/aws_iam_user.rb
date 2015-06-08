@@ -10,7 +10,7 @@ module Convection
             add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
 
-            @policies << add_policy
+            policies << add_policy
           end
 
           def with_key(serial = 0, &block)
@@ -44,18 +44,8 @@ module Convection
           type 'AWS::IAM::User'
           property :path, 'Path'
           property :login_profile, 'LoginProfile'
-          property :group, 'Groups', :array
-          attr_reader :policies
-
-          def initialize(*args)
-            super
-            @policies = []
-          end
-
-          def render
-            @properties['Policies'] = @policies.map(&:render) unless @policies.empty?
-            super
-          end
+          property :group, 'Groups', :type => :list
+          property :policies, 'Policies', :type => :list
         end
       end
     end
