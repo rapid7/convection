@@ -10,6 +10,7 @@ module Convection
         class RDSDBInstance < Resource
           include Model::Mixin::Taggable
 
+          type 'AWS::RDS::DBInstance', :rds_instance
           property :identifier, 'DBInstanceIdentifier'
           property :instance_class, 'DBInstanceClass'
           property :engine, 'Engine'
@@ -39,13 +40,8 @@ module Convection
           property :multi_az, 'MultiAZ'
           property :publicly_accessible, 'PubliclyAccessible'
           property :subnet_group, 'DBSubnetGroupName'
-          property :security_group, 'DBSecurityGroups', :array
-          property :vpc_security_group, 'VPCSecurityGroups', :array
-
-          def initialize(*args)
-            super
-            type 'AWS::RDS::DBInstance'
-          end
+          property :security_group, 'DBSecurityGroups', :type => :list
+          property :vpc_security_group, 'VPCSecurityGroups', :type => :list
 
           def render(*args)
             super.tap do |resource|
@@ -53,18 +49,6 @@ module Convection
             end
           end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def rds_instance(name, &block)
-        r = Model::Template::Resource::RDSDBInstance.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

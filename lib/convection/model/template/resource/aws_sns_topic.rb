@@ -8,27 +8,11 @@ module Convection
         # AWS::SNS::Topic
         ##
         class SNSTopic < Resource
+          type 'AWS::SNS::Topic'
           property :display_name, 'DisplayName'
-          property :subscription, 'Subscription', :array
+          property :subscription, 'Subscription', :type => :list
           property :topic_name, 'TopicName'
-
-          def initialize(*args)
-            super
-            type 'AWS::SNS::Topic'
-          end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def sns_topic(name, &block)
-        r = Model::Template::Resource::SNSTopic.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

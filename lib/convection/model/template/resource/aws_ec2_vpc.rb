@@ -2,20 +2,15 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def ec2_vpc(name, &block)
-        r = Model::Template::Resource::EC2VPC.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-
       module Resource
         ##
         # DSL For VPC sub-entities
         ##
         module EC2VPC
+          ## Expose other resource DSL handles inside of the VPC closure
+          include DSL::Template::Resource
+
           def add_internet_gateway(&block)
             g = Model::Template::Resource::EC2InternetGateway.new("#{ name }IG", @template)
             g.attach_to_vpc(self)
@@ -65,7 +60,7 @@ module Convection
 
             ## Allocate the next available subnet
             @subnet_allocated += 1
-            s.network(@network.subnet(
+            s.network(network.subnet(
               :Bits => @subnet_length,
               :NumSubnets => @subnet_allocated)[@subnet_allocated - 1])
 
@@ -85,23 +80,24 @@ module Convection
         ##
         class EC2VPC < Resource
           include DSL::Template::Resource::EC2VPC
-          include Model::Mixin::CIDRBlock
-          include Model::Mixin::Taggable
+          include Mixin::Taggable
+          extend Mixin::CIDRBlock
 
+          type 'AWS::EC2::VPC'
           attribute :subnet_length
           property :instance_tenancy, 'InstanceTenancy'
+          cidr_property :network, 'CidrBlock'
 
           def initialize(*args)
             super
 
-            type 'AWS::EC2::VPC'
             @subnet_allocated = 0
             @subnet_length = 24
 
             @internet_gateway = nil
           end
 
-          def enable_dns(value)
+          def enable_dns(value = true)
             property('EnableDnsSupport', value)
             property('EnableDnsHostnames', value)
           end

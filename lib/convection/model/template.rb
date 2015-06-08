@@ -9,7 +9,25 @@ module Convection
     # Template DSL
     ##
     module Template
+      ##
+      # Container for DSL interfaces
+      ##
+      module Resource
+        class << self
+          ## Wrap private define_method
+          def attach_resource(name, klass)
+            define_method(name) do |rname, &block|
+              resource = klass.new(rname, self)
+              resource.instance_exec(&block) if block
+
+              resources[rname] = resource
+            end
+          end
+        end
+      end
+
       include DSL::Helpers
+      include DSL::Template::Resource
 
       attribute :name
       attribute :version
@@ -57,11 +75,12 @@ module Convection
     # Mapable hash
     ##
     class Collection < Hash
-      def map(&block)
+      def map(no_nil = false, &block)
         result = {}
 
         each do |key, value|
-          result[key] = block.call(value)
+          res = block.call(value)
+          result[key] = res unless no_nil && res.nil?
         end
 
         result
@@ -143,8 +162,13 @@ module Convection
       attr_reader :resources
       attr_reader :outputs
 
+      def template
+        self
+      end
+
       def initialize(stack = nil, &block)
         @definition = block
+
         @stack = stack
         @attribute_mappings = {}
 
@@ -162,11 +186,16 @@ module Convection
         Template.new(stack_, &@definition)
       end
 
+      def execute
+        instance_exec(&@definition)
+      end
+
       def render(stack_ = nil)
         ## Instantiate a new template with the definition block and an other stack
         return clone(stack_).render unless stack_.nil?
 
-        instance_exec(&@definition)
+        execute ## Process the template document
+
         {
           'AWSTemplateFormatVersion' => version,
           'Description' => description,
@@ -183,8 +212,10 @@ module Convection
       end
 
       def to_json(stack_ = nil, pretty = false)
-        return JSON.generate(render(stack_)) unless pretty
-        JSON.pretty_generate(render(stack_))
+        object_template = render(stack_)
+
+        return JSON.generate(object_template) unless pretty
+        JSON.pretty_generate(object_template)
       end
     end
   end

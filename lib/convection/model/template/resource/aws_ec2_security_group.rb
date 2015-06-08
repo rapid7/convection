@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def ec2_security_group(name, &block)
-        r = Model::Template::Resource::EC2SecurityGroup.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-
       module Resource
         ##
         # DSL For EC2SecurityGroup rules
@@ -58,11 +50,9 @@ module Convection
           # Ingress/Egress Rule
           #
           class Rule < Resource
-            extend Model::Mixin::Protocol
-
             attribute :from
             attribute :to
-            protocol_property
+            attribute :protocol
 
             attribute :source
             attribute :destination_group
@@ -71,7 +61,7 @@ module Convection
 
             def render
               {
-                'IpProtocol' => protocol, # From protocol_property
+                'IpProtocol' => Mixin::Protocol.lookup(protocol),
                 'FromPort' => from,
                 'ToPort' => to
               }.tap do |rule|
@@ -83,13 +73,13 @@ module Convection
             end
           end
 
+          type 'AWS::EC2::SecurityGroup'
           property :description, 'GroupDescription'
           property :vpc, 'VpcId'
 
           def initialize(*args)
             super
 
-            type 'AWS::EC2::SecurityGroup'
             @security_group_ingress = []
             @security_group_egress = []
           end

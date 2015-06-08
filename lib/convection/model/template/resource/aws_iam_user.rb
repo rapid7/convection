@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def iam_user(name, &block)
-        r = Model::Template::Resource::IAMUser.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-
       module Resource
         ## Role DSL
         module IAMUser
@@ -18,7 +10,7 @@ module Convection
             add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
 
-            @policies << add_policy
+            policies << add_policy
           end
 
           def with_key(serial = 0, &block)
@@ -49,22 +41,11 @@ module Convection
         class IAMUser < Resource
           include DSL::Template::Resource::IAMUser
 
+          type 'AWS::IAM::User'
           property :path, 'Path'
           property :login_profile, 'LoginProfile'
-          property :group, 'Groups', :array
-          attr_reader :policies
-
-          def initialize(*args)
-            super
-
-            type 'AWS::IAM::User'
-            @policies = []
-          end
-
-          def render
-            @properties['Policies'] = @policies.map(&:render) unless @policies.empty?
-            super
-          end
+          property :group, 'Groups', :type => :list
+          property :policies, 'Policies', :type => :list
         end
       end
     end

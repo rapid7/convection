@@ -12,6 +12,7 @@ module Convection
         attribute :type
         attribute :default
         attribute :description
+        attr_reader :template
 
         attr_reader :allowed_values
         attribute :allowed_pattern
@@ -22,9 +23,9 @@ module Convection
         attribute :min_value
         attribute :constraint_description
 
-        def initialize(name, template)
+        def initialize(name, parent)
           @name = name
-          @template = template
+          @template = parent.template
 
           @type = 'String'
           @default = ''
