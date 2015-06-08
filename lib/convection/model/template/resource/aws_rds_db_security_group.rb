@@ -10,14 +10,10 @@ module Convection
         class RDSDBSecurityGroup < Resource
           include Model::Mixin::Taggable
 
-          type 'AWS::RDS::DBSecurityGroup'
+          type 'AWS::RDS::DBSecurityGroup', :rds_security_group
           property :description, 'GroupDescription'
           property :vpc, 'EC2VpcId'
-
-          def initialize(*args)
-            super
-            @properties['DBSecurityGroupIngress'] = []
-          end
+          property :ingress, 'DBSecurityGroupIngress', :type => :list
 
           def security_group_ingress(&block)
             # A new code block defines a new ingress group

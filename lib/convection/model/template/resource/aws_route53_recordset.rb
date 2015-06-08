@@ -8,7 +8,7 @@ module Convection
         # AWS::EC2::Instance
         ##
         class Route53RecordSet < Resource
-          type 'AWS::Route53::RecordSet'
+          type 'AWS::Route53::RecordSet', :route53_recordset
           property :alias_target, 'AliasTarget'
           property :comment, 'Comment'
           property :failover, 'Failover'

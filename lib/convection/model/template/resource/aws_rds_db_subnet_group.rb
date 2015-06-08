@@ -10,7 +10,7 @@ module Convection
         class RDSDBSubnetGroup < Resource
           include Model::Mixin::Taggable
 
-          type 'AWS::RDS::DBSubnetGroup'
+          type 'AWS::RDS::DBSubnetGroup', :rds_subnet_group
           property :subnet, 'SubnetIds', :type => :list
           property :description, 'DBSubnetGroupDescription'
 

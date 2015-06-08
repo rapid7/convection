@@ -8,7 +8,7 @@ module Convection
         # AWS::ElastiCache::SecurityGroup
         ##
         class ElastiCacheSecurityGroup < Resource
-          type 'AWS::ElastiCache::SecurityGroup'
+          type 'AWS::ElastiCache::SecurityGroup', :elasticache_security_group
           property :description, 'Description'
         end
       end
