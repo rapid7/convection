@@ -18,11 +18,11 @@ module Convection
             @properties ||= {}
           end
 
-          def type(cf_type = nil)
+          def type(cf_type = nil, dsl_name = nil)
             return @type if cf_type.nil?
 
             @type = cf_type
-            @name = DSL::Helpers.method_name(cf_type)
+            @name = dsl_name || DSL::Helpers.method_name(cf_type)
 
             DSL::Template::Resource.attach_resource(@name, self)
           end
@@ -64,6 +64,7 @@ module Convection
               case options[:type]
               when :string, :scalar, nil then ScalarProperty.new(name, property_name, options)
               when :array, :list then ListProperty.new(name, property_name, options)
+              when :hash then HashProperty.new(name, property_name, options)
               else fail TypeError, "Property must be defined with type `string` or `array`, not #{ options[:type] }"
               end
             end
@@ -99,7 +100,7 @@ module Convection
 
           def transform(value)
             return value if property.nil?
-            property.transform.inject(value) { |a, e| e.call(a) }
+            property.transform.inject(value) { |a, e| resource.instance_exec(a, &e) }
           end
 
           def validate!(value)
@@ -133,6 +134,11 @@ module Convection
             value
           end
 
+          def default
+            return if property.nil?
+            property.default
+          end
+
           def current(val)
             @current_value = @value = val
           end
@@ -147,11 +153,11 @@ module Convection
 
             resource.attach_method(definition.name) do |value = nil|
               return properties[definition.property_name].value if value.nil?
-              properties[definition.property_name].value = value
+              properties[definition.property_name].set(value)
             end
 
             resource.attach_method("#{ definition.name }=") do |value|
-              properties[definition.property_name].value = value
+              properties[definition.property_name].set(value)
             end
           end
 
@@ -164,12 +170,61 @@ module Convection
         # Instance of a scalar property
         ##
         class ScalarPropertyInstance < PropertyInstance
-          def value=(update)
-            @value = validate!(transform(update))
+          def set(new_value)
+            @value = validate!(transform(new_value))
           end
 
           def render
-            value.is_a?(Resource) ? value.reference : value
+            return default if value.nil?
+            return value.reference if value.is_a?(Resource)
+            value.respond_to?(:render) ? value.render : value
+          end
+        end
+
+        ##
+        # A Hash Property
+        ##
+        class HashProperty < Property
+          def attach(resource)
+            definition = self ## Expose to resource instance closure
+
+            resource.attach_method(definition.name) do |key, value = nil|
+              properties[definition.property_name].set(key, value)
+            end
+          end
+
+          def instance(resource)
+            HashPropertyInstance.new(resource, self)
+          end
+        end
+
+        ##
+        # Instance of a hash property
+        ##
+        class HashPropertyInstance < PropertyInstance
+          def initialize(*_)
+            super
+
+            @value = {}
+            @current_value = {}
+          end
+
+          def set(key, new_value)
+            @value[key] = validate!(transform(new_value))
+          end
+
+          def render
+            value.keys.inject({}) do |memo, i|
+              memo[i] = if value[i].is_a?(Resource)
+                          value[i].reference
+                        elsif value[i].respond_to?(:render)
+                          value[i].render
+                        else
+                          value[i]
+                        end
+
+              memo
+            end
           end
         end
 
@@ -181,7 +236,7 @@ module Convection
             definition = self ## Expose to resource instance closure
 
             resource.attach_method(definition.name) do |*values|
-              properties[definition.property_name].push(*values.flatten) unless values.empty?
+              properties[definition.property_name].set(values.flatten) unless values.empty?
 
               ## Return the list
               properties[definition.property_name].value
@@ -204,25 +259,27 @@ module Convection
             @current_value = []
           end
 
-          def push(*values)
-            values.map! do |val|
-              validate!(val)
-              transform(val)
+          def set(values)
+            values.map! do |new_value|
+              validate!(transform(new_value))
             end
 
             @value.push(*values)
           end
-          alias_method :<<, :push
+          alias_method :<<, :set
+          alias_method :push, :set
 
           def render
             value.map do |val|
-              val.is_a?(Resource) ? val.reference : val
+              next val.reference if val.is_a?(Resource)
+              val.respond_to?(:render) ? val.render : val
             end
           end
         end
 
         include DSL::Helpers
-        include Model::Mixin::Conditional
+        include DSL::Template::Resource
+        include Mixin::Conditional
 
         ##
         # Resource Instance Methods
@@ -249,12 +306,12 @@ module Convection
           end
         end
 
-        def property(key, value = nil)
-          return properties[key].value if value.nil?
+        def property(key,  *value)
+          return properties[key].value if value.empty?
 
           ## Define a property instance on the fly
           properties[key] = ScalarPropertyInstance.new(self) unless properties.include?(key)
-          properties[key].value = value
+          properties[key].set(*value)
         end
 
         def depends_on(resource)
