@@ -328,7 +328,7 @@ module Convection
           when :string
             @attribute_mapping_values[attribute_map[:name]] = resource[:physical_resource_id]
           when :array
-            @attribute_mapping_values[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
+            @attribute_mapping_values[attribute_map[:name]] = [] unless @attribute_mapping_values[attribute_map[:name]].is_a?(Array)
             @attribute_mapping_values[attribute_map[:name]].push(resource[:physical_resource_id])
           else
             fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
