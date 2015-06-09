@@ -95,7 +95,12 @@ module Convection
 
         each do |key, value|
           res = block.call(value)
-          result[key] = res unless no_nil && res.nil?
+
+          next if no_nil && res.nil?
+          next if no_nil && res.is_a?(Array) && res.empty?
+          next if no_nil && res.is_a?(Hash) && res.empty?
+
+          result[key] = res
         end
 
         result
