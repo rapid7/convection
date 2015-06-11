@@ -238,18 +238,20 @@ module Convection
         @id = @remote.stack_id
 
         @resources = {}
-        @cf_client.describe_stack_resources(:stack_name => @id).stack_resources.each do |resource|
-          next unless @template.attribute_mappings.include?(resource[:logical_resource_id])
+        @cf_client.describe_stack_resources(:stack_name => @id).each do |page|
+          page.stack_resources.each do |resource|
+            next unless @template.attribute_mappings.include?(resource[:logical_resource_id])
 
-          attribute_map = @template.attribute_mappings[resource[:logical_resource_id]]
-          case attribute_map[:type].to_sym
-          when :string
-            @resources[attribute_map[:name]] = resource[:physical_resource_id]
-          when :array
-            @resources[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
-            @resources[attribute_map[:name]].push(resource[:physical_resource_id])
-          else
-            fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
+            attribute_map = @template.attribute_mappings[resource[:logical_resource_id]]
+            case attribute_map[:type].to_sym
+            when :string
+              @resources[attribute_map[:name]] = resource[:physical_resource_id]
+            when :array
+              @resources[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
+              @resources[attribute_map[:name]].push(resource[:physical_resource_id])
+            else
+              fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
+            end
           end
         end
 
