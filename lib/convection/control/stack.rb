@@ -238,8 +238,8 @@ module Convection
         @id = @remote.stack_id
 
         @resources = {}
-        @cf_client.describe_stack_resources(:stack_name => @id).each do |page|
-          page.stack_resources.each do |resource|
+        @cf_client.list_stack_resources(:stack_name => @id).each do |page|
+          page.stack_resource_summaries.each do |resource|
             next unless @template.attribute_mappings.include?(resource[:logical_resource_id])
 
             attribute_map = @template.attribute_mappings[resource[:logical_resource_id]]
