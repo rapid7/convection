@@ -9,7 +9,7 @@ module Convection
         ##
         class ElastiCacheCluster < Resource
 
-          type 'AWS::ElastiCache::CacheCluster'
+          type 'AWS::ElastiCache::CacheCluster', :elasticache_cache_cluster
           property :auto_minor_version_upgrade, 'AutoMinorVersionUpgrade'
           property :cache_node_type, 'CacheNodeType'
           property :cache_security_group_names, 'CacheSecurityGroupNames'
