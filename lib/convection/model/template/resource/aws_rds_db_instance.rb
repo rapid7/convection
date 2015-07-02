@@ -11,6 +11,7 @@ module Convection
           include Model::Mixin::Taggable
 
           property :identifier, 'DBInstanceIdentifier'
+          property :source_identifier, 'SourceDBInstanceIdentifier'
           property :instance_class, 'DBInstanceClass'
           property :engine, 'Engine'
           property :engine_version, 'EngineVersion'
