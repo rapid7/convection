@@ -14,6 +14,7 @@ module Convection
           property :availability_zone, 'AvailabilityZone'
           property :image_id, 'ImageId'
           property :instance_type, 'InstanceType'
+          property :instance_profile, 'IamInstanceProfile'
           property :key_name, 'KeyName'
           property :subnet, 'SubnetId'
           property :user_data, 'UserData'
