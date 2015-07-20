@@ -105,7 +105,7 @@ module Convection
       end
 
       def get(*args)
-        @attributes.get(*args)
+        @attributes.get(*args, "** Warning: Could not resolve value [#{args[1]}] for stack [#{args[0]}] **")
       end
 
       def status
