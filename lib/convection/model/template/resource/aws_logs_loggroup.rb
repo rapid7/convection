@@ -8,7 +8,6 @@ module Convection
         # AWS::Logs::LogGroup
         ##
         class LogGroup < Resource
-
           property :retention_in_days, 'RetentionInDays'
       
           def initialize(*args)
