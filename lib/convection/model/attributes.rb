@@ -37,11 +37,12 @@ module Convection
       end
 
       def include?(stack, key)
-        @stacks.include?(stack) && @stacks[stack].include?(key)
+        @stacks.include?(stack.to_s) && @stacks[stack.to_s].include?(key.to_s)
       end
 
-      def get(stack, key, default=nil)
-        include?(stack, key) ? @stacks[stack.to_s][key.to_s] : fail(ArgumentError, "Attempted to reference an undefined attribute!", caller)
+      def get(stack, key, default = nil)
+        fail ArgumentError, "Attempted to reference an undefined attribute!", caller unless include?(stack, key)
+        @stacks[stack.to_s][key.to_s]
       end
 
       def set(stack, key, value)
