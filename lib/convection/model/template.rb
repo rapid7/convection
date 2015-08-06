@@ -135,7 +135,7 @@ module Convection
         their_properties = other.properties
 
         (our_properties.keys + their_properties.keys).uniq.inject({}) do |memo, key|
-          next memo if our_properties[key] == their_properties[key]
+          next memo if (our_properties[key] == their_properties[key] rescue false)
 
           ## HACK: String/Number/Symbol comparison
           if our_properties[key].is_a?(Numeric) ||
