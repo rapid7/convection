@@ -5,13 +5,12 @@ require 'pp'
 class TestLogGroups < Minitest::Test
   def setup
     @template = ::Convection.template do
-      description 'Logroups Test Template'
+    description 'Logroups Test Template'
 
          resource 'testgroup' do
            type 'AWS::Logs::LogGroup'
            property 'RetentionInDays', 365
          end
-
     end
   end
 

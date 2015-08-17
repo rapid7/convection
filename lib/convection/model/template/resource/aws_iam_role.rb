@@ -43,7 +43,7 @@ module Convection
             trust_relationship
           end
 	
-	## Add Add a canned trust policy for Cloudtrail
+	## Add a canned trust policy for Cloudtrail
 	def trust_cloudtrail(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-cloudtrail-instances', :template => @template)
             trust_relationship.allow do
