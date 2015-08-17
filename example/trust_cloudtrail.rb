@@ -4,7 +4,7 @@
         #IAM role to create a log stream & put events
         iam_role 'role' do
          path "/"
-         #creates trust policy
+         #defines trust relationship
 	 trust_cloudtrail
          
         policy 'CreateStreamPolicy' do
