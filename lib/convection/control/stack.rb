@@ -202,6 +202,7 @@ module Convection
 
         watch(&block) if block # Block execution on stack status
       rescue Aws::Errors::ServiceError => e
+        context = e.context
         if e.message == 'Rate exceeded'
           operation = context.operation_name
           retries = context.retries
