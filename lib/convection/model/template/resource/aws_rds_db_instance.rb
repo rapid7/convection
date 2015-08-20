@@ -30,6 +30,7 @@ module Convection
           property :option_group, 'OptionGroupName'
 
           property :storage_encrypted, 'StorageEncrypted'
+          property :kms_key_id, 'KmsKeyId'
           property :allocated_storage, 'AllocatedStorage'
           property :allow_major_version_upgrade, 'AllowMajorVersionUpgrade'
           property :auto_minor_version_upgrade, 'AutoMinorVersionUpgrade'
