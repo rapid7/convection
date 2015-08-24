@@ -85,7 +85,6 @@ module Convection
         @resources = {}
         @current_template = {}
         @last_event_seen = nil
-        @retries = 0
 
         ## Get initial state
         get_status(cloud_name)
@@ -202,18 +201,7 @@ module Convection
 
         watch(&block) if block # Block execution on stack status
       rescue Aws::Errors::ServiceError => e
-        context = e.context
-        if e.message == 'Rate exceeded'
-          operation = context.operation_name
-          retries = context.retries
-          puts "AWS API Rate exceeded on #{operation} after #{retries} retries"
-          sleep 10
-          raise if @retries > 3
-          @retries += 1
-          retry
-        else
-          @errors << e
-        end
+        @errors << e
       end
 
       def delete(&block)
