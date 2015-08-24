@@ -38,7 +38,7 @@ module Convection
 
           ## Stop here
           return if !to_stack.nil? && stack.name == to_stack
-          sleep rand(5)
+          sleep rand(2)
         end
       end
 
