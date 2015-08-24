@@ -39,8 +39,12 @@ module Convection
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
 
+        if resources.has_key?(name)
+          raise ArgumentError, "Duplicate Resources Error #{name}"
+        else
         r.instance_exec(&block) if block
         resources[name] = r
+      end
       end
 
       def output(name, &block)
