@@ -2,6 +2,7 @@ require_relative '../dsl/helpers'
 require_relative '../dsl/intrinsic_functions'
 require_relative './diff'
 require 'json'
+require 'pry'
 
 module Convection
   module DSL
@@ -36,15 +37,17 @@ module Convection
         conditions[name] = c
       end
 
+      ###
+      # DUPLICATE RESOURCES
+      ###
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
-
-        if resources.has_key?(name)
-          raise ArgumentError, "Duplicate Resources Error #{name}"
-        else
+        #if resources.has_key?(name)
+          #raise ArgumentError, "DUPLICATE RESOURCES ERROR #{name}"
+        #else
         r.instance_exec(&block) if block
         resources[name] = r
-      end
+      #end
       end
 
       def output(name, &block)
@@ -187,8 +190,14 @@ module Convection
       end
 
       def to_json(stack_ = nil, pretty = false)
-        return JSON.generate(render(stack_)) unless pretty
-        JSON.pretty_generate(render(stack_))
+        number_of_resources = (render(stack_)) ["Resources"].count
+        cf_max = 200
+        if number_of_resources > cf_max
+          raise ArgumentError, "EXCESSIVE NUMBER OF RESOURCES (#{number_of_resources}) Max= #{cf_max}"
+        else
+          return JSON.generate(render(stack_)) unless pretty
+          JSON.pretty_generate(render(stack_))
+        end
       end
     end
   end
