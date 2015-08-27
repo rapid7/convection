@@ -190,10 +190,20 @@ module Convection
       end
 
       def to_json(stack_ = nil, pretty = false)
-        number_of_resources = (render(stack_)) ["Resources"].count
-        cf_max = 200
-        if number_of_resources > cf_max
-          raise ArgumentError, "EXCESSIVE NUMBER OF RESOURCES (#{number_of_resources}) Max= #{cf_max}"
+        #bytesize
+        json = JSON.generate(render(stack_))
+        template_bytesize = json.bytesize
+        binding.pry
+        cf_max_bytesize = 51200
+        if template_bytesize > cf_max_bytesize
+          raise ArgumentError, "EXCESSIVE TEMPLATE BODY SIZE (#{template_bytesize} Max= #{cf_max_bytesize})"
+        end
+        #resource count
+        resources_json = (render(stack_)) ["Resources"]
+        number_of_resources = resources_json.count
+        cf_max_resources = 200
+        if number_of_resources > cf_max_resources
+          raise ArgumentError, "EXCESSIVE NUMBER OF RESOURCES (#{number_of_resources}) Max= #{cf_max_resources}"
         else
           return JSON.generate(render(stack_)) unless pretty
           JSON.pretty_generate(render(stack_))
