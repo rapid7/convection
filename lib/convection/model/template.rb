@@ -2,7 +2,6 @@ require_relative '../dsl/helpers'
 require_relative '../dsl/intrinsic_functions'
 require_relative './diff'
 require 'json'
-require 'pry'
 
 module Convection
   module DSL
@@ -37,12 +36,12 @@ module Convection
         conditions[name] = c
       end
 
-
       def resource(name, &block)
-        r = Model::Template::Resource.new(name, self)
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
+       r = Model::Template::Resource.new(name, self)
+
+       r.instance_exec(&block) if block
+       resources[name] = r
+     end
 
       def output(name, &block)
         o = Model::Template::Output.new(name, self)
