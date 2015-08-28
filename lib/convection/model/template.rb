@@ -40,13 +40,8 @@ module Convection
 
       def resource(name, &block)
         r = Model::Template::Resource.new(name, self)
-        #
-        #if resources.has_key?(name)
-          #raise ArgumentError, "DUPLICATE RESOURCES ERROR #{name}"
-        #else
         r.instance_exec(&block) if block
         resources[name] = r
-      #end
       end
 
       def output(name, &block)
@@ -196,18 +191,68 @@ module Convection
         template_bytesize = json.bytesize
         cf_max_bytesize = 51200
         if template_bytesize > cf_max_bytesize
-          raise ArgumentError, "EXCESSIVE TEMPLATE BODY SIZE (#{template_bytesize} Max= #{cf_max_bytesize})"
+          Kernel.abort("Error: Excessive Template Size (#{template_bytesize}) Max= #{cf_max_bytesize}")
         end
+
+        #description characters
+        description_bytesize = stack['Description'].bytesize
+        cf_max_description_bitesize = 1024
+        if description_bytesize > cf_max_description_bitesize
+          Kernel.abort("Error: Excessive Description Size (#{description_bytesize}) Max= #{cf_max_description_bitesize}")
+        end
+
         #resource count
-        resources_json = stack["Resources"]
-        number_of_resources = resources_json.count
+        number_of_resources = stack["Resources"].count
         cf_max_resources = 200
         if number_of_resources > cf_max_resources
-          raise ArgumentError, "EXCESSIVE NUMBER OF RESOURCES (#{number_of_resources}) Max= #{cf_max_resources}"
-        else
-          return JSON.generate(stack) unless pretty
-          JSON.pretty_generate(stack)
+          Kernel.abort("Error: Excessive Number of Resources (#{number_of_resources}) Max= #{cf_max_resources}")
         end
+
+        #parameter count
+        number_of_parameters = stack['Parameters'].count
+        cf_max_parameters = 60
+        if number_of_parameters > cf_max_parameters
+          Kernel.abort("Error: Excessive Number of Parameters (#{number_of_parameters}) Max= #{cf_max_parameters}")
+        end
+
+        #parameter name characters
+        largest_parameter_name = ((stack['Parameters'].keys).max)
+        if largest_parameter_name == nil
+          largest_parameter_name = ""
+        end
+        parameter_name_characters = largest_parameter_name.length
+        cf_max_parameter_name_characters = 255
+        if parameter_name_characters > cf_max_parameter_name_characters
+          Kernel.abort("Error: Parameter Name #{largest_parameter_name} has too many characters (#{parameter_name_characters}) Max= #{cf_max_parameter_name_characters}")
+        end
+
+        #mappings count
+        number_of_mappings = stack ['Mappings'].count
+        cf_max_mappings = 100
+        if number_of_mappings > cf_max_mappings
+          Kernel.abort("Error: Excessive Number of Mappings (#{number_of_mappings}) Max= #{cf_max_mappings}")
+        end
+
+        #outputs count
+        number_of_outputs = stack['Outputs'].count
+        cf_max_outputs = 60
+        if number_of_outputs > cf_max_outputs
+          Kernel.abort("Error: Excessive Number of Outputs (#{number_of_outputs}) Max= #{cf_max_outputs}")
+        end
+
+        #output name characters
+        largest_output_name = ((stack['Outputs'].keys).max)
+        if largest_output_name == nil
+          largest_output_name = ""
+        end
+        output_name_characters = largest_output_name.length
+        cf_max_output_name_characters = 255
+        if output_name_characters > cf_max_output_name_characters
+          Kernel.abort("Error: Output Name #{largest_output_name} has too many characters (#{output_name_characters}) Max= #{cf_max_output_name_characters}")
+        end
+
+        return JSON.generate(stack) unless pretty
+        JSON.pretty_generate(stack)
       end
     end
   end
