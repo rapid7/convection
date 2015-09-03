@@ -11,19 +11,19 @@ module Convection
     module Template
       include DSL::Helpers
 
-      CF_MAX_BYTESIZE = 51200
-      CF_MAX_DESCRIPTION_BYTESIZE = 1024
-      CF_MAX_RESOURCES = 200
-      CF_MAX_RESOURCE_NAME = 255
-      CF_MAX_MAPPINGS = 30
-      CF_MAX_MAPPING_NAME = 25
-      CF_MAX_MAPPING_ATTRIBUTES = 30
+      CF_MAX_BYTESIZE = 51_200
+      CF_MAX_DESCRIPTION_BYTESIZE = 1_024
       CF_MAX_MAPPING_ATTRIBUTE_NAME = 255
-      CF_MAX_PARAMETERS = 60
-      CF_MAX_PARAMETER_VALUE_BYTESIZE = 4086
-      CF_MAX_PARAMETER_NAME_CHARACTERS = 255
-      CF_MAX_OUTPUTS = 60
+      CF_MAX_MAPPING_ATTRIBUTES = 30
+      CF_MAX_MAPPING_NAME = 25
+      CF_MAX_MAPPINGS = 30
       CF_MAX_OUTPUT_NAME_CHARACTERS = 255
+      CF_MAX_OUTPUTS = 60
+      CF_MAX_PARAMETER_NAME_CHARACTERS = 255
+      CF_MAX_PARAMETERS = 60
+      CF_MAX_PARAMETER_VALUE_BYTESIZE = 4_086
+      CF_MAX_RESOURCE_NAME = 255
+      CF_MAX_RESOURCES = 200
 
       attribute :name
       attribute :version
@@ -211,7 +211,6 @@ module Convection
         validate_outputs(rendered_stack)
         validate_description(rendered_stack)
         validate_bytesize(rendered_stack)
-
       end
 
       def validate_resources(rendered_stack = nil)
@@ -221,9 +220,8 @@ module Convection
           raise ArgumentError, "Error: Excessive Number of Resources (#{number_of_resources}) Max= #{CF_MAX_RESOURCES}"
         end
         largest_resource_name = resources.keys.max
-        if largest_resource_name == nil
-          largest_resource_name = ""
-        end
+        largest_resource_name ||=''
+
         resource_name_characters = largest_resource_name.length
         if  resource_name_characters> CF_MAX_RESOURCE_NAME
           raise ArgumentError, "Error: Resource Name #{largest_resource_name} has too many characters (#{resource_name_characters}) Max=#{CF_MAX_RESOURCE_NAME} "
@@ -237,13 +235,15 @@ module Convection
           raise ArgumentError, "Error: Excessive Number of Mappings (#{number_of_mappings}) Max= #{CF_MAX_MAPPINGS}"
         end
         mappings.each do |key,value|
-          if value.count > CF_MAX_MAPPING_ATTRIBUTES
-            raise ArgumentError, "Error: Excessive Number of Mapping Attributes"
+          number_of_attributes = value.count
+          if number_of_attributes > CF_MAX_MAPPING_ATTRIBUTES
+            raise ArgumentError, "Error: Excessive Number of Mapping Attributes (#{number_of_attributes} Max = #{CF_MAX_MAPPING_ATTRIBUTES})"
           end
         end
         mappings.keys.each do |key|
-          if key.length > CF_MAX_MAPPING_NAME
-            raise ArgumentError, "Error: Excessive Mapping Name #{key}"
+          mapping_name_length=key.length
+          if  mapping_name_length > CF_MAX_MAPPING_NAME
+            raise ArgumentError, "Error: Excessive Mapping Name #{key } (#{mapping_name_length}) Max= #{CF_MAX_MAPPING_NAME}"
           end
         end
         mapping_attributes = mappings.values.flat_map do |inner_hash|
@@ -252,8 +252,9 @@ module Convection
           end
         end
         mapping_attributes.each do |attribute|
-          if attribute.length > CF_MAX_MAPPING_ATTRIBUTE_NAME
-            raise ArgumentError, "Error: Excessive Mapping Attribute Name #{attribute}"
+          mapping_attribute_name_length = attribute.length
+          if mapping_attribute_name_length > CF_MAX_MAPPING_ATTRIBUTE_NAME
+            raise ArgumentError, "Error: Excessive Mapping Attribute Name #{attribute} (#{mapping_attribute_name_length}) Max= #{CF_MAX_MAPPING_ATTRIBUTE_NAME}"
           end
         end
       end
@@ -265,9 +266,8 @@ module Convection
           raise ArgumentError, "Error: Excessive Number of Parameters (#{number_of_parameters}) Max= #{CF_MAX_PARAMETERS}"
         end
         largest_parameter_name = parameters.keys.max
-        if largest_parameter_name == nil
-          largest_parameter_name = ""
-        end
+        largest_parameter_name ||=''
+
         parameter_name_characters = largest_parameter_name.length
         if parameter_name_characters > CF_MAX_PARAMETER_NAME_CHARACTERS
           raise ArgumentError, "Error: Parameter Name #{largest_parameter_name} has too many characters (#{parameter_name_characters}) Max= #{CF_MAX_PARAMETER_NAME_CHARACTERS}"
@@ -287,9 +287,8 @@ module Convection
           raise ArgumentError, "Error: Excessive Number of Outputs (#{number_of_outputs}) Max= #{CF_MAX_OUTPUTS}"
         end
         largest_output_name = outputs.keys.max
-        if largest_output_name == nil
-          largest_output_name = ""
-        end
+        largest_output_name||=''
+
         output_name_characters = largest_output_name.length
         if output_name_characters > CF_MAX_OUTPUT_NAME_CHARACTERS
           raise ArgumentError, "Error: Output Name #{largest_output_name} has too many characters (#{output_name_characters}) Max= #{CF_MAX_OUTPUT_NAME_CHARACTERS}"
@@ -310,9 +309,6 @@ module Convection
           raise ArgumentError, "Error: Excessive Template Size (#{template_bytesize}) Max= #{CF_MAX_BYTESIZE}"
         end
       end
-
-
-
     end
   end
 end
