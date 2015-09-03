@@ -5,7 +5,14 @@ SimpleCov.start do
   add_group 'DSL', 'lib/convection/dsl'
 end
 
+
 gem 'minitest'
 require 'minitest/autorun'
 require 'minitest/spec'
 require_relative '../lib/convection'
+
+module Minitest::Assertions
+  def assert_nothing_raised(*)
+    yield
+  end
+end

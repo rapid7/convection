@@ -11,6 +11,20 @@ module Convection
     module Template
       include DSL::Helpers
 
+      CF_MAX_BYTESIZE = 51200
+      CF_MAX_DESCRIPTION_BYTESIZE = 1024
+      CF_MAX_RESOURCES = 200
+      CF_MAX_RESOURCE_NAME = 255
+      CF_MAX_MAPPINGS = 30
+      CF_MAX_MAPPING_NAME = 25
+      CF_MAX_MAPPING_ATTRIBUTES = 30
+      CF_MAX_MAPPING_ATTRIBUTE_NAME = 255
+      CF_MAX_PARAMETERS = 60
+      CF_MAX_PARAMETER_VALUE_BYTESIZE = 4086
+      CF_MAX_PARAMETER_NAME_CHARACTERS = 255
+      CF_MAX_OUTPUTS = 60
+      CF_MAX_OUTPUT_NAME_CHARACTERS = 255
+
       attribute :name
       attribute :version
       attribute :description
@@ -37,11 +51,11 @@ module Convection
       end
 
       def resource(name, &block)
-       r = Model::Template::Resource.new(name, self)
+        r = Model::Template::Resource.new(name, self)
 
-       r.instance_exec(&block) if block
-       resources[name] = r
-     end
+        r.instance_exec(&block) if block
+        resources[name] = r
+      end
 
       def output(name, &block)
         o = Model::Template::Output.new(name, self)
@@ -183,76 +197,122 @@ module Convection
       end
 
       def to_json(stack_ = nil, pretty = false)
-        stack = render(stack_)
+        rendered_stack = render(stack_)
+        validate(rendered_stack)
 
-        #bytesize
-        json = JSON.generate(stack)
-        template_bytesize = json.bytesize
-        cf_max_bytesize = 51200
-        if template_bytesize > cf_max_bytesize
-          Kernel.abort("Error: Excessive Template Size (#{template_bytesize}) Max= #{cf_max_bytesize}")
+        return JSON.generate(render(stack_)) unless pretty
+        JSON.pretty_generate(render(stack_))
+      end
+
+      def validate(rendered_stack = nil)
+        validate_resources(rendered_stack)
+        validate_mappings(rendered_stack)
+        validate_parameters(rendered_stack)
+        validate_outputs(rendered_stack)
+        validate_description(rendered_stack)
+        validate_bytesize(rendered_stack)
+
+      end
+
+      def validate_resources(rendered_stack = nil)
+        resources=rendered_stack["Resources"]
+        number_of_resources = resources.count
+        if number_of_resources > CF_MAX_RESOURCES
+          raise ArgumentError, "Error: Excessive Number of Resources (#{number_of_resources}) Max= #{CF_MAX_RESOURCES}"
         end
-
-        #description characters
-        description_bytesize = stack['Description'].bytesize
-        cf_max_description_bitesize = 1024
-        if description_bytesize > cf_max_description_bitesize
-          Kernel.abort("Error: Excessive Description Size (#{description_bytesize}) Max= #{cf_max_description_bitesize}")
+        largest_resource_name = resources.keys.max
+        if largest_resource_name == nil
+          largest_resource_name = ""
         end
-
-        #resource count
-        number_of_resources = stack["Resources"].count
-        cf_max_resources = 200
-        if number_of_resources > cf_max_resources
-          Kernel.abort("Error: Excessive Number of Resources (#{number_of_resources}) Max= #{cf_max_resources}")
+        resource_name_characters = largest_resource_name.length
+        if  resource_name_characters> CF_MAX_RESOURCE_NAME
+          raise ArgumentError, "Error: Resource Name #{largest_resource_name} has too many characters (#{resource_name_characters}) Max=#{CF_MAX_RESOURCE_NAME} "
         end
+      end
 
-        #parameter count
-        number_of_parameters = stack['Parameters'].count
-        cf_max_parameters = 60
-        if number_of_parameters > cf_max_parameters
-          Kernel.abort("Error: Excessive Number of Parameters (#{number_of_parameters}) Max= #{cf_max_parameters}")
+      def validate_mappings(rendered_stack = nil)
+        mappings = rendered_stack ['Mappings']
+        number_of_mappings = mappings.count
+        if number_of_mappings > CF_MAX_MAPPINGS
+          raise ArgumentError, "Error: Excessive Number of Mappings (#{number_of_mappings}) Max= #{CF_MAX_MAPPINGS}"
         end
+        mappings.each do |key,value|
+          if value.count > CF_MAX_MAPPING_ATTRIBUTES
+            raise ArgumentError, "Error: Excessive Number of Mapping Attributes"
+          end
+        end
+        mappings.keys.each do |key|
+          if key.length > CF_MAX_MAPPING_NAME
+            raise ArgumentError, "Error: Excessive Mapping Name #{key}"
+          end
+        end
+        mapping_attributes = mappings.values.flat_map do |inner_hash|
+          inner_hash.keys.select do |key|
+            value = inner_hash[key]
+          end
+        end
+        mapping_attributes.each do |attribute|
+          if attribute.length > CF_MAX_MAPPING_ATTRIBUTE_NAME
+            raise ArgumentError, "Error: Excessive Mapping Attribute Name #{attribute}"
+          end
+        end
+      end
 
-        #parameter name characters
-        largest_parameter_name = ((stack['Parameters'].keys).max)
+      def validate_parameters(rendered_stack = nil)
+        parameters= rendered_stack['Parameters']
+        number_of_parameters = parameters.count
+        if number_of_parameters > CF_MAX_PARAMETERS
+          raise ArgumentError, "Error: Excessive Number of Parameters (#{number_of_parameters}) Max= #{CF_MAX_PARAMETERS}"
+        end
+        largest_parameter_name = parameters.keys.max
         if largest_parameter_name == nil
           largest_parameter_name = ""
         end
         parameter_name_characters = largest_parameter_name.length
-        cf_max_parameter_name_characters = 255
-        if parameter_name_characters > cf_max_parameter_name_characters
-          Kernel.abort("Error: Parameter Name #{largest_parameter_name} has too many characters (#{parameter_name_characters}) Max= #{cf_max_parameter_name_characters}")
+        if parameter_name_characters > CF_MAX_PARAMETER_NAME_CHARACTERS
+          raise ArgumentError, "Error: Parameter Name #{largest_parameter_name} has too many characters (#{parameter_name_characters}) Max= #{CF_MAX_PARAMETER_NAME_CHARACTERS}"
         end
-
-        #mappings count
-        number_of_mappings = stack ['Mappings'].count
-        cf_max_mappings = 100
-        if number_of_mappings > cf_max_mappings
-          Kernel.abort("Error: Excessive Number of Mappings (#{number_of_mappings}) Max= #{cf_max_mappings}")
+        parameters.values.each do |value|
+          parameter_in_json = JSON.generate(value)
+          if parameter_in_json.bytesize > CF_MAX_PARAMETER_VALUE_BYTESIZE
+            raise ArgumentError, "Error: Excessive Parameter Size #{value}"
+          end
         end
+      end
 
-        #outputs count
-        number_of_outputs = stack['Outputs'].count
-        cf_max_outputs = 60
-        if number_of_outputs > cf_max_outputs
-          Kernel.abort("Error: Excessive Number of Outputs (#{number_of_outputs}) Max= #{cf_max_outputs}")
+      def validate_outputs(rendered_stack = nil)
+        outputs = rendered_stack['Outputs']
+        number_of_outputs = outputs.count
+        if number_of_outputs > CF_MAX_OUTPUTS
+          raise ArgumentError, "Error: Excessive Number of Outputs (#{number_of_outputs}) Max= #{CF_MAX_OUTPUTS}"
         end
-
-        #output name characters
-        largest_output_name = ((stack['Outputs'].keys).max)
+        largest_output_name = outputs.keys.max
         if largest_output_name == nil
           largest_output_name = ""
         end
         output_name_characters = largest_output_name.length
-        cf_max_output_name_characters = 255
-        if output_name_characters > cf_max_output_name_characters
-          Kernel.abort("Error: Output Name #{largest_output_name} has too many characters (#{output_name_characters}) Max= #{cf_max_output_name_characters}")
+        if output_name_characters > CF_MAX_OUTPUT_NAME_CHARACTERS
+          raise ArgumentError, "Error: Output Name #{largest_output_name} has too many characters (#{output_name_characters}) Max= #{CF_MAX_OUTPUT_NAME_CHARACTERS}"
         end
-
-        return JSON.generate(stack) unless pretty
-        JSON.pretty_generate(stack)
       end
+
+      def validate_description(rendered_stack = nil)
+        description_bytesize = rendered_stack['Description'].bytesize
+        if description_bytesize > CF_MAX_DESCRIPTION_BYTESIZE
+          raise ArgumentError, "Error: Excessive Description Size (#{description_bytesize}) Max= #{CF_MAX_DESCRIPTION_BYTESIZE}"
+        end
+      end
+
+      def validate_bytesize(rendered_stack = nil)
+        json = JSON.generate(rendered_stack)
+        template_bytesize = json.bytesize
+        if template_bytesize > CF_MAX_BYTESIZE
+          raise ArgumentError, "Error: Excessive Template Size (#{template_bytesize}) Max= #{CF_MAX_BYTESIZE}"
+        end
+      end
+
+
+
     end
   end
 end
