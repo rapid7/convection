@@ -4,7 +4,7 @@ require 'pp'
 
 class TestValidations < Minitest::Test
 
-  def setup
+  def test_within_limits
     @within_limits = ::Convection.template do
       description 'Validations Test Template - Within Limits'
       10.times do |count|
@@ -19,20 +19,14 @@ class TestValidations < Minitest::Test
             'Value' => 'test-1'
             }]
           end
-        end
-      10.times do |count|
         mapping "Mapping_#{count}" do
           item 'one', 'two', 'three'
           item '1', '2', '3'
         end
-      end
-      10.times do |count|
         output "Output_#{count}" do
           description 'An Important Attribute'
           value get_att('Resource', 'Attribute')
         end
-      end
-      10.times do |count|
         parameter "Parameter_#{count}" do
           type 'String'
           description 'Example Parameter'
@@ -40,6 +34,13 @@ class TestValidations < Minitest::Test
         end
       end
     end
+
+    assert_nothing_raised(ArgumentError) do
+      @within_limits.to_json
+    end
+  end
+
+  def test_bytesize
     @excessive_bytesize = ::Convection.template do
       description 'Validations Test Template - Excessive Bytesize'
       200.times do |count|
@@ -62,9 +63,13 @@ class TestValidations < Minitest::Test
         end
       end
     end
-    @excessive_description = ::Convection.template do
-      description "0" * 1025
+
+    assert_raises(ArgumentError, "Error: Excessive Template Size") do
+      JSON.generate(@excessive_bytesize.to_json).bytesize
     end
+  end
+
+  def test_resources
     @excessive_resources = ::Convection.template do
       description 'Validations Test Template - Too Many Resources'
       201.times do |count|
@@ -79,6 +84,16 @@ class TestValidations < Minitest::Test
           retention_in_days 365
         end
       end
+
+    assert_raises(ArgumentError, "Error: Excessive Number of Resources") do
+      @excessive_resources.to_json
+    end
+    assert_raises(ArgumentError, "Error: Resource Name") do
+      @excessive_resource_name.to_json
+    end
+  end
+
+  def test_mappings
     @excessive_mappings = ::Convection.template do
       description 'Validations Test Template - Too Many Mappings'
       101.times do |count|
@@ -99,15 +114,32 @@ class TestValidations < Minitest::Test
     @excessive_mapping_name = ::Convection.template do
       description 'Validations Test Template - Excessive Mapping Name'
       mapping "0" *256 do
-        item "1","2","3"
+        item "1", "2", "3"
       end
     end
     @excessive_mapping_attribute_names = ::Convection.template do
       description 'Validations Test Template - Excessive Mapping Attribute Name'
       mapping "Mapping_1" do
-        item "0" *256,"value","value"
+        item "0" *256, "value", "value"
       end
     end
+
+    assert_raises(ArgumentError, "Error: Excessive Number of Mappings") do
+      @excessive_mappings.to_json
+    end
+    assert_raises(ArgumentError, "Error: Excessive Mapping Name") do
+      @excessive_mapping_name.to_json
+    end
+    assert_raises(ArgumentError, "Error: Excessive Number of Mapping Attributes")do
+      @excessive_mapping_attributes.to_json
+    end
+    assert_raises(ArgumentError, "Error: Excessive Mapping Attribute Name") do
+      @excessive_mapping_attribute_names.to_json
+    end
+  end
+
+  def test_outputs
+
     @excessive_outputs = ::Convection.template do
       description 'Validations Test Template - Too Many Outputs'
       61.times do |count|
@@ -117,6 +149,23 @@ class TestValidations < Minitest::Test
         end
       end
     end
+    @excessive_output_name = ::Convection.template do
+      description 'Validations Test Template - Excessive Output Name'
+      output "0" * 256 do
+        description 'An Important Attribute'
+        value get_att('Resource', 'Attribute')
+      end
+    end
+
+    assert_raises(ArgumentError, "Error: Excessive Number of Outputs") do
+      @excessive_outputs.to_json
+    end
+    assert_raises(ArgumentError, "Error: Output Name") do
+      @excessive_output_name.to_json
+    end
+  end
+
+  def test_parameters
     @excessive_parameters = ::Convection.template do
       description 'Validations Test Template - Too Many Parameters'
       61.times do |count|
@@ -127,7 +176,6 @@ class TestValidations < Minitest::Test
         end
       end
     end
-
     @excessive_parameter_name = ::Convection.template do
       description 'Validations Test Template - Excessive Parameter Name'
       parameter "0" * 256 do
@@ -144,41 +192,25 @@ class TestValidations < Minitest::Test
         default 'm3.medium'*150
       end
     end
-    @excessive_output_name = ::Convection.template do
-      description 'Validations Test Template - Excessive Output Name'
-      output "0" * 256 do
-        description 'An Important Attribute'
-        value get_att('Resource', 'Attribute')
-      end
+
+    assert_raises(ArgumentError, "Error: Excessive Number of Parameters") do
+      @excessive_parameters.to_json
+    end
+    assert_raises(ArgumentError, "Error: Parameter Name") do
+      @excessive_parameter_name.to_json
+    end
+    assert_raises(ArgumentError, "Error: Excessive Parameter Size") do
+      @excessive_parameter_value_bytesize.to_json
     end
   end
 
-  def test_within_limits
-    assert_nothing_raised(ArgumentError) {@within_limits.to_json}
-  end
-  def test_bytesize
-    assert_raises(ArgumentError, "Error: Excessive Template Size") {JSON.generate(@excessive_bytesize.to_json).bytesize}
-  end
-  def test_resources
-    assert_raises(ArgumentError, "Error: Excessive Number of Resources") {@excessive_resources.to_json}
-    assert_raises(ArgumentError, "Error: Resource Name") {@excessive_resource_name.to_json}
-  end
-  def test_mappings
-    assert_raises(ArgumentError, "Error: Excessive Number of Mappings") {@excessive_mappings.to_json}
-    assert_raises(ArgumentError, "Error: Excessive Mapping Name") {@excessive_mapping_name.to_json}
-    assert_raises(ArgumentError, "Error: Excessive Number of Mapping Attributes") {@excessive_mapping_attributes.to_json}
-    assert_raises(ArgumentError, "Error: Excessive Mapping Attribute Name") {@excessive_mapping_attribute_names.to_json}
-  end
-  def test_outputs
-    assert_raises(ArgumentError, "Error: Excessive Number of Outputs") {@excessive_outputs.to_json}
-    assert_raises(ArgumentError, "Error: Output Name") {@excessive_output_name.to_json}
-  end
-  def test_parameters
-    assert_raises(ArgumentError, "Error: Excessive Number of Parameters") {@excessive_parameters.to_json}
-    assert_raises(ArgumentError, "Error: Parameter Name") {@excessive_parameter_name.to_json}
-    assert_raises(ArgumentError, "Error: Excessive Parameter Size") {@excessive_parameter_value_bytesize.to_json}
-  end
   def test_description
-    assert_raises(ArgumentError, "Error: Excessive Description Size") {@excessive_description.to_json}
+    @excessive_description = ::Convection.template do
+      description "0" * 1_025
+    end
+
+    assert_raises(ArgumentError, "Error: Excessive Description Size") do
+      @excessive_description.to_json
+    end
   end
 end
