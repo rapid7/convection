@@ -12,6 +12,6 @@ class ExcessiveOutputNameError < StandardError; end
 class ExcessiveDescriptionError < StandardError; end
 class ExcessiveTemplateSizeError < StandardError; end
 
-def raiseIt(errorClass)
-  raise errorClass, 'Validation Error'
+def limitExceededError(value, limit, errorClass)
+  raise errorClass, "Value #{value} exceeds Limit #{limit}"
 end

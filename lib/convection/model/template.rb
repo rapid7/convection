@@ -206,12 +206,9 @@ module Convection
       end
 
       def validate(rendered_stack = nil)
-        validate_resources(rendered_stack)
-        validate_mappings(rendered_stack)
-        validate_parameters(rendered_stack)
-        validate_outputs(rendered_stack)
-        validate_description(rendered_stack)
-        validate_bytesize(rendered_stack)
+        %w(resources mappings parameters outputs description bytesize).map do
+          |method| self.send("validate_#{method}", rendered_stack)
+        end
       end
 
       def validate_compare(value, cf_max, error)
@@ -256,7 +253,7 @@ module Convection
         validate_compare(parameters.count, CF_MAX_PARAMETERS, ExcessiveParametersError)
 
         largest_parameter_name = parameters.keys.max
-        largest_parameter_name ||=''
+        largest_parameter_name ||= ''
         validate_compare(largest_parameter_name.length, CF_MAX_PARAMETER_NAME_CHARACTERS, ExcessiveParameterNameError)
 
         parameters.values.each do |value|
@@ -269,7 +266,7 @@ module Convection
         validate_compare(outputs.count, CF_MAX_OUTPUTS, ExcessiveOutputsError)
 
         largest_output_name = outputs.keys.max
-        largest_output_name||=''
+        largest_output_name ||= ''
         validate_compare(largest_output_name.length, CF_MAX_OUTPUT_NAME_CHARACTERS, ExcessiveOutputNameError)
       end
 
