@@ -3,7 +3,6 @@ require_relative '../dsl/intrinsic_functions'
 require_relative './diff'
 require_relative 'exceptions.rb'
 require 'json'
-require 'pry'
 
 module Convection
   module DSL
