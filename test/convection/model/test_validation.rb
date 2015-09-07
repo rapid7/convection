@@ -35,7 +35,7 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_nothing_raised(ValidationError) do
+    assert_nothing_raised(StandardError) do
       @within_limits.to_json
     end
   end
@@ -56,15 +56,14 @@ class TestValidations < Minitest::Test
             }]
           end
         end
-      100.times do |count|
+      80.times do |count|
         mapping "Mapping_#{count}" do
           item 'us-east-1', 'test', 'cf-test-keys'
           item 'us-west-1', 'test', 'cf-test-keys'
         end
       end
     end
-
-    assert_raises(ValidationError, "Error: Excessive Template Size") do
+    assert_raises(ExcessiveTemplateSizeError) do
       JSON.generate(@excessive_bytesize.to_json).bytesize
     end
   end
@@ -85,10 +84,10 @@ class TestValidations < Minitest::Test
         end
       end
 
-    assert_raises(ValidationError, "Error: Excessive Number of Resources") do
+  assert_raises(ExcessiveResourcesError) do
       @excessive_resources.to_json
     end
-    assert_raises(ValidationError, "Error: Resource Name") do
+    assert_raises(ExcessiveResourceNameError) do
       @excessive_resource_name.to_json
     end
   end
@@ -124,20 +123,19 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_raises(ValidationError, "Error: Excessive Number of Mappings") do
+    assert_raises(ExcessiveMappingsError) do
       @excessive_mappings.to_json
     end
-    assert_raises(ValidationError, "Error: Excessive Mapping Name") do
+    assert_raises(ExcessiveMappingNameError) do
       @excessive_mapping_name.to_json
     end
-    assert_raises(ValidationError, "Error: Excessive Number of Mapping Attributes")do
+    assert_raises(ExcessiveMappingAttributesError)do
       @excessive_mapping_attributes.to_json
     end
-    assert_raises(ValidationError, "Error: Excessive Mapping Attribute Name") do
+    assert_raises(ExcessiveMappingAttributeNameError) do
       @excessive_mapping_attribute_names.to_json
     end
   end
-
   def test_outputs
 
     @excessive_outputs = ::Convection.template do
@@ -149,6 +147,7 @@ class TestValidations < Minitest::Test
         end
       end
     end
+
     @excessive_output_name = ::Convection.template do
       description 'Validations Test Template - Excessive Output Name'
       output "0" * 256 do
@@ -157,10 +156,10 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_raises(ValidationError, "Error: Excessive Number of Outputs") do
+    assert_raises(ExcessiveOutputsError) do
       @excessive_outputs.to_json
     end
-    assert_raises(ValidationError, "Error: Output Name") do
+    assert_raises(ExcessiveOutputNameError) do
       @excessive_output_name.to_json
     end
   end
@@ -193,13 +192,13 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_raises(ValidationError, "Error: Excessive Number of Parameters") do
+    assert_raises(ExcessiveParametersError) do
       @excessive_parameters.to_json
     end
-    assert_raises(ValidationError, "Error: Parameter Name") do
+    assert_raises(ExcessiveParameterNameError) do
       @excessive_parameter_name.to_json
     end
-    assert_raises(ValidationError, "Error: Excessive Parameter Size") do
+    assert_raises(ExcessiveParameterBytesizeError) do
       @excessive_parameter_value_bytesize.to_json
     end
   end
@@ -209,7 +208,7 @@ class TestValidations < Minitest::Test
       description "0" * 1_025
     end
 
-    assert_raises(ValidationError, "Error: Excessive Description Size") do
+    assert_raises(ExcessiveDescriptionError) do
       @excessive_description.to_json
     end
   end

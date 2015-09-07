@@ -18,7 +18,7 @@ module Convection
       CF_MAX_MAPPING_ATTRIBUTE_NAME = 255
       CF_MAX_MAPPING_ATTRIBUTES = 30
       CF_MAX_MAPPING_NAME = 25
-      CF_MAX_MAPPINGS = 30
+      CF_MAX_MAPPINGS = 100
       CF_MAX_OUTPUT_NAME_CHARACTERS = 255
       CF_MAX_OUTPUTS = 60
       CF_MAX_PARAMETER_NAME_CHARACTERS = 255
@@ -217,39 +217,29 @@ module Convection
 
       def validate_compare(value, cf_max, error)
         if value > cf_max
-          raise ValidationError, error
+          raiseIt error
         end
       end
 
       def validate_resources(rendered_stack)
-        resources=rendered_stack["Resources"]
-        number_of_resources = resources.count
-        resources_error = "Error: Excessive Number of Resources (#{number_of_resources}) Max= #{CF_MAX_RESOURCES}"
-        validate_compare(number_of_resources, CF_MAX_RESOURCES, resources_error)
+        validate_compare(rendered_stack["Resources"].count, CF_MAX_RESOURCES, ExcessiveResourcesError)
 
         largest_resource_name = resources.keys.max
         largest_resource_name ||=''
-        resource_name_characters = largest_resource_name.length
-        resource_name_error = "Error: Resource Name #{largest_resource_name} has too many characters (#{resource_name_characters}) Max=#{CF_MAX_RESOURCE_NAME} "
-        validate_compare(resource_name_characters, CF_MAX_RESOURCE_NAME, resource_name_error)
+        validate_compare(largest_resource_name.length, CF_MAX_RESOURCE_NAME, ExcessiveResourceNameError)
       end
 
       def validate_mappings(rendered_stack)
         mappings = rendered_stack ['Mappings']
         number_of_mappings = mappings.count
-        mappings_error = "Error: Excessive Number of Mappings (#{number_of_mappings}) Max= #{CF_MAX_MAPPINGS}"
-        validate_compare(number_of_mappings, CF_MAX_MAPPINGS, mappings_error)
+        validate_compare(number_of_mappings, CF_MAX_MAPPINGS, ExcessiveMappingsError)
 
         mappings.each do |key,value|
-          number_of_attributes = value.count
-          mapping_attrubutes_error= "Error: Excessive Number of Mapping Attributes (#{number_of_attributes} Max = #{CF_MAX_MAPPING_ATTRIBUTES})"
-          validate_compare(number_of_attributes, CF_MAX_MAPPING_ATTRIBUTES, mapping_attrubutes_error)
+          validate_compare(value.count, CF_MAX_MAPPING_ATTRIBUTES, ExcessiveMappingAttributesError)
         end
 
         mappings.keys.each do |key|
-          mapping_name_length=key.length
-          mapping_name_error = "Error: Excessive Mapping Name #{key } (#{mapping_name_length}) Max= #{CF_MAX_MAPPING_NAME}"
-          validate_compare(mapping_name_length, CF_MAX_MAPPING_NAME, mapping_name_error)
+            validate_compare(key.length, CF_MAX_MAPPING_NAME, ExcessiveMappingNameError)
         end
 
         mapping_attributes = mappings.values.flat_map do |inner_hash|
@@ -258,55 +248,39 @@ module Convection
           end
         end
         mapping_attributes.each do |attribute|
-          mapping_attribute_name_length = attribute.length
-          mapping_attribute_name_error = "Error: Excessive Mapping Attribute Name #{attribute} (#{mapping_attribute_name_length}) Max= #{CF_MAX_MAPPING_ATTRIBUTE_NAME}"
-          validate_compare(mapping_attribute_name_length, CF_MAX_MAPPING_ATTRIBUTE_NAME, mapping_attribute_name_error)
+          validate_compare(attribute.length, CF_MAX_MAPPING_ATTRIBUTE_NAME, ExcessiveMappingAttributeNameError)
         end
       end
 
       def validate_parameters(rendered_stack)
         parameters= rendered_stack['Parameters']
-        number_of_parameters = parameters.count
-        parameter_error = "Error: Excessive Number of Parameters (#{number_of_parameters}) Max= #{CF_MAX_PARAMETERS}"
-        validate_compare(number_of_parameters, CF_MAX_PARAMETERS, parameter_error)
+        validate_compare(parameters.count, CF_MAX_PARAMETERS, ExcessiveParametersError)
 
         largest_parameter_name = parameters.keys.max
         largest_parameter_name ||=''
-        parameter_name_characters = largest_parameter_name.length
-        parameter_name_error = "Error: Parameter Name #{largest_parameter_name} has too many characters (#{parameter_name_characters}) Max= #{CF_MAX_PARAMETER_NAME_CHARACTERS}"
-        validate_compare(parameter_name_characters, CF_MAX_PARAMETER_NAME_CHARACTERS, parameter_name_error)
+        validate_compare(largest_parameter_name.length, CF_MAX_PARAMETER_NAME_CHARACTERS, ExcessiveParameterNameError)
 
         parameters.values.each do |value|
-          parameter_bytesize = JSON.generate(value).bytesize
-          parameter_bytesize_error = "Error: Excessive Parameter Size #{value}"
-          validate_compare(parameter_bytesize, CF_MAX_PARAMETER_VALUE_BYTESIZE, parameter_bytesize_error)
+          validate_compare(JSON.generate(value).bytesize, CF_MAX_PARAMETER_VALUE_BYTESIZE, ExcessiveParameterBytesizeError)
         end
       end
 
       def validate_outputs(rendered_stack)
         outputs = rendered_stack['Outputs']
-        number_of_outputs = outputs.count
-        output_error = "Error: Excessive Number of Outputs (#{number_of_outputs}) Max= #{CF_MAX_OUTPUTS}"
-        validate_compare(number_of_outputs, CF_MAX_OUTPUTS, output_error)
+        validate_compare(outputs.count, CF_MAX_OUTPUTS, ExcessiveOutputsError)
 
         largest_output_name = outputs.keys.max
         largest_output_name||=''
-        output_name_characters = largest_output_name.length
-        output_name_error = "Error: Output Name #{largest_output_name} has too many characters (#{output_name_characters}) Max= #{CF_MAX_OUTPUT_NAME_CHARACTERS}"
-        validate_compare(output_name_characters, CF_MAX_OUTPUT_NAME_CHARACTERS, output_name_error)
+        validate_compare(largest_output_name.length, CF_MAX_OUTPUT_NAME_CHARACTERS, ExcessiveOutputNameError)
       end
 
       def validate_description(rendered_stack)
-        description_bytesize = rendered_stack['Description'].bytesize
-        description_error = "Error: Excessive Description Size (#{description_bytesize}) Max= #{CF_MAX_DESCRIPTION_BYTESIZE}"
-        validate_compare(description_bytesize, CF_MAX_DESCRIPTION_BYTESIZE, description_error)
+        validate_compare(rendered_stack['Description'].bytesize, CF_MAX_DESCRIPTION_BYTESIZE, ExcessiveDescriptionError)
       end
 
       def validate_bytesize(rendered_stack)
         json = JSON.generate(rendered_stack)
-        template_bytesize = json.bytesize
-        template_bytesize_error = "Error: Excessive Template Size (#{template_bytesize}) Max= #{CF_MAX_BYTESIZE}"
-        validate_compare(template_bytesize, CF_MAX_BYTESIZE, template_bytesize_error)
+        validate_compare(json.bytesize, CF_MAX_BYTESIZE, ExcessiveTemplateSizeError)
       end
     end
   end
