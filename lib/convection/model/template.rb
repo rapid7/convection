@@ -205,8 +205,8 @@ module Convection
       end
 
       def validate(rendered_stack = nil)
-        %w(resources mappings parameters outputs description bytesize).map
-        do |method| send("validate_#{method}", rendered_stack)
+        %w(resources mappings parameters outputs description bytesize).map do
+          |method| send("validate_#{method}", rendered_stack)
         end
       end
 
