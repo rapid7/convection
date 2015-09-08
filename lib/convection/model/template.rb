@@ -1,7 +1,7 @@
 require_relative '../dsl/helpers'
 require_relative '../dsl/intrinsic_functions'
 require_relative './diff'
-require_relative 'exceptions.rb'
+require_relative './exceptions.rb'
 require 'json'
 
 module Convection
@@ -200,20 +200,19 @@ module Convection
       def to_json(stack_ = nil, pretty = false)
         rendered_stack = render(stack_)
         validate(rendered_stack)
-
         return JSON.generate(rendered_stack) unless pretty
         JSON.pretty_generate(rendered_stack)
       end
 
       def validate(rendered_stack = nil)
-        %w(resources mappings parameters outputs description bytesize).map do
-          |method| self.send("validate_#{method}", rendered_stack)
+        %w(resources mappings parameters outputs description bytesize).map
+        do |method| send("validate_#{method}", rendered_stack)
         end
       end
 
       def validate_compare(value, cf_max, error)
         if value > cf_max
-          LimitExceededError(value, cf_max, error)
+          limit_exceeded_error(value, cf_max, error)
         end
       end
 
@@ -222,7 +221,6 @@ module Convection
           rendered_stack["Resources"].count,
           CF_MAX_RESOURCES,
           ExcessiveResourcesError)
-
         largest_resource_name = resources.keys.max
         largest_resource_name ||=''
         validate_compare(
@@ -237,13 +235,11 @@ module Convection
           mappings.count,
           CF_MAX_MAPPINGS,
           ExcessiveMappingsError)
-
         mappings.each do |key,value|
           validate_compare(value.count,
             CF_MAX_MAPPING_ATTRIBUTES,
             ExcessiveMappingAttributesError)
         end
-
         mappings.keys.each do |key|
           validate_compare(key.length,
             CF_MAX_MAPPING_NAME,
@@ -269,14 +265,12 @@ module Convection
           parameters.count,
           CF_MAX_PARAMETERS,
           ExcessiveParametersError)
-
         largest_parameter_name = parameters.keys.max
         largest_parameter_name ||= ''
         validate_compare(
           largest_parameter_name.length,
           CF_MAX_PARAMETER_NAME_CHARACTERS,
           ExcessiveParameterNameError)
-
         parameters.values.each do |value|
           validate_compare(
             JSON.generate(value).bytesize,
@@ -291,7 +285,6 @@ module Convection
           outputs.count,
           CF_MAX_OUTPUTS,
           ExcessiveOutputsError)
-
         largest_output_name = outputs.keys.max
         largest_output_name ||= ''
         validate_compare(
