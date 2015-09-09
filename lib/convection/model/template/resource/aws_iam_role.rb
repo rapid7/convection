@@ -34,7 +34,18 @@ module Convection
             trust_relationship.instance_exec(&block) if block
             trust_relationship
           end
-	
+
+          ## Add a canned trust policy for Flow Logs
+          def trust_ec2_flow_logs(&block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust_ec2_flow_logs', :template => @template)
+            trust_relationship.allow do
+              action 'sts:AssumeRole'
+              principal :Service => 'vpc-flow-logs.amazonaws.com'
+            end
+            trust_relationship.instance_exec(&block) if block
+            trust_relationship
+          end
+
 	## Add a canned trust policy for Cloudtrail
 	def trust_cloudtrail(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-cloudtrail-instances', :template => @template)
