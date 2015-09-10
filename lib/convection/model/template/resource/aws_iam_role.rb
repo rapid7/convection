@@ -36,7 +36,7 @@ module Convection
           end
 
           ## Add a canned trust policy for Flow Logs
-          def trust_ec2_flow_logs(&block)
+          def trust_flow_logs(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust_ec2_flow_logs', :template => @template)
             trust_relationship.allow do
               action 'sts:AssumeRole'
