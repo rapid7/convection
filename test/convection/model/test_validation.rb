@@ -17,8 +17,8 @@ class TestValidations < Minitest::Test
           property 'Tags', [{
             'Key' => 'Name',
             'Value' => 'test-1'
-            }]
-          end
+          }]
+        end
         mapping "Mapping_#{count}" do
           item 'one', 'two', 'three'
           item '1', '2', '3'
@@ -54,8 +54,8 @@ class TestValidations < Minitest::Test
             'Key' => 'Name',
             'Value' => 'test-1'
             }]
-          end
         end
+      end
       80.times do |count|
         mapping "Mapping_#{count}" do
           item 'us-east-1', 'test', 'cf-test-keys'
@@ -79,12 +79,12 @@ class TestValidations < Minitest::Test
     end
     @excessive_resource_name = ::Convection.template do
       description 'Validations Test Template - Excessive Resource Name'
-        logs_log_group "0"*256  do
-          retention_in_days 365
-        end
+      logs_log_group "0"*256  do
+        retention_in_days 365
       end
+    end
 
-  assert_raises(ExcessiveResourcesError) do
+    assert_raises(ExcessiveResourcesError) do
       @excessive_resources.to_json
     end
     assert_raises(ExcessiveResourceNameError) do
@@ -136,8 +136,8 @@ class TestValidations < Minitest::Test
       @excessive_mapping_attribute_names.to_json
     end
   end
-  def test_outputs
 
+  def test_outputs
     @excessive_outputs = ::Convection.template do
       description 'Validations Test Template - Too Many Outputs'
       61.times do |count|
