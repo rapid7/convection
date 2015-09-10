@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'thor-scmversion', '= 1.7.0'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'rubocop', '~> 0.32'
 
   spec.add_runtime_dependency 'aws-sdk', '>= 2'
   spec.add_runtime_dependency 'httparty', '~> 0.13'

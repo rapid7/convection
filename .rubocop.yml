@@ -1,16 +1,12 @@
 AllCops:
- Exclude:
-   - libraries/**/*
-   - spec/**/*
-   - metadata.rb
+ Include:
+  - lib/**/*
+  - bin/**/*
 
 Encoding:
  Enabled: false
-LineLength:
+RescueModifier:
  Enabled: false
 HashSyntax:
  Enabled: false
-RescueModifier:
-  Enabled: false
-MethodLength:
-  Max: 24
+inherit_from: .rubocop_todo.yml
