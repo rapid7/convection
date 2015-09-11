@@ -17,7 +17,7 @@ module Convection
                                                 when :tcp then 6
                                                 when :udp then 17
                                                 else value
-            end) unless value.nil?
+                                                end) unless value.nil?
             instance_variable_get("@#{ name }")
           end
 

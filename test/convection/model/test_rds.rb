@@ -38,7 +38,7 @@ class TestRDS < Minitest::Test
   end
 
   def test_rds_instance
-    # Expected JSON: 
+    # Expected JSON:
     json = from_json['Resources']['MyRDSInstance']
     db_secgroups = json['Properties']['DBSecurityGroups']
 
@@ -49,7 +49,7 @@ class TestRDS < Minitest::Test
   end
 
   def test_rds_secgroup
-    # Expected JSON: 
+    # Expected JSON:
     json = from_json['Resources']['MyRDSSecGroup']
     ingress_rules = json['Properties']['DBSecurityGroupIngress']
 
@@ -58,7 +58,7 @@ class TestRDS < Minitest::Test
 
     ingress_rules.each do |rule|
       if rule.has_key? 'CIDRIP'
-        assert rule.has_value?  'my_cidr_value'
+        assert rule.has_value? 'my_cidr_value'
       else
         assert rule['EC2SecurityGroupName'] == 'MyEC2SecGroup'
         assert rule['EC2SecurityGroupOwnerId'] == '123456789012'

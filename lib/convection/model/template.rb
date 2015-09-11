@@ -205,15 +205,13 @@ module Convection
       end
 
       def validate(rendered_stack = nil)
-        %w(resources mappings parameters outputs description bytesize).map do
-          |method| send("validate_#{method}", rendered_stack)
+        %w(resources mappings parameters outputs description bytesize).map do |method|
+          send("validate_#{method}", rendered_stack)
         end
       end
 
       def validate_compare(value, cf_max, error)
-        if value > cf_max
-          limit_exceeded_error(value, cf_max, error)
-        end
+        limit_exceeded_error(value, cf_max, error) if value > cf_max
       end
 
       def validate_resources(rendered_stack)
@@ -235,13 +233,15 @@ module Convection
           mappings.count,
           CF_MAX_MAPPINGS,
           ExcessiveMappingsError)
-        mappings.each do |key,value|
-          validate_compare(value.count,
+        mappings.each do |_, value|
+          validate_compare(
+            value.count,
             CF_MAX_MAPPING_ATTRIBUTES,
             ExcessiveMappingAttributesError)
         end
         mappings.keys.each do |key|
-          validate_compare(key.length,
+          validate_compare(
+            key.length,
             CF_MAX_MAPPING_NAME,
             ExcessiveMappingNameError)
         end
