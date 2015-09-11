@@ -14,10 +14,6 @@ class TestValidations < Minitest::Test
           property 'ImageId', 'ami-76e27e1e'
           property 'KeyName', 'test'
           property 'SecurityGroupIds', ['sg-dd733c41', 'sg-dd738df3']
-          property 'Tags', [{
-            'Key' => 'Name',
-            'Value' => 'test-1'
-          }]
         end
         mapping "Mapping_#{count}" do
           item 'one', 'two', 'three'
@@ -79,7 +75,7 @@ class TestValidations < Minitest::Test
     end
     @excessive_resource_name = ::Convection.template do
       description 'Validations Test Template - Excessive Resource Name'
-      logs_log_group "0"*256  do
+      logs_log_group "0"*256 do
         retention_in_days 365
       end
     end
@@ -102,24 +98,10 @@ class TestValidations < Minitest::Test
         end
       end
     end
-    @excessive_mapping_attributes = ::Convection.template do
-      description 'Validations Test Template - Too Many Mapping Attributes'
-      mapping "Mapping_Example" do
-        31.times do |count|
-          item "#{count}_1", "#{count}_2", "#{count}_3"
-        end
-      end
-    end
     @excessive_mapping_name = ::Convection.template do
       description 'Validations Test Template - Excessive Mapping Name'
       mapping "0" *256 do
         item "1", "2", "3"
-      end
-    end
-    @excessive_mapping_attribute_names = ::Convection.template do
-      description 'Validations Test Template - Excessive Mapping Attribute Name'
-      mapping "Mapping_1" do
-        item "0" *256, "value", "value"
       end
     end
 
@@ -129,6 +111,24 @@ class TestValidations < Minitest::Test
     assert_raises(ExcessiveMappingNameError) do
       @excessive_mapping_name.to_json
     end
+  end
+
+  def test_mapping_attributes
+    @excessive_mapping_attributes = ::Convection.template do
+      description 'Validations Test Template - Too Many Mapping Attributes'
+      mapping "Mapping_Example" do
+        31.times do |count|
+          item "#{count}_1", "#{count}_2", "#{count}_3"
+        end
+      end
+    end
+    @excessive_mapping_attribute_names = ::Convection.template do
+      description 'Validations Test Template - Excessive Mapping Attribute Name'
+      mapping "Mapping_1" do
+        item "0" *256, "value", "value"
+      end
+    end
+
     assert_raises(ExcessiveMappingAttributesError)do
       @excessive_mapping_attributes.to_json
     end
@@ -147,7 +147,6 @@ class TestValidations < Minitest::Test
         end
       end
     end
-
     @excessive_output_name = ::Convection.template do
       description 'Validations Test Template - Excessive Output Name'
       output "0" * 256 do
@@ -183,7 +182,17 @@ class TestValidations < Minitest::Test
         default 'm3.medium'
       end
     end
-    @excessive_parameter_value_bytesize  = ::Convection.template do
+
+    assert_raises(ExcessiveParametersError) do
+      @excessive_parameters.to_json
+    end
+    assert_raises(ExcessiveParameterNameError) do
+      @excessive_parameter_name.to_json
+    end
+  end
+
+  def test_parameter_bytesize
+    @excessive_parameter_value_bytesize = ::Convection.template do
       description 'Validations Test Template - Excessive Parameter Value Bytesize'
       parameter "Excessive_Parameter" do
         type 'String'*150
@@ -192,12 +201,6 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_raises(ExcessiveParametersError) do
-      @excessive_parameters.to_json
-    end
-    assert_raises(ExcessiveParameterNameError) do
-      @excessive_parameter_name.to_json
-    end
     assert_raises(ExcessiveParameterBytesizeError) do
       @excessive_parameter_value_bytesize.to_json
     end
@@ -207,7 +210,6 @@ class TestValidations < Minitest::Test
     @excessive_description = ::Convection.template do
       description "0" * 1_025
     end
-
     assert_raises(ExcessiveDescriptionError) do
       @excessive_description.to_json
     end

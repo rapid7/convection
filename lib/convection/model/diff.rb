@@ -30,7 +30,7 @@ module Convection
                   when :create then "#{ key }: #{ ours }"
                   when :update then "#{ key }: #{ theirs } => #{ ours }"
                   when :delete then key
-        end
+                  end
 
         [action, message, color]
       end
