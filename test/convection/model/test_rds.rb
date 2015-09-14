@@ -10,12 +10,8 @@ class TestRDS < Minitest::Test
 
       rds_security_group 'MyRDSSecGroup' do
         description "Pulls in EC2 SGs"
-        security_group_ingress do
-          ec2_security_group('MyEC2SecGroup', '123456789012')
-        end
-        security_group_ingress do
-          cidr_ip 'my_cidr_value'
-        end
+        ec2_security_group 'MyEC2SecGroup', '123456789012'
+        cidr_ip 'my_cidr_value'
       end
 
       rds_instance 'MyRDSInstance' do
