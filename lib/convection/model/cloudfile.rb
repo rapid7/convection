@@ -13,6 +13,7 @@ module Convection
 
       attribute :name
       attribute :region
+      attribute :splay
 
       ## Helper to define a template in-line
       def template(*args, &block)

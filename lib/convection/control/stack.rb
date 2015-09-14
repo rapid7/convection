@@ -10,11 +10,15 @@ module Convection
       attr_reader :id
       attr_reader :name
       attr_accessor :template
+      attr_reader :exist
+      attr_reader :status
+      alias_method :exist?, :exist
 
       attr_reader :attributes
       attr_reader :errors
       attr_reader :options
       attr_reader :resources
+      attr_reader :attribute_mapping_values
       attr_reader :outputs
 
       ## AWS-SDK
@@ -55,13 +59,12 @@ module Convection
 
         @cloud = options.delete(:cloud)
         @cloud_name = options.delete(:cloud_name)
-
         @region = options.delete(:region) { |_| 'us-east-1' }
         @credentials = options.delete(:credentials)
         @parameters = options.delete(:parameters) { |_| {} } # Default empty hash
         @tags = options.delete(:tags) { |_| {} } # Default empty hash
-        @on_failure = options.delete(:on_failure) { |_| 'DELETE' }
         options.delete(:disable_rollback) # There can be only one...
+        @on_failure = options.delete(:on_failure) { |_| 'DELETE' }
         @capabilities = options.delete(:capabilities) { |_| ['CAPABILITY_IAM'] }
 
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
@@ -74,13 +77,23 @@ module Convection
         @ec2_client = Aws::EC2::Client.new(client_options)
         @cf_client = Aws::CloudFormation::Client.new(client_options)
 
-        ## Get initial state
-        render
-        cf_get_stack(cloud_name)
-
-        ## Get last-seen event ID
+        ## Remote state
+        @exist = false
+        @status = NOT_CREATED
+        @id = nil
+        @outputs = {}
+        @resources = {}
+        @current_template = {}
         @last_event_seen = nil
-        cf_get_events(1) unless @id.nil?
+
+        ## Get initial state
+        get_status(cloud_name)
+        return unless exist?
+
+        get_resources
+        get_template
+        resource_attributes
+        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -91,6 +104,9 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
+      ##
+      # Attribute Accessors
+      ##
       def include?(stack, key = nil)
         return @attributes.include?(name, stack) if key.nil?
         @attributes.include?(stack, key)
@@ -108,14 +124,9 @@ module Convection
         @attributes.get(*args)
       end
 
-      def status
-        @remote.stack_status rescue NOT_CREATED
-      end
-
-      def exist?
-        !@remote.nil?
-      end
-
+      ##
+      # Stack State
+      ##
       def in_progress?
         [CREATE_IN_PROGRESS, ROLLBACK_IN_PROGRESS, DELETE_IN_PROGRESS,
          UPDATE_IN_PROGRESS, UPDATE_COMPLETE_CLEANUP_IN_PROGRESS,
@@ -140,14 +151,24 @@ module Convection
         !error? && complete?
       end
 
+      ##
+      # Rendderers
+      ##
       def render
-        template.render
+        @template.render
       end
 
       def to_json(pretty = false)
-        template.to_json(nil, pretty)
+        @template.to_json(nil, pretty)
       end
 
+      def diff
+        @template.diff(@current_template)
+      end
+
+      ##
+      # Controllers
+      ##
       def apply(&block)
         request_options = @options.clone.tap do |o|
           o[:template_body] = to_json
@@ -158,7 +179,7 @@ module Convection
         if exist?
           if diff.empty? ## No Changes. Just get resources and move on
             block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
-            cf_get_stack
+            get_status
             return
           end
 
@@ -175,31 +196,10 @@ module Convection
             o[:on_failure] = on_failure
           end)
 
-          cf_get_stack(cloud_name) # Get ID of new stack
+          get_status(cloud_name) # Get ID of new stack
         end
 
         watch(&block) if block # Block execution on stack status
-      rescue Aws::Errors::ServiceError => e
-        @errors << e
-      end
-
-      def diff
-        @template.diff(cf_get_template)
-      end
-
-      def watch(poll = 2, &block)
-        cf_get_stack
-
-        loop do
-          cf_get_events.reverse.each do |event|
-            block.call(Model::Event.from_cf(event))
-          end if block
-
-          break unless in_progress?
-
-          sleep poll
-          cf_get_stack
-        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -212,7 +212,24 @@ module Convection
         ## Block execution on stack status
         watch(&block) if block
 
-        cf_get_stack
+        get_status
+      rescue Aws::Errors::ServiceError => e
+        @errors << e
+      end
+
+      def watch(poll = 2, &block)
+        get_status
+
+        loop do
+          get_events.reverse.each do |event|
+            block.call(Model::Event.from_cf(event))
+          end if block
+
+          break unless in_progress?
+
+          sleep poll
+          get_status
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -233,43 +250,48 @@ module Convection
 
       private
 
-      def cf_get_stack(stack_name = id)
-        @remote = @cf_client.describe_stacks(:stack_name => stack_name).stacks.first
-        @id = @remote.stack_id
+      def get_status(stack_name = id)
+        cf_stack = @cf_client.describe_stacks(:stack_name => stack_name).stacks.first
 
-        @resources = {}
-        @cf_client.list_stack_resources(:stack_name => @id).each do |page|
-          page.stack_resource_summaries.each do |resource|
-            next unless @template.attribute_mappings.include?(resource[:logical_resource_id])
+        @id = cf_stack.stack_id
+        @status = cf_stack.stack_status
+        @exist = true
 
-            attribute_map = @template.attribute_mappings[resource[:logical_resource_id]]
-            case attribute_map[:type].to_sym
-            when :string
-              @resources[attribute_map[:name]] = resource[:physical_resource_id]
-            when :array
-              @resources[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
-              @resources[attribute_map[:name]].push(resource[:physical_resource_id])
-            else
-              fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
-            end
+        ## Parse outputs
+        @outputs = {}.tap do |collection|
+          cf_stack.outputs.each do |output|
+            collection[output[:output_key].to_s] = (JSON.parse(output[:output_value]) rescue output[:output_value])
           end
         end
 
-        @outputs = Hash[@remote.outputs.map do |output|
-          [output[:output_key].to_s, (JSON.parse(output[:output_value]) rescue output[:output_value])]
-        end]
-
         ## Add outputs to attribute set
-        @attributes.stack(self)
-
+        @attributes.load_outputs(self)
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
-        @remote = nil
+        @exist = false
+        @status = NOT_CREATED
         @id = nil
-        @resources = {}
         @outputs = {}
       end
 
-      def cf_get_events(pages = nil, stack_name = id)
+      ## Fetch current resources
+      def get_resources
+        @resources = {}.tap do |collection|
+          @cf_client.describe_stack_resources(:stack_name => @id).stack_resources.each do |resource|
+            collection[resource[:logical_resource_id]] = resource
+          end
+        end
+      rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
+        @resources = {}
+      end
+
+      def get_template
+        @current_template = JSON.parse(@cf_client.get_template(:stack_name => id).template_body)
+      rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
+        @current_template = {}
+      end
+
+      ## Fetch new stack events
+      def get_events(pages = nil, stack_name = id)
         return [] unless exist?
 
         [].tap do |collection|
@@ -293,8 +315,28 @@ module Convection
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
       end
 
-      def cf_get_template
-        JSON.parse(@cf_client.get_template(:stack_name => id).template_body)
+      ## TODO No. This will become unnecessary as current_state is fleshed out
+      def resource_attributes
+        @attribute_mapping_values = {}
+        @template.execute ## Populate mappings fro the template
+
+        @resources.each do |logical, resource|
+          next unless @template.attribute_mappings.include?(logical)
+
+          attribute_map = @template.attribute_mappings[logical]
+          case attribute_map[:type].to_sym
+          when :string
+            @attribute_mapping_values[attribute_map[:name]] = resource[:physical_resource_id]
+          when :array
+            @attribute_mapping_values[attribute_map[:name]] = [] unless @resources[attribute_map[:name]].is_a?(Array)
+            @attribute_mapping_values[attribute_map[:name]].push(resource[:physical_resource_id])
+          else
+            fail TypeError, "Attribute Mapping must be defined with type `string` or `array`, not #{ type }"
+          end
+        end
+
+        ## Add mapped resource IDs to attributes
+        @attributes.load_resources(self)
       end
 
       def cf_parameters

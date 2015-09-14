@@ -1,0 +1,13 @@
+require_relative '../lib/convection'
+require_relative './vpc'
+require_relative './security-groups'
+require_relative './foobar'
+
+name 'convection-test'
+region 'us-east-1'
+
+attribute 'vpc', 'subnet', '10.255.0.0/16'
+
+stack 'vpc', Convection::Demo::VPC
+stack 'security-groups', Convection::Demo::SECURITY_GROUPS
+stack 'foobar', Convection::Demo::FOOBAR

@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def ec2_network_acl(name, &block)
-        r = Model::Template::Resource::EC2NetworkACL.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
-      end
-
       module Resource
         ##
         # Add DSL helpers to EC2NetworkACL
@@ -38,12 +30,8 @@ module Convection
           include DSL::Template::Resource::EC2NetworkACL
           include Model::Mixin::Taggable
 
+          type 'AWS::EC2::NetworkAcl'
           property :vpc, 'VpcId'
-
-          def initialize(*args)
-            super
-            type 'AWS::EC2::NetworkAcl'
-          end
 
           def render(*args)
             super.tap do |resource|

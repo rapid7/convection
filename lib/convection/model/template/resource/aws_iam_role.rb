@@ -2,15 +2,7 @@ require_relative '../resource'
 
 module Convection
   module DSL
-    ## Add DSL method to template namespace
     module Template
-      def iam_role(name, &block)
-        r = Model::Template::Resource::IAMRole.new(name, self)
-        r.instance_exec(&block) if block
-
-        resources[name] = r
-      end
-
       module Resource
         ## Role DSL
         module IAMRole
@@ -18,7 +10,7 @@ module Convection
             add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
 
-            @policies << add_policy
+            policies << add_policy
           end
 
           ## Create an IAM Instance Profile for this role
@@ -43,8 +35,19 @@ module Convection
             trust_relationship
           end
 
-          ## Add a canned trust policy for Cloudtrail
-          def trust_cloudtrail(&block)
+          ## Add a canned trust policy for Flow Logs
+          def trust_flow_logs(&block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-flow-logs', :template => @template)
+            trust_relationship.allow do
+              action 'sts:AssumeRole'
+              principal :Service => 'vpc-flow-logs.amazonaws.com'
+            end
+            trust_relationship.instance_exec(&block) if block
+            trust_relationship
+          end
+
+	## Add a canned trust policy for Cloudtrail
+	def trust_cloudtrail(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-cloudtrail-instances', :template => @template)
             trust_relationship.allow do
               action 'sts:AssumeRole'
@@ -89,24 +92,17 @@ module Convection
         class IAMRole < Resource
           include DSL::Template::Resource::IAMRole
 
+          type 'AWS::IAM::Role'
           property :path, 'Path'
-          attr_accessor :trust_relationship
-          attr_reader :policies
+          property :policies, 'Policies', :type => :list
 
-          ## Reference to associated instance profile
+          attr_accessor :trust_relationship
           attr_reader :instance_profile
 
-          def initialize(*args)
-            super
-
-            type 'AWS::IAM::Role'
-            @policies = []
-          end
-
           def render
-            @properties['Policies'] = @policies.map(&:render) unless @policies.empty?
-            @properties['AssumeRolePolicyDocument'] = trust_relationship.document unless trust_relationship.nil?
-            super
+            super.tap do |r|
+              r['Properties']['AssumeRolePolicyDocument'] = trust_relationship.document unless trust_relationship.nil?
+            end
           end
         end
       end
