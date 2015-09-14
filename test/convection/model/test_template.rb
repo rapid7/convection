@@ -7,15 +7,15 @@ class TestTemplate < Minitest::Test
     @template = Convection.template do
       description 'Test Template'
 
-      instance1 = ec2_instance 'TestInstance1' do
+      ec2_instance 'TestInstance1' do
         availability_zone 'us-east-1'
         image_id 'ami-asdf83'
       end
 
-      instance2 = ec2_instance 'TestInstance2' do
+      ec2_instance 'TestInstance2' do
         availability_zone 'us-west-1'
         image_id 'ami-lda34f'
-        depends_on instance1.name
+        depends_on 'TestInstance1'
       end
     end
   end
@@ -29,19 +29,16 @@ class TestTemplate < Minitest::Test
   end
 
   def test_template_format_version
-    json = from_json['AWSTemplateFormatVersion']
-    assert_equal '2010-09-09', json
+    assert_equal '2010-09-09', from_json['AWSTemplateFormatVersion']
   end
 
   def test_template_description
-    json = from_json['Description']
-    assert_equal 'Test Template', json
+    assert_equal 'Test Template', from_json['Description']
   end
 
   %w(Parameters Mappings Conditions Resources).each do |section|
     define_method("test_template_#{section.downcase}") do
-      json = from_json[section]
-      assert_respond_to json, :has_key?, "#{section} expected to respond to :has_key? method"
+      assert_respond_to from_json[section], :key?, "#{section} expected to respond to :key? method"
     end
   end
 
@@ -50,8 +47,7 @@ class TestTemplate < Minitest::Test
   end
 
   def instance1
-    json = from_json['Resources']
-    json = json['TestInstance1']
+    from_json['Resources']['TestInstance1']
   end
 
   def test_template_instance_has_properties
@@ -59,13 +55,10 @@ class TestTemplate < Minitest::Test
   end
 
   def test_template_instance_type
-    json = instance1['Type']
-    assert_equal 'AWS::EC2::Instance', json
+    assert_equal 'AWS::EC2::Instance', instance1['Type']
   end
 
   def test_template_depends_on
-    json = from_json['Resources']
-    json = json['TestInstance2']['DependsOn']
-    assert_includes json, 'TestInstance1'
+    assert_includes from_json['Resources']['TestInstance2']['DependsOn'], 'TestInstance1'
   end
 end

@@ -31,13 +31,14 @@ module Convection
 
           if stack.error?
             block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
-            return
+            break
           end
 
-          return unless stack.success?
+          ## Stop on converge error
+          break unless stack.success?
 
           ## Stop here
-          return if !to_stack.nil? && stack.name == to_stack
+          break if !to_stack.nil? && stack.name == to_stack
           sleep rand @cloudfile.splay || 2
         end
       end

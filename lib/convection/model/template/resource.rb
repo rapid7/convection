@@ -214,7 +214,7 @@ module Convection
           end
 
           def render
-            value.keys.inject({}) do |memo, i|
+            value.keys.each_with_object({}) do |i, memo|
               memo[i] = if value[i].is_a?(Resource)
                           value[i].reference
                         elsif value[i].respond_to?(:render)
@@ -222,8 +222,6 @@ module Convection
                         else
                           value[i]
                         end
-
-              memo
             end
           end
         end
@@ -306,7 +304,7 @@ module Convection
           end
         end
 
-        def property(key,  *value)
+        def property(key, *value)
           return properties[key].value if value.empty?
 
           ## Define a property instance on the fly

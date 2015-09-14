@@ -134,19 +134,18 @@ module Convection
         our_properties = properties
         their_properties = other.properties
 
-        (our_properties.keys + their_properties.keys).uniq.inject({}) do |memo, key|
-          next memo if (our_properties[key] == their_properties[key] rescue false)
+        (our_properties.keys + their_properties.keys).uniq.each_with_object({}) do |key, memo|
+          next if (our_properties[key] == their_properties[key] rescue false)
 
           ## HACK: String/Number/Symbol comparison
           if our_properties[key].is_a?(Numeric) ||
              their_properties[key].is_a?(Numeric) ||
              our_properties[key].is_a?(Symbol) ||
              their_properties[key].is_a?(Symbol)
-            next memo if our_properties[key].to_s == their_properties[key].to_s
+            next if our_properties[key].to_s == their_properties[key].to_s
           end
 
           memo[key] = [our_properties[key], their_properties[key]]
-          memo
         end
       end
 
@@ -250,11 +249,11 @@ module Convection
 
       def validate_resources(rendered_stack)
         validate_compare(
-          rendered_stack["Resources"].count,
+          rendered_stack['Resources'].count,
           CF_MAX_RESOURCES,
           ExcessiveResourcesError)
-        largest_resource_name = resources.keys.max
-        largest_resource_name ||=''
+
+        largest_resource_name = resources.keys.max || ''
         validate_compare(
           largest_resource_name.length,
           CF_MAX_RESOURCE_NAME,
@@ -273,6 +272,7 @@ module Convection
             CF_MAX_MAPPING_ATTRIBUTES,
             ExcessiveMappingAttributesError)
         end
+
         mappings.keys.each do |key|
           validate_compare(
             key.length,
@@ -280,11 +280,13 @@ module Convection
             ExcessiveMappingNameError)
         end
 
+        ## XXX What are we trying to do here @aburke
         mapping_attributes = mappings.values.flat_map do |inner_hash|
           inner_hash.keys.select do |key|
             value = inner_hash[key]
           end
         end
+
         mapping_attributes.each do |attribute|
           validate_compare(
             attribute.length,
@@ -294,7 +296,7 @@ module Convection
       end
 
       def validate_parameters(rendered_stack)
-        parameters= rendered_stack['Parameters']
+        parameters = rendered_stack['Parameters']
         validate_compare(
           parameters.count,
           CF_MAX_PARAMETERS,

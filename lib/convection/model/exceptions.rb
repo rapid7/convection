@@ -14,5 +14,5 @@ class ExcessiveDescriptionError < ValidationError; end
 class ExcessiveTemplateSizeError < ValidationError; end
 
 def limit_exceeded_error(value, limit, error_class)
-  raise error_class, "Value #{value} exceeds Limit #{limit}"
+  fail error_class, "Value #{value} exceeds Limit #{limit}"
 end

@@ -1,7 +1,11 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
- Include:
-  - lib/**/*
-  - bin/**/*
+  Include:
+    - lib/**/*
+    - bin/**/*
+  Exclude:
+    - example/**/*
 
 Encoding:
  Enabled: false
@@ -9,4 +13,18 @@ RescueModifier:
  Enabled: false
 HashSyntax:
  Enabled: false
-inherit_from: .rubocop_todo.yml
+SpaceInsideStringInterpolation:
+  Enabled: false
+
+# AbcSize:
+#   Max: 24
+# ClassLength:
+#   Max: 256
+# CyclomaticComplexity:
+#   Max: 12
+# LineLength:
+#   Max: 120
+# MethodLength:
+#   Max: 32
+# PerceivedComplexity:
+#   Max: 12

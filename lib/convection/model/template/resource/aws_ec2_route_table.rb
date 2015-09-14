@@ -1,7 +1,6 @@
 require_relative '../resource'
 
 module Convection
-
   module DSL
     module Template
       module Resource

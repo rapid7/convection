@@ -29,17 +29,16 @@ class TestElasticache < Minitest::Test
       end
 
       elasticache_cache_cluster 'MyRedisCluster' do
-        cluster_name "demo"
+        cluster_name 'demo'
 
         auto_minor_version_upgrade true
         cache_node_type 'cache.m3.medium'
         cache_parameter_group_name fn_ref('MyRedisParmGroup')
-        cache_security_group_names [ fn_ref('MyRedisSecGroup') ]
+        cache_security_group_names [fn_ref('MyRedisSecGroup')]
         engine 'redis'
         engine_version '2.8.6'
         num_cache_nodes 1
       end
-
     end
   end
 
@@ -57,21 +56,22 @@ class TestElasticache < Minitest::Test
     perform_parameter_ref_comparison secgroups, 'MyRedisSecGroup', nil
   end
 
-  def test_elasticache_secgroup_ingress
-    json = from_json['Resources']['MyRedisSecGroupIngress']
-    cachesecgroup = json['Properties']['CacheSecurityGroupName']
-
-    assert cachesecgroup.is_a? Hash
-    assert_equal 1, cachesecgroup.size
-    assert cachesecgroup.has_key? 'Ref'
-    assert cachesecgroup.has_value? 'MyRedisSecGroup'
-
-    ec2_secgroup = json['Properties']['EC2SecurityGroupName']
-    assert ec2_secgroup.is_a? Hash
-    assert_equal 1, ec2_secgroup.size
-    assert ec2_secgroup.has_key? 'Ref'
-    assert ec2_secgroup.has_value? 'MyEC2SecGroup'
-  end
+  # XXX Which method is correct implementation? @aburke
+  # def test_elasticache_secgroup_ingress
+  #   json = from_json['Resources']['MyRedisSecGroupIngress']
+  #   cachesecgroup = json['Properties']['CacheSecurityGroupName']
+  #
+  #   assert cachesecgroup.is_a? Hash
+  #   assert_equal 1, cachesecgroup.size
+  #   assert cachesecgroup.key? 'Ref'
+  #   assert cachesecgroup.value? 'MyRedisSecGroup'
+  #
+  #   ec2_secgroup = json['Properties']['EC2SecurityGroupName']
+  #   assert ec2_secgroup.is_a? Hash
+  #   assert_equal 1, ec2_secgroup.size
+  #   assert ec2_secgroup.key? 'Ref'
+  #   assert ec2_secgroup.value? 'MyEC2SecGroup'
+  # end
 
   def test_elasticache_secgroup_ingress
     json = from_json['Resources']['MyRedisParmGroup']
@@ -79,8 +79,8 @@ class TestElasticache < Minitest::Test
 
     assert parms.is_a? Hash
     assert_equal 1, parms.size
-    assert parms.has_key? 'my_parm_key'
-    assert parms.has_value? 'my_parm_value'
+    assert parms.key? 'my_parm_key'
+    assert parms.value? 'my_parm_value'
   end
 
   private
@@ -89,8 +89,8 @@ class TestElasticache < Minitest::Test
     parameter_ref = comparison_array[0]
     assert parameter_ref.is_a? Hash
     assert_equal 1, parameter_ref.size
-    assert parameter_ref.has_key? 'Ref'
-    assert parameter_ref.has_value? parameter_name
+    assert parameter_ref.key? 'Ref'
+    assert parameter_ref.value? parameter_name
 
     assert_equal expected_value, comparison_array[1]
   end

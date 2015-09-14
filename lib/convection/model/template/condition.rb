@@ -31,10 +31,7 @@ module Convection
           condition.render
         end
 
-        private
-
         class ConditionalFunction
-
           def initialize(function_name, arg_array)
             @function_name = function_name
             @function_arguments = arg_array
@@ -53,9 +50,7 @@ module Convection
             { CONDITIONAL_FUNCTION_SYNTAX_MAP[@function_name] => rendered_values }
           end
         end
-
       end
-
     end
   end
 end

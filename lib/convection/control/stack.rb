@@ -221,7 +221,7 @@ module Convection
         get_status
 
         loop do
-          get_events.reverse.each do |event|
+          get_events.reverse_each do |event|
             block.call(Model::Event.from_cf(event))
           end if block
 
@@ -244,7 +244,7 @@ module Convection
 
       def validate
         result = @cf_client.validate_template(:template_body => template.to_json)
-        raise result.context.http_response.inspect unless result.successful?
+        fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
       end
 

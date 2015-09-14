@@ -3,7 +3,6 @@ require 'json'
 require 'pp'
 
 class TestValidations < Minitest::Test
-
   def test_within_limits
     @within_limits = ::Convection.template do
       description 'Validations Test Template - Within Limits'
@@ -49,7 +48,7 @@ class TestValidations < Minitest::Test
           property 'Tags', [{
             'Key' => 'Name',
             'Value' => 'test-1'
-            }]
+          }]
         end
       end
       80.times do |count|
@@ -75,7 +74,7 @@ class TestValidations < Minitest::Test
     end
     @excessive_resource_name = ::Convection.template do
       description 'Validations Test Template - Excessive Resource Name'
-      logs_log_group "0"*256 do
+      logs_log_group '0' * 256 do
         retention_in_days 365
       end
     end
@@ -100,8 +99,8 @@ class TestValidations < Minitest::Test
     end
     @excessive_mapping_name = ::Convection.template do
       description 'Validations Test Template - Excessive Mapping Name'
-      mapping "0" *256 do
-        item "1", "2", "3"
+      mapping '0' * 256 do
+        item '1', '2', '3'
       end
     end
 
@@ -116,7 +115,7 @@ class TestValidations < Minitest::Test
   def test_mapping_attributes
     @excessive_mapping_attributes = ::Convection.template do
       description 'Validations Test Template - Too Many Mapping Attributes'
-      mapping "Mapping_Example" do
+      mapping 'Mapping_Example' do
         31.times do |count|
           item "#{count}_1", "#{count}_2", "#{count}_3"
         end
@@ -124,8 +123,8 @@ class TestValidations < Minitest::Test
     end
     @excessive_mapping_attribute_names = ::Convection.template do
       description 'Validations Test Template - Excessive Mapping Attribute Name'
-      mapping "Mapping_1" do
-        item "0" *256, "value", "value"
+      mapping 'Mapping_1' do
+        item '0' * 256, 'value', 'value'
       end
     end
 
@@ -149,7 +148,7 @@ class TestValidations < Minitest::Test
     end
     @excessive_output_name = ::Convection.template do
       description 'Validations Test Template - Excessive Output Name'
-      output "0" * 256 do
+      output '0' * 256 do
         description 'An Important Attribute'
         value get_att('Resource', 'Attribute')
       end
@@ -176,7 +175,7 @@ class TestValidations < Minitest::Test
     end
     @excessive_parameter_name = ::Convection.template do
       description 'Validations Test Template - Excessive Parameter Name'
-      parameter "0" * 256 do
+      parameter '0' * 256 do
         type 'String'
         description 'Example Parameter'
         default 'm3.medium'
@@ -194,10 +193,10 @@ class TestValidations < Minitest::Test
   def test_parameter_bytesize
     @excessive_parameter_value_bytesize = ::Convection.template do
       description 'Validations Test Template - Excessive Parameter Value Bytesize'
-      parameter "Excessive_Parameter" do
-        type 'String'*150
-        description 'Example Parameter'*150
-        default 'm3.medium'*150
+      parameter 'Excessive_Parameter' do
+        type 'String' * 150
+        description 'Example Parameter' * 150
+        default 'm3.medium' * 150
       end
     end
 
@@ -208,7 +207,7 @@ class TestValidations < Minitest::Test
 
   def test_description
     @excessive_description = ::Convection.template do
-      description "0" * 1_025
+      description '0' * 1_025
     end
     assert_raises(ExcessiveDescriptionError) do
       @excessive_description.to_json

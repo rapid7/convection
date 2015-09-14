@@ -2,7 +2,6 @@ require_relative '../resource'
 require_relative 'aws_ec2_subnet_route_table_association'
 
 module Convection
-
   module DSL
     module Template
       module Resource

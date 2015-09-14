@@ -13,7 +13,7 @@ module Convection
 
           type 'AWS::S3::BucketPolicy'
           property :bucket, 'Bucket'
-          attr_reader :document #, 'PolicyDocument'
+          attr_reader :document # , 'PolicyDocument'
 
           def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name

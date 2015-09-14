@@ -13,20 +13,20 @@ module Convection
 
           type 'AWS::IAM::Policy'
           property :group, 'Groups', :type => :list,
-                                     :transform => proc { |resource|
+                                     :transform => (proc do |resource|
                                        depends_on(resource)
                                        resource
-                                     }
+                                     end)
           property :role, 'Roles', :type => :list,
-                                   :transform => proc { |resource|
+                                   :transform => (proc do |resource|
                                      depends_on(resource)
                                      resource
-                                   }
+                                   end)
           property :user, 'Users', :type => :list,
-                                   :transform => proc { |resource|
+                                   :transform => (proc do |resource|
                                      depends_on(resource)
                                      resource
-                                   }
+                                   end)
 
           attr_reader :document
           def_delegators :@document, :allow, :id, :version, :statement

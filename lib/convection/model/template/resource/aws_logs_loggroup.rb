@@ -9,12 +9,11 @@ module Convection
         ##
         class LogGroup < Resource
           property :retention_in_days, 'RetentionInDays'
-      
+
           def initialize(*args)
             super
             type 'AWS::Logs::LogGroup'
           end
-
         end
       end
     end
