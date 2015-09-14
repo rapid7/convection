@@ -15,20 +15,17 @@ module Convection
           property :vpc, 'EC2VpcId'
           property :ingress, 'DBSecurityGroupIngress', :type => :list
 
-          def security_group_ingress(&block)
-            # A new code block defines a new ingress group
-            @properties['DBSecurityGroupIngress'] << {}
-            yield
-          end
-
           def ec2_security_group(group, owner)
-            @properties['DBSecurityGroupIngress'].last.merge!(
-              { 'EC2SecurityGroupName' => group, 'EC2SecurityGroupOwnerId' => owner }
+            ingres(
+              :EC2SecurityGroupName => group,
+              :EC2SecurityGroupOwnerId => owner
             )
           end
 
           def cidr_ip(cidr_block)
-            @properties['DBSecurityGroupIngress'].last.merge!({ 'CIDRIP' => cidr_block })
+            ingres(
+              :CIDRIP => cidr_block
+            )
           end
 
           def render(*args)
