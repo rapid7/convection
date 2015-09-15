@@ -20,7 +20,7 @@ The effect of this policy is such that two major versions will retain some level
 
 ### v0.2
 
-This code-line is in the process of being deprecated in favor of version 1.0 of Convection, which is in active development (see [below](#v1.0)). Note that this conflicts with the policy above due to the radical scope of the refactor to version 1.0.0.
+This code-line is in the process of being deprecated in favor of version 1.0 of Convection, which is in active development (see [below](#v10)). Note that this conflicts with the policy above due to the radical scope of the refactor to version 1.0.0.
 
 Commits are automatically tagged and released to [rubygems.org](https://rubygems.org/gems/convection) with `0.2.x` versions.
 
