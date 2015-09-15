@@ -13,7 +13,7 @@ module Convection
 
           type 'AWS::SNS::TopicPolicy'
           property :topics, 'Topics'
-          attr_reader :document #, 'PolicyDocument'
+          attr_reader :document
 
           def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
