@@ -4,7 +4,8 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'bundler', '~> 1.7'
-gem 'rake', '~> 10.0'
-gem 'thor-scmversion', '= 1.7.0'
 gem 'minitest'
+gem 'rake', '~> 10.0'
+gem 'rubocop', '~> 0.34'
 gem 'simplecov'
+gem 'thor-scmversion', '= 1.7.0'
