@@ -55,6 +55,7 @@ module Convection
             attribute :protocol
 
             attribute :source
+            attribute :destination
             attribute :destination_group
             attribute :source_group
             attribute :source_group_owner
@@ -66,6 +67,7 @@ module Convection
                 'ToPort' => to
               }.tap do |rule|
                 rule['CidrIp'] = source unless source.nil?
+                rule['CidrIp'] = destination unless destination.nil?
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
                 rule['SourceSecurityGroupId'] = source_group unless source_group.nil?
                 rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group_owner.nil?
