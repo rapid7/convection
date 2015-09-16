@@ -20,6 +20,7 @@ module Convection
           property :user_data, 'UserData'
           property :security_group, 'SecurityGroupIds', :type => :list
           property :src_dst_checks, 'SourceDestCheck'
+          property :disable_api_termination, 'DisableApiTermination'
           property :network_interfaces, 'NetworkInterfaces', :type => :list
 
           # Append a network interface to network_interfaces
