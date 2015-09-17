@@ -20,6 +20,15 @@ module Convection
           property :user_data, 'UserData'
           property :security_group, 'SecurityGroupIds', :type => :list
           property :src_dst_checks, 'SourceDestCheck'
+          property :network_interfaces, 'NetworkInterfaces', :type => :list
+
+          # Append a network interface to network_interfaces
+          def network_interface(&block)
+            interface = ResourceProperty::EC2NetworkInterface.new(self)
+            interface.instance_exec(&block) if block
+            interface.device_index = network_interfaces.count.to_s
+            network_interfaces << interface
+          end
 
           def render(*args)
             super.tap do |resource|
