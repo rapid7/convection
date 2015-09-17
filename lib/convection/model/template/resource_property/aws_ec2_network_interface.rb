@@ -4,7 +4,8 @@ module Convection
   module Model
     class Template
       class ResourceProperty
-        # Represents an {http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-iface-embedded.html EC2 NetworkInterface Embedded Property Type}
+        # Represents an {http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-iface-embedded.html
+        # EC2 NetworkInterface Embedded Property Type}
         class EC2NetworkInterface < ResourceProperty
           property :associate_public_ip_address, 'AssociatePublicIpAddress'
           property :delete_on_termination, 'DeleteOnTermination'
