@@ -12,7 +12,7 @@ module Convection
           extend Forwardable
 
           type 'AWS::SQS::QueuePolicy'
-          property :queues, 'Queues'
+          property :queue, 'Queues', :type => :list
           attr_reader :document
 
           def_delegators :@document, :allow, :id, :version, :statement
