@@ -8,26 +8,10 @@ module Convection
         # AWS::EC2::SubnetRouteTableAssociation
         ##
         class EC2SubnetRouteTableAssociation < Resource
+          type 'AWS::EC2::SubnetRouteTableAssociation'
           property :route_table, 'RouteTableId'
           property :subnet, 'SubnetId'
-
-          def initialize(*args)
-            super
-            type 'AWS::EC2::SubnetRouteTableAssociation'
-          end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def ec2_subnet_route_table_association(name, &block)
-        r = Model::Template::Resource::EC2SubnetRouteTableAssociation.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

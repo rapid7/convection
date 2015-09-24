@@ -10,18 +10,10 @@ module Convection
         class RDSDBParameterGroup < Resource
           include Model::Mixin::Taggable
 
+          type 'AWS::RDS::DBParameterGroup', :rds_parameter_group
           property :description, 'Description'
           property :family, 'Family'
-
-          def initialize(*args)
-            super
-            type 'AWS::RDS::DBParameterGroup'
-            @properties['Parameters'] = {}
-          end
-
-          def parameter(key, value)
-            @properties['Parameters'][key] = value
-          end
+          property :parameter, 'Parameters', :type => :hash
 
           def render(*args)
             super.tap do |resource|
@@ -29,18 +21,6 @@ module Convection
             end
           end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def rds_parameter_group(name, &block)
-        r = Model::Template::Resource::RDSDBParameterGroup.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

@@ -6,14 +6,15 @@ module Convection
       class Condition
         include DSL::Helpers
 
-        CONDITIONAL_FUNCTION_SYNTAX_MAP = 
-          { fn_and: 'Fn::And', 
+        CONDITIONAL_FUNCTION_SYNTAX_MAP =
+          { fn_and: 'Fn::And',
             fn_equals: 'Fn::Equals',
-            fn_if: 'Fn::If', 
-            fn_not: 'Fn::Not', 
+            fn_if: 'Fn::If',
+            fn_not: 'Fn::Not',
             fn_or: 'Fn::Or' }
 
         attr_reader :condition
+        attr_reader :template
 
         CONDITIONAL_FUNCTION_SYNTAX_MAP.keys.each do |conditional_function|
           define_method(conditional_function) do |*args|
@@ -21,19 +22,16 @@ module Convection
           end
         end
 
-        def initialize(name, template)
+        def initialize(name, parent)
           @name = name
-          @template = template
+          @template = parent.template
         end
 
         def render
           condition.render
         end
 
-        private
-
         class ConditionalFunction
-
           def initialize(function_name, arg_array)
             @function_name = function_name
             @function_arguments = arg_array
@@ -52,9 +50,7 @@ module Convection
             { CONDITIONAL_FUNCTION_SYNTAX_MAP[@function_name] => rendered_values }
           end
         end
-
       end
-
     end
   end
 end

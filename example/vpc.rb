@@ -1,85 +1,67 @@
-#!/usr/bin/env ruby
-require 'convection'
+require_relative '../lib/convection'
 
-test_template = Convection.template do
-  description 'This is a test stack generated with Convection'
+module Convection
+  module Demo
+    VPC = Convection.template do
+      description 'Demo VPC'
 
-  parameter 'InstanceSize' do
-    type 'String'
-    description 'Instance Size'
-    default 'm3.medium'
+      ## Define the VPC
+      ec2_vpc 'TargetVPC' do
+        network stack['subnet']
+        subnet_length 24
+        enable_dns true
 
-    allow 'm3.medium'
-    allow 'm3.large'
-    allow 'm3.xlarge'
-  end
+        tag 'Name', stack.cloud
+        tag 'Stack', stack.cloud
+        with_output 'id'
 
-  mapping 'RegionalAMIs' do
-    item 'us-east-1', 'hvm', 'ami-76e27e1e'
-    item 'us-west-1', 'hvm', 'ami-d5180890'
-    item 'us-east-1', 'pv', 'ami-64e27e0c'
-    item 'us-west-1', 'pv', 'ami-c5180880'
-  end
+        ## Add an InternetGateway
+        add_internet_gateway
 
-  mapping 'RegionalKeys' do
-    item 'us-east-1', 'test', 'cf-test-keys'
-    item 'us-west-1', 'test', 'cf-test-keys'
-  end
+        public_acl = add_network_acl 'Public' do
+          entry 'AllowAllIngress' do
+            action 'allow'
+            number 100
+            network '0.0.0.0/0'
+            protocol :any
+            range :From => 0,
+                  :To => 65_535
+          end
 
-  ## Define the VPC
-  ec2_vpc 'TargetVPC' do
-    network '100.65.0.0/18'
-    subnet_length 25
+          entry 'AllowAllEgress' do
+            action 'allow'
+            number 100
+            egress true
+            network '0.0.0.0/0'
+            protocol :any
+            range :From => 0,
+                  :To => 65_535
+          end
 
-    ## Add an InternetGateway
-    add_internet_gateway
+          tag 'Name', "acl-public-#{ stack.cloud }"
+          tag 'Stack', stack.cloud
+        end
 
-    ## Add a default routing table
-    public_table = add_route_table('Public', :gateway_route => true)
+        public_table = add_route_table 'Public', :gateway_route => true do
+          tag 'Name', "routes-public-#{ stack.cloud }"
+          tag 'Stack', stack.cloud
+        end
 
-    ## Define Subnets and Insatnces in each availability zone
-    stack.availability_zones do |zone, i|
-      add_subnet "Test#{ i }" do
-        availability_zone zone
-        route_table public_table
+        stack.availability_zones do |zone, i|
+          add_subnet "Public#{ i }" do
+            availability_zone zone
+            acl public_acl
+            route_table public_table
 
-        tag 'Service', 'Foo'
+            with_output
+
+            immutable_metadata "public-#{ stack.cloud }"
+            tag 'Name', "subnet-public-#{ stack.cloud }-#{ zone }"
+            tag 'Stack', stack.cloud
+            tag 'Service', 'Public'
+          end
+        end
       end
     end
-
-    tag 'Name', join('-', 'cf-test-vpc', fn_ref('AWS::StackName'))
-  end
-
-  ec2_security_group 'BetterSecurityGroup' do
-    ingress_rule do
-      cidr_ip '0.0.0.0/0'
-      from 22
-      to 22
-      protocol 'TCP'
-    end
-    egress_rule do
-      cidr_ip '0.0.0.0/0'
-      from 0
-      to 65_535
-      protocol(-1)
-    end
-
-    description 'Allow SSH traffic from all of the places'
-    vpc fn_ref(:TargetVPC)
-
-    tag 'Name', join('-', fn_ref('AWS::StackName'), 'BetterSecurityGroup')
   end
 end
-
-# puts test_template.render
-# puts test_template.to_json
-
-# stack_e1 = Convection.stack('TestStackE1B1', test_template, :region => 'us-east-1')
-stack_w1 = Convection.stack('TestStackW1B2', test_template, :region => 'us-west-1')
-
-# puts stack_e1.status
-# puts stack_e1.apply
-puts stack_w1.to_json
-
-puts "Status #{ stack_w1.status }"
-# puts stack_w1.apply

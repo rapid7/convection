@@ -9,13 +9,9 @@ class TestRDS < Minitest::Test
       description 'RDS Test Template'
 
       rds_security_group 'MyRDSSecGroup' do
-        description "Pulls in EC2 SGs"
-        security_group_ingress do
-          ec2_security_group('MyEC2SecGroup', '123456789012')
-        end
-        security_group_ingress do
-          cidr_ip 'my_cidr_value'
-        end
+        description 'Pulls in EC2 SGs'
+        ec2_security_group 'MyEC2SecGroup', '123456789012'
+        cidr_ip 'my_cidr_value'
       end
 
       rds_instance 'MyRDSInstance' do
@@ -28,7 +24,7 @@ class TestRDS < Minitest::Test
         master_username 'root'
         master_password 'secret'
 
-        security_group [ fn_ref('MyRDSSecGroup') ]
+        security_group [fn_ref('MyRDSSecGroup')]
       end
     end
   end
@@ -38,7 +34,7 @@ class TestRDS < Minitest::Test
   end
 
   def test_rds_instance
-    # Expected JSON: 
+    # Expected JSON:
     json = from_json['Resources']['MyRDSInstance']
     db_secgroups = json['Properties']['DBSecurityGroups']
 
@@ -49,7 +45,7 @@ class TestRDS < Minitest::Test
   end
 
   def test_rds_secgroup
-    # Expected JSON: 
+    # Expected JSON:
     json = from_json['Resources']['MyRDSSecGroup']
     ingress_rules = json['Properties']['DBSecurityGroupIngress']
 
@@ -57,14 +53,13 @@ class TestRDS < Minitest::Test
     assert_equal 2, ingress_rules.size
 
     ingress_rules.each do |rule|
-      if rule.has_key? 'CIDRIP'
-        assert rule.has_value?  'my_cidr_value'
+      if rule.key? 'CIDRIP'
+        assert rule.value? 'my_cidr_value'
       else
         assert rule['EC2SecurityGroupName'] == 'MyEC2SecGroup'
         assert rule['EC2SecurityGroupOwnerId'] == '123456789012'
       end
     end
-
   end
 
   private
@@ -73,8 +68,8 @@ class TestRDS < Minitest::Test
     parameter_ref = comparison_array[0]
     assert parameter_ref.is_a? Hash
     assert_equal 1, parameter_ref.size
-    assert parameter_ref.has_key? 'Ref'
-    assert parameter_ref.has_value? parameter_name
+    assert parameter_ref.key? 'Ref'
+    assert parameter_ref.value? parameter_name
 
     assert_equal expected_value, comparison_array[1]
   end

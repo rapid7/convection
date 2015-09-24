@@ -5,12 +5,12 @@ require 'pp'
 class TestLogGroups < Minitest::Test
   def setup
     @template = ::Convection.template do
-    description 'Logroups Test Template'
+      description 'Logroups Test Template'
 
-         resource 'testgroup' do
-           type 'AWS::Logs::LogGroup'
-           property 'RetentionInDays', 365
-         end
+      resource 'testgroup' do
+        type 'AWS::Logs::LogGroup'
+        property 'RetentionInDays', 365
+      end
     end
   end
 
@@ -22,5 +22,4 @@ class TestLogGroups < Minitest::Test
     refute_empty(from_json['Resources'])
     assert_includes(from_json['Resources'], 'testgroup')
   end
-
 end

@@ -22,17 +22,6 @@ module Convection
           collection
         end
       end
-
-      # def child(child_name, klass, options = {}, &block)
-      #   attr_reader collection
-      #   define_method(child_name) do |instance_name, &instance_block|
-      #     resource = klass.new(instance_name, self)
-      #     resource.instance_exec(&instance_block) if instance_block
-      #
-      #     instance_exec(resource, &block) if block
-      #     instance_variable_get("@#{ options[:collection] }")[instance_name] = resource if options.include?(:collection)
-      #   end
-      # end
     end
 
     ##
@@ -47,6 +36,21 @@ module Convection
       class << self
         def included(mod)
           mod.extend(DSL::ClassHelpers)
+        end
+
+        def method_name(cf_type)
+          nodes = cf_type.split('::')
+          nodes.shift # Remove AWS::
+
+          ## Cammel-case to snake-case
+          nodes.map! do |n|
+            n.split(/([A-Z0-9])(?![A-Z0-9])(?<!$)/)
+              .reject(&:empty?)
+              .reduce('') { |a, e| (e.length == 1 && !a.empty?) ? a + "_#{e}" : a + e }
+              .downcase
+          end
+
+          nodes.join('_').downcase
         end
       end
 

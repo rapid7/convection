@@ -7,22 +7,21 @@ module Convection
       # Map IP protocol names to numbers
       ##
       module Protocol
-        def protocol_property(name = :protocol)
-          attr_reader name
-
-          writer = proc do |value = nil|
-            instance_variable_set("@#{ name }", case value
-                                                when :any then -1
-                                                when :icmp then 1
-                                                when :tcp then 6
-                                                when :udp then 17
-                                                else value
-            end) unless value.nil?
-            instance_variable_get("@#{ name }")
+        class << self
+          def lookup(value)
+            case value
+            when :any then -1
+            when :icmp then 1
+            when :tcp then 6
+            when :udp then 17
+            else value
+            end
           end
+        end
 
-          define_method(name, &writer)
-          define_method("#{name}=", &writer)
+        def protocol_property(name = :protocol, property_name = 'IpProtocol')
+          property(name, property_name,
+                   :transform => Mixin::Protocol.method(:lookup))
         end
       end
     end

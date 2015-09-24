@@ -49,9 +49,12 @@ module Convection
         @stacks[stack.to_s][key.to_s] = value
       end
 
-      def stack(stack)
-        @stacks[stack.name.to_s].resources = stack.resources
+      def load_outputs(stack)
         @stacks[stack.name.to_s].outputs = stack.outputs
+      end
+
+      def load_resources(stack)
+        @stacks[stack.name.to_s].resources = stack.attribute_mapping_values
       end
     end
   end

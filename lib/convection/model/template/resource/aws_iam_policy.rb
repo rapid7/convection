@@ -2,18 +2,6 @@ require 'forwardable'
 require_relative '../resource'
 
 module Convection
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def iam_policy(name, &block)
-        r = Model::Template::Resource::IAMPolicy.new(name, self)
-        r.instance_exec(&block) if block
-
-        resources[name] = r
-      end
-    end
-  end
-
   module Model
     class Template
       class Resource
@@ -23,39 +11,36 @@ module Convection
         class IAMPolicy < Resource
           extend Forwardable
 
+          type 'AWS::IAM::Policy'
+          property :group, 'Groups', :type => :list,
+                                     :transform => (proc do |resource|
+                                       depends_on(resource)
+                                       resource
+                                     end)
+          property :role, 'Roles', :type => :list,
+                                   :transform => (proc do |resource|
+                                     depends_on(resource)
+                                     resource
+                                   end)
+          property :user, 'Users', :type => :list,
+                                   :transform => (proc do |resource|
+                                     depends_on(resource)
+                                     resource
+                                   end)
+
           attr_reader :document
           def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
 
           def initialize(*args)
             super
-
-            type 'AWS::IAM::Policy'
             @document = Model::Mixin::Policy.new(:template => @template)
-
-            @properties['Groups'] = []
-            @properties['Roles'] = []
-            @properties['Users'] = []
-          end
-
-          def group(resource)
-            depends_on(resource)
-            @properties['Groups'] << (resource.is_a?(Resource) ? resource.reference : resource)
-          end
-
-          def role(resource)
-            depends_on(resource)
-            @properties['Roles'] << (resource.is_a?(Resource) ? resource.reference : resource)
-          end
-
-          def user(resource)
-            depends_on(resource)
-            @properties['Users'] << (resource.is_a?(Resource) ? resource.reference : resource)
           end
 
           def render
-            document.render(@properties)
-            super
+            super.tap do |r|
+              document.render(r['Properties'])
+            end
           end
         end
       end

@@ -19,23 +19,23 @@ class TestConditions < Minitest::Test
       end
 
       condition 'InProd' do
-        fn_equals( fn_ref('DeploymentEnvironment'), 'prod' )
+        fn_equals(fn_ref('DeploymentEnvironment'), 'prod')
       end
 
       condition 'NotInProd' do
         fn_or(
-          fn_equals( fn_ref('DeploymentEnvironment'), 'stage' ),
-          fn_equals( fn_ref('DeploymentEnvironment'), 'dev' )
+          fn_equals(fn_ref('DeploymentEnvironment'), 'stage'),
+          fn_equals(fn_ref('DeploymentEnvironment'), 'dev')
         )
       end
 
       resource 'SomeSG' do
-        type "AWS::EC2::SecurityGroup"
+        type 'AWS::EC2::SecurityGroup'
         condition 'NotInProd'
       end
 
       resource 'SQLDB' do
-        type "AWS::RDS::DBInstance"
+        type 'AWS::RDS::DBInstance'
         property 'Iops', fn_if('InProd', '1000', fn_ref('AWS::NoValue'))
       end
     end
@@ -46,7 +46,7 @@ class TestConditions < Minitest::Test
   end
 
   def test_inprod_condition
-    # Expected JSON: 
+    # Expected JSON:
     # "InProd": { "Fn::Equals" : [ { "Ref" : "DeploymentEnvironment" }, "prod" ] },
     json = from_json['Conditions']['InProd']
     func_args = json['Fn::Equals']
@@ -55,11 +55,10 @@ class TestConditions < Minitest::Test
     assert_equal 2, func_args.size
 
     perform_parameter_ref_comparison func_args, 'DeploymentEnvironment', 'prod'
-
   end
 
   def test_notinprod_condition
-    # Expected JSON: 
+    # Expected JSON:
     # "NotInProd": {
     #   "Fn::Or" : [
     #     { "Fn::Equals" : [ { "Ref" : "DeploymentEnvironment"}, "stage" ] },
@@ -77,26 +76,25 @@ class TestConditions < Minitest::Test
 
     perform_parameter_ref_comparison subfunc1, 'DeploymentEnvironment', 'stage'
     perform_parameter_ref_comparison subfunc2, 'DeploymentEnvironment', 'dev'
-
   end
 
   def test_resource_uses_condition
     json = from_json['Resources']['SomeSG']
 
     assert json.is_a? Hash
-    assert json.has_key? 'Condition'
+    assert json.key? 'Condition'
     assert_equal 'NotInProd', json['Condition']
   end
 
   def test_property_uses_condition
     iops_property = from_json['Resources']['SQLDB']['Properties']['Iops']
-    # Expected JSON: 
+    # Expected JSON:
     # "Iops" : { "Fn::If" : [ "InProd", "1000", { "Ref" : "AWS::NoValue" }
 
     # Check we have an IF function
     assert iops_property.is_a? Hash
     assert_equal 1, iops_property.size
-    assert iops_property.has_key? 'Fn::If'
+    assert iops_property.key? 'Fn::If'
 
     # Check the 3 arguments to the IF function: (condition, true_value, false_value)
     if_cond = iops_property['Fn::If']
@@ -115,8 +113,8 @@ class TestConditions < Minitest::Test
     parameter_ref = comparison_array[0]
     assert parameter_ref.is_a? Hash
     assert_equal 1, parameter_ref.size
-    assert parameter_ref.has_key? 'Ref'
-    assert parameter_ref.has_value? parameter_name
+    assert parameter_ref.key? 'Ref'
+    assert parameter_ref.value? parameter_name
 
     assert_equal expected_value, comparison_array[1]
   end

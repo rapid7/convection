@@ -8,6 +8,7 @@ module Convection
         # AWS::EC2::Instance
         ##
         class Route53RecordSet < Resource
+          type 'AWS::Route53::RecordSet', :route53_recordset
           property :alias_target, 'AliasTarget'
           property :comment, 'Comment'
           property :failover, 'Failover'
@@ -22,24 +23,7 @@ module Convection
           property :ttl, 'TTL'
           property :record_type, 'Type'
           property :weight, 'Weight'
-
-          def initialize(*args)
-            super
-            type 'AWS::Route53::RecordSet'
-          end
         end
-      end
-    end
-  end
-
-  module DSL
-    ## Add DSL method to template namespace
-    module Template
-      def route53_recordset(name, &block)
-        r = Model::Template::Resource::Route53RecordSet.new(name, self)
-
-        r.instance_exec(&block) if block
-        resources[name] = r
       end
     end
   end

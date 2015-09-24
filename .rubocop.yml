@@ -1,16 +1,34 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
- Exclude:
-   - libraries/**/*
-   - spec/**/*
-   - metadata.rb
+  Include:
+    - lib/**/*
+    - bin/**/*
+    - test/**/*
+    - Gemfile
+    - Rakefile
+    - Thorfile
+  Exclude:
+    - example/**/*
 
 Encoding:
  Enabled: false
-LineLength:
+RescueModifier:
  Enabled: false
 HashSyntax:
  Enabled: false
-RescueModifier:
+SpaceInsideStringInterpolation:
   Enabled: false
-MethodLength:
-  Max: 24
+
+# AbcSize:
+#   Max: 24
+# ClassLength:
+#   Max: 256
+# CyclomaticComplexity:
+#   Max: 12
+# LineLength:
+#   Max: 120
+# MethodLength:
+#   Max: 32
+# PerceivedComplexity:
+#   Max: 12

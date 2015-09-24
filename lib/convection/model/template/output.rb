@@ -15,10 +15,11 @@ module Convection
         attribute :name
         attribute :value
         attribute :description
+        attr_reader :template
 
-        def initialize(name, template)
+        def initialize(name, parent)
           @name = name
-          @template = template
+          @template = parent.template
 
           @type = ''
           @properties = {}
@@ -26,7 +27,7 @@ module Convection
 
         def render
           {
-            'Value' => value.is_a?(Array) ? JSON.generate(value) : value,
+            'Value' => value.respond_to?(:render) ? value.render : value,
             'Description' => description
           }.tap do |output|
             render_condition(output)
