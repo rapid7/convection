@@ -62,6 +62,14 @@ module Convection
             resource "arn:aws:s3:::#{ bucket }"
           end
 
+          def sqs_resource(region, account, queue)
+            resource "arn:aws:sqs:#{ region }:#{ account }:#{ queue }"
+          end
+
+          def sns_resource(region, account, topic)
+            resource "arn:aws:sns:#{ region }:#{ account }:#{ topic }"
+          end
+
           def initialize(effect = 'Allow', template = nil)
             @effect = effect
 
