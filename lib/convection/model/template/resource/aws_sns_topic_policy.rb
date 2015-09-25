@@ -12,7 +12,7 @@ module Convection
           extend Forwardable
 
           type 'AWS::SNS::TopicPolicy'
-          property :topics, 'Topics'
+          property :topic, 'Topics', :type => :list
           attr_reader :document
 
           def_delegators :@document, :allow, :id, :version, :statement
