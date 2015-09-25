@@ -6,13 +6,13 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::SQS::QueuePolicy
+        # AWS::SNS::TopicPolicy
         ##
-        class SQSQueuePolicy < Resource
+        class SNSTopicPolicy < Resource
           extend Forwardable
 
-          type 'AWS::SQS::QueuePolicy'
-          property :queue, 'Queues', :type => :list
+          type 'AWS::SNS::TopicPolicy'
+          property :topic, 'Topics', :type => :list
           attr_reader :document
 
           def_delegators :@document, :allow, :id, :version, :statement
