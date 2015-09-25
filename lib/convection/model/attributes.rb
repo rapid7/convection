@@ -41,7 +41,8 @@ module Convection
       end
 
       def get(stack, key, default = false)
-        fail ArgumentError, "Attempted to reference an undefined attribute, #{key}, in stack #{stack} ", caller unless include?(stack, key) || default != false
+        fail ArgumentError, "Attempted to reference an undefined attribute, #{key}, in stack #{stack} ",
+          caller unless include?(stack, key) || default != false
         include?(stack, key) ? @stacks[stack.to_s][key.to_s] : default
       end
 
