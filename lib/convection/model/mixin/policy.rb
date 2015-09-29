@@ -30,6 +30,14 @@ module Convection
           statement(add_statement)
         end
 
+        def deny(sid = nil, &block)
+          add_statement = Statement.new('Deny', @template)
+          add_statement.sid = sid unless sid.nil?
+          add_statement.instance_exec(&block) if block
+
+          statement(add_statement)
+        end
+
         def document
           {
             'Version' => version,
