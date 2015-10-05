@@ -61,6 +61,7 @@ module Convection
           attribute :sid
           attribute :effect
           attribute :principal
+          attribute :not_principal
           attribute :condition
           list :action
           list :resource
@@ -96,6 +97,7 @@ module Convection
               statemant['Sid'] = sid unless sid.nil?
               statemant['Condition'] = condition unless condition.nil?
               statemant['Principal'] = principal unless principal.nil?
+              statemant['NotPrincipal'] = not_principal unless not_principal.nil?
             end
           end
         end
