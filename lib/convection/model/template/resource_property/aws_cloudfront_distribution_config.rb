@@ -45,7 +45,6 @@ module Convection
             properties['Logging'].set(logging)
           end
 
-
           def origin(&block)
             origin = ResourceProperty::CloudFrontOrigin.new(self)
             origin.instance_exec(&block) if block
