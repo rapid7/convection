@@ -13,7 +13,7 @@ module Convection
           property :description, 'Description'
           property :handler, 'Handler'
           property :memory_size, 'MemorySize'
-          property :runtime, 'Runtime'
+          property :runtime, 'Runtime', :equal_to => ['nodejs', 'java8', 'python2.7']
           property :timeout, 'Timeout'
         end
       end
