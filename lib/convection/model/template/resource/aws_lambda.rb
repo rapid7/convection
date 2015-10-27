@@ -11,7 +11,7 @@ module Convection
           type 'AWS::Lambda::Function'
           property :code, 'Code'
           property :description, 'Description'
-          property :handler, 'Handler',
+          property :handler, 'Handler'
           property :memory_size, 'MemorySize'
           property :runtime, 'Runtime'
           property :timeout, 'Timeout'
