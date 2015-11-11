@@ -268,6 +268,7 @@ module Convection
           alias_method :push, :set
 
           def render
+            return default if value.nil? || value.empty?
             value.map do |val|
               next val.reference if val.is_a?(Resource)
               val.respond_to?(:render) ? val.render : val
