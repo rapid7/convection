@@ -17,7 +17,7 @@ module Convection
           property :lifecycle_configuration, 'LifecycleConfiguration'
           property :logging_configuration, 'LoggingConfiguration'
           property :notification_configuration, 'NotificationConfiguration'
-          property :version_configuration, 'VersionConfiguration'
+          property :versioning_configuration, 'VersioningConfiguration'
 
           def render(*args)
             super.tap do |resource|
