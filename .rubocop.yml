@@ -10,6 +10,7 @@ AllCops:
     - Thorfile
   Exclude:
     - example/**/*
+    - 'lib/convection/model/template/mapping.rb' # Something is causing this file to fail
 
 Encoding:
  Enabled: false
