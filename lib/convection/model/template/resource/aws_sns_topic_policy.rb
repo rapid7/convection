@@ -6,16 +6,16 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::S3::BucketPolicy
+        # AWS::SNS::TopicPolicy
         ##
-        class S3BucketPolicy < Resource
+        class SNSTopicPolicy < Resource
           extend Forwardable
 
-          type 'AWS::S3::BucketPolicy'
-          property :bucket, 'Bucket'
-          attr_reader :document # , 'PolicyDocument'
+          type 'AWS::SNS::TopicPolicy'
+          property :topic, 'Topics', :type => :list
+          attr_reader :document
 
-          def_delegators :@document, :allow, :deny, :id, :version, :statement
+          def_delegators :@document, :allow, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
 
           def initialize(*args)

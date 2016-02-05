@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Convection
   module Model
     module Mixin
@@ -30,6 +32,14 @@ module Convection
           statement(add_statement)
         end
 
+        def deny(sid = nil, &block)
+          add_statement = Statement.new('Deny', @template)
+          add_statement.sid = sid unless sid.nil?
+          add_statement.instance_exec(&block) if block
+
+          statement(add_statement)
+        end
+
         def document
           {
             'Version' => version,
@@ -53,6 +63,7 @@ module Convection
           attribute :sid
           attribute :effect
           attribute :principal
+          attribute :not_principal
           attribute :condition
           list :action
           list :resource
@@ -60,6 +71,14 @@ module Convection
           def s3_resource(bucket, path = nil)
             return resource "arn:aws:s3:::#{ bucket }/#{ path }" unless path.nil?
             resource "arn:aws:s3:::#{ bucket }"
+          end
+
+          def sqs_resource(region, account, queue)
+            resource "arn:aws:sqs:#{ region }:#{ account }:#{ queue }"
+          end
+
+          def sns_resource(region, account, topic)
+            resource "arn:aws:sns:#{ region }:#{ account }:#{ topic }"
           end
 
           def initialize(effect = 'Allow', template = nil)
@@ -74,12 +93,13 @@ module Convection
           def render
             {
               'Effect' => effect,
-              'Action' => action,
-              'Resource' => resource
-            }.tap do |statemant|
-              statemant['Sid'] = sid unless sid.nil?
-              statemant['Condition'] = condition unless condition.nil?
-              statemant['Principal'] = principal unless principal.nil?
+              'Action' => action
+            }.tap do |statement|
+              statement['Sid'] = sid unless sid.nil?
+              statement['Condition'] = condition unless condition.nil?
+              statement['Principal'] = principal unless principal.nil?
+              statement['NotPrincipal'] = not_principal unless not_principal.nil?
+              statement['Resource'] = resource unless resource.empty? # Avoid failure in CF if empty Resources array is passed
             end
           end
         end

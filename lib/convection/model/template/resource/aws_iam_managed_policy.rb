@@ -1,4 +1,3 @@
-require 'forwardable'
 require_relative '../resource'
 
 module Convection
@@ -6,26 +5,29 @@ module Convection
     class Template
       class Resource
         ##
-        # AWS::S3::BucketPolicy
+        # AWS::IAM::ManagedPolicy
         ##
-        class S3BucketPolicy < Resource
+        class IAMManagedPolicy < Resource
           extend Forwardable
 
-          type 'AWS::S3::BucketPolicy'
-          property :bucket, 'Bucket'
-          attr_reader :document # , 'PolicyDocument'
+          type 'AWS::IAM::ManagedPolicy'
+          property :path, 'Path'
+          property :group, 'Groups', :type => :list
+          property :role, 'Roles', :type => :list
+          property :user, 'Users', :type => :list
 
+          attr_reader :document
           def_delegators :@document, :allow, :deny, :id, :version, :statement
-          def_delegator :@document, :name, :policy_name
 
           def initialize(*args)
             super
-            @document = Model::Mixin::Policy.new(:name => false, :template => @template)
+            @document = Model::Mixin::Policy.new(:template => @template)
           end
 
           def render
             super.tap do |r|
               document.render(r['Properties'])
+              r['Properties'].delete('PolicyName')
             end
           end
         end
