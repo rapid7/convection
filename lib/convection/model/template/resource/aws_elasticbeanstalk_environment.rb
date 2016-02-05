@@ -1,5 +1,4 @@
 require_relative '../resource'
-
 module Convection
   module Model
     class Template
@@ -24,4 +23,3 @@ module Convection
     end
   end
 end
-    
