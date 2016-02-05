@@ -11,7 +11,7 @@ module Convection
             fn_equals: 'Fn::Equals',
             fn_if: 'Fn::If',
             fn_not: 'Fn::Not',
-            fn_or: 'Fn::Or' }
+            fn_or: 'Fn::Or' }.freeze
 
         attr_reader :condition
         attr_reader :template

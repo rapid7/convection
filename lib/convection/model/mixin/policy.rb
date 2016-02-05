@@ -7,7 +7,7 @@ module Convection
       class Policy
         include DSL::Helpers
 
-        DEFAULT_VERSION = '2012-10-17'
+        DEFAULT_VERSION = '2012-10-17'.freeze
 
         attribute :name
         attribute :id
