@@ -19,6 +19,10 @@ HashSyntax:
  Enabled: false
 SpaceInsideStringInterpolation:
   Enabled: false
+Performance/RedundantBlockCall:
+  Enabled: false
+Style/SignalException:
+  Enabled: false
 
 # AbcSize:
 #   Max: 24
