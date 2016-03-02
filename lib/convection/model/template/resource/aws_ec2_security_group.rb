@@ -64,9 +64,9 @@ module Convection
             def render
               {
                 'IpProtocol' => Mixin::Protocol.lookup(protocol),
-                'FromPort' => from,
-                'ToPort' => to
               }.tap do |rule|
+                rule['FromPort'] = from unless from.nil?
+                rule['ToPort'] = to unless to.nil?
                 rule['CidrIp'] = source unless source.nil?
                 rule['CidrIp'] = destination unless destination.nil?
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
