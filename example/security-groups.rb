@@ -38,7 +38,7 @@ module Convection
 
       ec2_security_group 'FoobarEgress' do
         vpc stack.get('vpc', 'id')
-        description 'Foobar Ingress'
+        description 'Foobar Egress'
 
         egress_rule(:tcp, 80, '0.0.0.0/0')
         egress_rule(:tcp, 443, '0.0.0.0/0')
@@ -54,7 +54,7 @@ module Convection
 
       ec2_security_group 'FoobarNoEgress' do
         vpc stack.get('vpc', 'id')
-        description 'Foobar Ingress'
+        description 'Foobar No Egress'
 
         # By default, Cloud Formation adds a default egress rule that allows
         # egress traffic on all ports and IP protocols to any location.  The default
