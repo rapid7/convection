@@ -63,7 +63,7 @@ module Convection
 
             def render
               {
-                'IpProtocol' => Mixin::Protocol.lookup(protocol),
+                'IpProtocol' => Mixin::Protocol.lookup(protocol)
               }.tap do |rule|
                 rule['FromPort'] = from unless from.nil?
                 rule['ToPort'] = to unless to.nil?
