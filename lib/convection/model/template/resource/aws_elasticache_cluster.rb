@@ -13,10 +13,12 @@ module Convection
           property :cache_node_type, 'CacheNodeType'
           property :cache_security_group_names, 'CacheSecurityGroupNames'
           property :cache_parameter_group_name, 'CacheParameterGroupName'
+          property :cache_subnet_group_name, 'CacheSubnetGroupName'
           property :cluster_name, 'ClusterName'
           property :engine, 'Engine'
           property :engine_version, 'EngineVersion'
           property :num_cache_nodes, 'NumCacheNodes'
+          property :vpc_security_group_ids, 'VpcSecurityGroupIds'
         end
       end
     end

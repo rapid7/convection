@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Convection
   module Model
     module Mixin
@@ -7,7 +9,7 @@ module Convection
       class Policy
         include DSL::Helpers
 
-        DEFAULT_VERSION = '2012-10-17'
+        DEFAULT_VERSION = '2012-10-17'.freeze
 
         attribute :name
         attribute :id
@@ -61,6 +63,7 @@ module Convection
           attribute :sid
           attribute :effect
           attribute :principal
+          attribute :not_principal
           attribute :condition
           list :action
           list :resource
@@ -90,12 +93,13 @@ module Convection
           def render
             {
               'Effect' => effect,
-              'Action' => action,
-              'Resource' => resource
-            }.tap do |statemant|
-              statemant['Sid'] = sid unless sid.nil?
-              statemant['Condition'] = condition unless condition.nil?
-              statemant['Principal'] = principal unless principal.nil?
+              'Action' => action
+            }.tap do |statement|
+              statement['Sid'] = sid unless sid.nil?
+              statement['Condition'] = condition unless condition.nil?
+              statement['Principal'] = principal unless principal.nil?
+              statement['NotPrincipal'] = not_principal unless not_principal.nil?
+              statement['Resource'] = resource unless resource.empty? # Avoid failure in CF if empty Resources array is passed
             end
           end
         end
