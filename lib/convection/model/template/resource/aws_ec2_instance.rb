@@ -22,6 +22,7 @@ module Convection
           property :src_dst_checks, 'SourceDestCheck'
           property :disable_api_termination, 'DisableApiTermination'
           property :network_interfaces, 'NetworkInterfaces', :type => :list
+          property :volumes, 'Volumes', :type => :list
 
           # Append a network interface to network_interfaces
           def network_interface(&block)
@@ -29,6 +30,13 @@ module Convection
             interface.instance_exec(&block) if block
             interface.device_index = network_interfaces.count.to_s
             network_interfaces << interface
+          end
+
+          # Append a volume to volumes
+          def volume(&block)
+            volume = ResourceProperty::EC2MountPoint.new(self)
+            volume.instance_exec(&block) if block
+            volumes << volume
           end
 
           def render(*args)
