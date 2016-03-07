@@ -2,7 +2,7 @@ require_relative '../lib/convection'
 
 module Convection
   module Demo
-    FOOBAR = Convection.template do
+    INSTANCES = Convection.template do
       description 'Demo Foobar'
 
       ec2_instance 'Foobar' do
