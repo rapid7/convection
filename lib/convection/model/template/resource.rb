@@ -295,6 +295,7 @@ module Convection
           @template = parent.template
           @type = self.class.type
           @depends_on = []
+          @deletion_policy = nil
           @exist = false
 
           ## Instantiate properties
@@ -316,6 +317,14 @@ module Convection
         def depends_on(resource)
           @depends_on << (resource.is_a?(Resource) ? resource.name : resource)
         end
+
+        # rubocop:disable Style/TrivialAccessors
+        #   We don't want to use an accessor (e.g. deletion_policy=) because
+        #   this is a DSL method
+        def deletion_policy(deletion_policy)
+          @deletion_policy = deletion_policy
+        end
+        # rubocop:enable Style/TrivialAccessors
 
         def reference
           {
@@ -345,6 +354,7 @@ module Convection
             'Properties' => properties.map(true, &:render)
           }.tap do |resource|
             resource['DependsOn'] = @depends_on unless @depends_on.empty?
+            resource['DeletionPolicy'] = @deletion_policy unless @deletion_policy.nil?
             render_condition(resource)
           end
         end
