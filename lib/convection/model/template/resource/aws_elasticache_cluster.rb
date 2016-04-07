@@ -8,6 +8,8 @@ module Convection
         # AWS::ElastiCache::CacheCluster
         ##
         class ElastiCacheCluster < Resource
+          include Mixin::Taggable
+          
           type 'AWS::ElastiCache::CacheCluster', :elasticache_cache_cluster
           property :auto_minor_version_upgrade, 'AutoMinorVersionUpgrade'
           property :cache_node_type, 'CacheNodeType'
@@ -19,6 +21,13 @@ module Convection
           property :engine_version, 'EngineVersion'
           property :num_cache_nodes, 'NumCacheNodes'
           property :vpc_security_group_ids, 'VpcSecurityGroupIds'
+
+          def render(*args)
+            super.tap do |resource|
+              render_tags(resource)
+            end
+          end
+
         end
       end
     end
