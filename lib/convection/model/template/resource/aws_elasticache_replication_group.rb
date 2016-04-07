@@ -8,6 +8,8 @@ module Convection
         # AWS::ElastiCache::ReplicationGroup
         ##
         class ElastiCacheReplicationGroup < Resource
+          include Mixin::Taggable
+
           type 'AWS::ElastiCache::ReplicationGroup', :elasticache_replication_group
           property :auto_failover_enabled, 'AutomaticFailoverEnabled'
           property :auto_minor_version_upgrade, 'AutoMinorVersionUpgrade'
@@ -27,6 +29,13 @@ module Convection
           property :snapshot_arns, 'SnapshotArns', :type => :list
           property :snapshot_retention_limit, 'SnapshotRetentionLimit'
           property :snapshot_window, 'SnapshotWindow'
+
+          def render(*args)
+            super.tap do |resource|
+              render_tags(resource)
+            end
+          end
+
         end
       end
     end
