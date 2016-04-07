@@ -35,7 +35,6 @@ module Convection
               render_tags(resource)
             end
           end
-
         end
       end
     end
