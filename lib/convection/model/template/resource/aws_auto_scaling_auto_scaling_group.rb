@@ -30,7 +30,13 @@ module Convection
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
+              @update_policy.render(resource) unless @update_policy.nil?
             end
+          end
+
+          def update_policy(&block)
+            @update_policy = ResourceAttribute::UpdatePolicy.new(self)
+            @update_policy.instance_exec(&block) if block
           end
         end
       end
