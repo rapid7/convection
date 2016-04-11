@@ -356,7 +356,7 @@ module Convection
             'Type' => type,
             'Properties' => properties.map(true, &:render)
           }.tap do |resource|
-            resource_attributes.map(&:render)
+            resource_attributes.map { |a| a.render resource }
             resource['DependsOn'] = @depends_on unless @depends_on.empty?
             resource['DeletionPolicy'] = @deletion_policy unless @deletion_policy.nil?
             render_condition(resource)
