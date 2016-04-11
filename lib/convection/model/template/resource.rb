@@ -287,6 +287,7 @@ module Convection
         attr_reader :name
         attr_reader :template
         attr_reader :properties
+        attr_reader :resource_attributes
         attr_reader :exist
         alias_method :exist?, :exist
 
@@ -297,6 +298,8 @@ module Convection
           @depends_on = []
           @deletion_policy = nil
           @exist = false
+
+          @resource_attributes = []
 
           ## Instantiate properties
           @properties = Model::Collection.new
@@ -353,6 +356,7 @@ module Convection
             'Type' => type,
             'Properties' => properties.map(true, &:render)
           }.tap do |resource|
+            resource_attributes.map(&:render)
             resource['DependsOn'] = @depends_on unless @depends_on.empty?
             resource['DeletionPolicy'] = @deletion_policy unless @deletion_policy.nil?
             render_condition(resource)
