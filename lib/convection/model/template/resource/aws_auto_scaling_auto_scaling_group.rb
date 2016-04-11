@@ -27,8 +27,6 @@ module Convection
           property :termination_policie, 'TerminationPolicies', :array
           property :vpc_zone_identifier, 'VPCZoneIdentifier', :array
 
-          property :network_interfaces, 'NetworkInterfaces', :type => :list
-
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
