@@ -6,12 +6,9 @@ module Convection
       class ResourceAttribute
         # Represents {http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html}
         class UpdatePolicy < ResourceAttribute
-          def initialize(parent)
-            @parent = parent
-            @pause = 'PT5M'
-            @min_in_service = 0
-            @max_batch = 1
-          end
+          @pause = 'PT5M'
+          @min_in_service = 0
+          @max_batch = 1
 
           def pause_time(val)
             @pause = val
