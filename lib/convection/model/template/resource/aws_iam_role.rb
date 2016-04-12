@@ -24,6 +24,7 @@ module Convection
             @template.resources[profile.name] = profile
           end
 
+
           ## Add a canned trust policy for EC2 instances
           def trust_ec2_instances(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-ec2-instances', :template => @template)
@@ -41,6 +42,17 @@ module Convection
             trust_relationship.allow do
               action 'sts:AssumeRole'
               principal :Service => 'vpc-flow-logs.amazonaws.com'
+            end
+            trust_relationship.instance_exec(&block) if block
+            trust_relationship
+          end
+
+          ## Add a canned trust policy for EMR
+          def trust_emr(&block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-emr', :template => @template)
+            trust_relationship.allow do
+              action 'sts:AssumeRole'
+              principal :Service => 'elasticmapreduce.amazonaws.com'
             end
             trust_relationship.instance_exec(&block) if block
             trust_relationship
