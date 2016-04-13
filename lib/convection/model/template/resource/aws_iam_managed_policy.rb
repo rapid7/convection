@@ -12,6 +12,7 @@ module Convection
 
           type 'AWS::IAM::ManagedPolicy'
           property :path, 'Path'
+          property :description, 'Description'
           property :group, 'Groups', :type => :list
           property :role, 'Roles', :type => :list
           property :user, 'Users', :type => :list
