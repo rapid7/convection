@@ -46,6 +46,17 @@ module Convection
             trust_relationship
           end
 
+          ## Add a canned trust policy for EMR
+          def trust_emr(&block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-emr', :template => @template)
+            trust_relationship.allow do
+              action 'sts:AssumeRole'
+              principal :Service => 'elasticmapreduce.amazonaws.com'
+            end
+            trust_relationship.instance_exec(&block) if block
+            trust_relationship
+          end
+
           ## Add a canned trust policy for Cloudtrail
           def trust_cloudtrail(&block)
             @trust_relationship =
@@ -98,6 +109,8 @@ module Convection
           type 'AWS::IAM::Role'
           property :path, 'Path'
           property :policies, 'Policies', :type => :list
+          property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
+          alias managed_policy managed_policy_arn
 
           attr_accessor :trust_relationship
           attr_reader :instance_profile
