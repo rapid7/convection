@@ -27,7 +27,6 @@ class TestVpcEndpoint < Minitest::Test
   def test_endpoint
     json = from_json['Resources']
 
-    pp json
     endpoint = json['TestVpcEndpoint']
     refute endpoint.nil?, 'VpcEndpoint not present in generated template'
 
@@ -42,6 +41,9 @@ class TestVpcEndpoint < Minitest::Test
     refute s3_string_arr.nil?, 'ServiceName value is not specified as a string array'
 
     assert s3_string_arr.is_a? Array
-    assert s3_string_arr[1][2] == 's3', 'ServiceName does not contain \'s3\' as final element'
+    s3_path_as_array = s3_string_arr[1]
+    refute s3_path_as_array.nil?, "The path for S3 should be defined as an array in #{s3_string_arr}"
+
+    assert s3_path_as_array.last == 's3', "ServiceName (#{s3_path_as_array}) does not contain \'s3\' as final element"
   end
 end
