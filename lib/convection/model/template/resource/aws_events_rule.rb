@@ -16,7 +16,7 @@ module Convection
           property :role_arn, 'RoleArn'
           property :schedule_expression, 'ScheduleExpression'
           property :state, 'State'
-          property :targets, 'Targets', :type => :array
+          property :target, 'Targets', :type => :array
         end
       end
     end
