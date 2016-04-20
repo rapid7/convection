@@ -24,6 +24,16 @@ module Convection
             @template.resources[profile.name] = profile
           end
 
+          ## Add a canned trust policy for any AWS service
+          def trust_service(name, &block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => "trust-#{name}-service", :template => @template)
+            trust_relationship.allow do
+              action 'sts:AssumeRole'
+              principal :Service => "#{name}.amazonaws.com"
+            end
+            trust_relationship.instance_exec(&block) if block
+          end
+
           ## Add a canned trust policy for EC2 instances
           def trust_ec2_instances(&block)
             @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-ec2-instances', :template => @template)
