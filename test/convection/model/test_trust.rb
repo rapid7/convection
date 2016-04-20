@@ -1,6 +1,5 @@
 require 'test_helper'
 require 'json'
-require 'pp'
 
 class TestTrust < Minitest::Test
   def setup
