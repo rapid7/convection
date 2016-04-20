@@ -25,7 +25,7 @@ class TestLambdaPermission < Minitest::Test
     properties = json['Properties']
 
     assert_equal properties['Action'], 'lambda:InvokeFunction'
-    assert_equal properties['FunctionName'], { 'Fn::GetAtt' => ['MyLambdaFunction', 'Arn'] }
-    assert_equal properties['SourceAccount'], { 'Ref' => 'AWS::AccountId' }
+    assert_equal properties['FunctionName'], 'Fn::GetAtt' => ['MyLambdaFunction', 'Arn']
+    assert_equal properties['SourceAccount'], 'Ref' => 'AWS::AccountId'
   end
 end
