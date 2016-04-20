@@ -16,7 +16,13 @@ module Convection
           property :role_arn, 'RoleArn'
           property :schedule_expression, 'ScheduleExpression'
           property :state, 'State'
-          property :target, 'Targets', :type => :array
+          property :targets, 'Targets', :type => :array
+
+          def target(&block)
+            target = ResourceProperty::EventsRuleTarget.new(self)
+            target.instance_exec(&block) if block
+            targets << target
+          end
         end
       end
     end
