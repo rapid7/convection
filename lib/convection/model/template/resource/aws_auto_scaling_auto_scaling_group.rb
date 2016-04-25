@@ -32,6 +32,11 @@ module Convection
               render_tags(resource)
             end
           end
+
+          def update_policy(&block)
+            policy = ResourceAttribute::UpdatePolicy.new(self)
+            policy.instance_exec(&block) if block
+          end
         end
       end
     end
