@@ -41,6 +41,8 @@ class TestVpcEndpoint < Minitest::Test
     refute s3_string_arr.nil?, 'ServiceName value is not specified as a string array'
 
     assert s3_string_arr.is_a? Array
+    assert_equal '.', s3_string_arr[0]
+
     s3_path_as_array = s3_string_arr[1]
     refute s3_path_as_array.nil?, "The path for S3 should be defined as an array in #{s3_string_arr}"
 
