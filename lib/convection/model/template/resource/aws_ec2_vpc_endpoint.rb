@@ -26,7 +26,7 @@ module Convection
           end
 
           def service(val)
-            properties['ServiceName'].set(join('', 'com.amazonaws.', fn_ref('AWS::Region'), val))
+            properties['ServiceName'].set(join('.', 'com.amazonaws', fn_ref('AWS::Region'), val))
           end
 
           def render
