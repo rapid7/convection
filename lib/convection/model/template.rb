@@ -170,7 +170,7 @@ module Convection
       include DSL::IntrinsicFunctions
       include DSL::Template
 
-      DEFAULT_VERSION = '2010-09-09'
+      DEFAULT_VERSION = '2010-09-09'.freeze
 
       attr_reader :stack
       attr_reader :attribute_mappings

@@ -128,7 +128,7 @@ class TestValidations < Minitest::Test
       end
     end
 
-    assert_raises(ExcessiveMappingAttributesError)do
+    assert_raises(ExcessiveMappingAttributesError) do
       @excessive_mapping_attributes.to_json
     end
     assert_raises(ExcessiveMappingAttributeNameError) do
