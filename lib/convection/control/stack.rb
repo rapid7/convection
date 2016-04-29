@@ -214,8 +214,8 @@ module Convection
       end
 
       def delete(&block)
-        ## Execute before create tasks
-        @tasks[:before_create].each { |task| task.call(stack) }
+        ## Execute before delete tasks
+        @tasks[:before_delete].each { |task| task.call(stack) }
 
         @cf_client.delete_stack(
           :stack_name => id
@@ -226,8 +226,8 @@ module Convection
 
         get_status
 
-        ## Execute after create tasks
-        @tasks[:after_create].each { |task| task.call(stack) }
+        ## Execute after delete tasks
+        @tasks[:after_delete].each { |task| task.call(stack) }
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
