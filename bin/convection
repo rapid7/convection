@@ -27,8 +27,8 @@ module Convection
     end
 
     desc 'diff', 'Show changes that will be applied by converge'
-    option :verbose, :type => :boolean, :aliases => '--v'
-    option :'very-verbose', :type => :boolean, :aliases => '--vv'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     def diff
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
 
