@@ -85,6 +85,7 @@ module Convection
         @outputs = {}
         @resources = {}
         @tasks = { after_create: [], after_delete: [], before_create: [], before_delete: [] }
+        instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
 
@@ -96,8 +97,6 @@ module Convection
         get_template
         resource_attributes
         get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
-
-        instance_exec(&block) if block
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -194,7 +193,7 @@ module Convection
         else
           ## Execute before create tasks
           @tasks[:before_create].delete_if do |task|
-            task.call(stack)
+            task.call(self)
             task.success?
           end
 
@@ -210,7 +209,7 @@ module Convection
 
           ## Execute after create tasks
           @tasks[:after_create].delete_if do |task|
-            task.call(stack)
+            task.call(self)
             task.success?
           end
         end
@@ -223,7 +222,7 @@ module Convection
       def delete(&block)
         ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
-          task.call(stack)
+          task.call(self)
           task.success?
         end
 
@@ -238,7 +237,7 @@ module Convection
 
         ## Execute after delete tasks
         @tasks[:after_delete].delete_if do |task|
-          task.call(stack)
+          task.call(self)
           task.success?
         end
       rescue Aws::Errors::ServiceError => e
@@ -276,20 +275,20 @@ module Convection
         puts "\nTemplate validated successfully"
       end
 
-      def after_create_task(name, task)
-        @tasks[:after_create][name].unshift(task)
+      def after_create_task(task)
+        @tasks[:after_create].unshift(task)
       end
 
-      def after_delete_task(name, task)
-        @tasks[:after_delete][name].unshift(task)
+      def after_delete_task(task)
+        @tasks[:after_delete].unshift(task)
       end
 
-      def before_create_task(name, task)
-        @tasks[:before_create][name].push(task)
+      def before_create_task(task)
+        @tasks[:before_create].push(task)
       end
 
-      def before_delete_task(name, task)
-        @tasks[:before_delete][name].push(task)
+      def before_delete_task(task)
+        @tasks[:before_delete].push(task)
       end
 
       private
@@ -402,6 +401,14 @@ module Convection
             :value => p[1].to_s
           }
         end
+      end
+
+      def hash_with_array_as_default
+        Hash.new { |hash, key| hash[key] = [] }
+      end
+
+      def reversed_hash(hash)
+        hash.reverse_each.to_h
       end
     end
   end
