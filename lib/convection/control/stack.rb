@@ -192,7 +192,10 @@ module Convection
           end)
         else
           ## Execute before create tasks
-          @tasks[:before_create].each { |task| task.call(stack) }
+          @tasks[:before_create].delete_if do |task|
+            task.call(stack)
+            task.success?
+          end
 
           ## Create
           @cf_client.create_stack(request_options.tap do |o|
@@ -205,7 +208,10 @@ module Convection
           get_status(cloud_name) # Get ID of new stack
 
           ## Execute after create tasks
-          @tasks[:after_create].each { |task| task.call(stack) }
+          @tasks[:after_create].delete_if do |task|
+            task.call(stack)
+            task.success?
+          end
         end
 
         watch(&block) if block # Block execution on stack status
@@ -215,7 +221,10 @@ module Convection
 
       def delete(&block)
         ## Execute before delete tasks
-        @tasks[:before_delete].each { |task| task.call(stack) }
+        @tasks[:before_delete].delete_if do |task|
+          task.call(stack)
+          task.success?
+        end
 
         @cf_client.delete_stack(
           :stack_name => id
@@ -227,7 +236,10 @@ module Convection
         get_status
 
         ## Execute after delete tasks
-        @tasks[:after_delete].each { |task| task.call(stack) }
+        @tasks[:after_delete].delete_if do |task|
+          task.call(stack)
+          task.success?
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
