@@ -8,7 +8,7 @@ module Convection
         # EC2 Block Device Mapping Property Type}
         class EC2BlockDeviceMapping < ResourceProperty
           property :device_name, 'DeviceName'
-          alias device device_name
+          alias_method :device, :device_name
           property :ebs, 'Ebs'
           property :no_device, 'NoDevice'
           property :virtual_name, 'VirtualName'

@@ -120,7 +120,7 @@ module Convection
           property :path, 'Path'
           property :policies, 'Policies', :type => :list
           property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
-          alias managed_policy managed_policy_arn
+          alias_method :managed_policy, :managed_policy_arn
 
           attr_accessor :trust_relationship
           attr_reader :instance_profile
