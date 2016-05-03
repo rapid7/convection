@@ -29,7 +29,19 @@ module Convection
     desc 'diff', 'Show changes that will be applied by converge'
     def diff
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.diff { |d| say_status(*d.to_thor) }
+
+      last_event = nil
+      @cloud.diff do |d|
+        if d.is_a? Model::Event
+          last_event = d
+        else
+          unless last_event.nil?
+            say_status(*last_event.to_thor)
+            last_event = nil
+          end
+          say_status(*d.to_thor)
+        end
+      end
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
