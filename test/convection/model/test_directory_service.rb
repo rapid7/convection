@@ -34,7 +34,7 @@ describe 'AWS::DirectoryService' do
 
   def simple_ad_json
     JSON.parse(simple_ad_template.to_json)
-        .fetch('Resources')
-        .fetch('SimpleActiveDirectory')
+      .fetch('Resources')
+      .fetch('SimpleActiveDirectory')
   end
 end

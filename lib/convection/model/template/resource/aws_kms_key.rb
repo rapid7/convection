@@ -29,7 +29,7 @@ module Convection
           property :description, 'Description'
           property :enabled, 'Enabled'
           property :enabled_key_rotation, 'EnabledKeyRotation'
-          alias key_rotation enabled_key_rotation
+          alias_method :key_rotation, :enabled_key_rotation
           property :key_policy, 'KeyPolicy'
         end
       end

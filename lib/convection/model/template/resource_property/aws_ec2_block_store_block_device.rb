@@ -12,9 +12,9 @@ module Convection
           property :iops, 'Iops'
           property :snapshot, 'SnapshotId'
           property :volume_size, 'VolumeSize'
-          alias size volume_size
+          alias_method :size, :volume_size
           property :volume_type, 'VolumeType'
-          alias type volume_type
+          alias_method :type, :volume_type
         end
       end
     end
