@@ -27,7 +27,8 @@ module Convection
     end
 
     desc 'diff', 'Show changes that will be applied by converge'
-    option :verbose, :type => :boolean, :aliases => :v
+    option :verbose, :type => :boolean, :aliases => '--v'
+    option :'very-verbose', :type => :boolean, :aliases => '--vv'
     def diff
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
 
@@ -35,13 +36,15 @@ module Convection
 
       @cloud.diff do |d|
         if d.is_a? Model::Event
-          if options[:verbose] && d.name == :compare
+          if options[:'very-verbose']
             say_status(*d.to_thor)
+          elsif options[:verbose]
+            say_status(*d.to_thor) if d.name == :compare
           end
           last_event = d
         elsif d.is_a? Model::Diff
-          if !options[:verbose] && !last_event.nil?
-            say_status(*last_event.to_thor)
+          if !options[:'very-verbose'] && !options[:verbose]
+            say_status(*last_event.to_thor) unless last_event.nil?
             last_event = nil
           end
           say_status(*d.to_thor)
