@@ -401,14 +401,6 @@ module Convection
           }
         end
       end
-
-      def hash_with_array_as_default
-        Hash.new { |hash, key| hash[key] = [] }
-      end
-
-      def reversed_hash(hash)
-        hash.reverse_each.to_h
-      end
     end
   end
 end
