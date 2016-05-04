@@ -56,7 +56,7 @@ class TestTasksWithEc2 < Minitest::Test
         stack.apply
 
         # then - the task should have been executed
-        assert task.availability_zones.include?('eu-central-1')
+        assert_includes task.availability_zones, 'eu-central-1'
       end
     end
   end
@@ -65,9 +65,8 @@ class TestTasksWithEc2 < Minitest::Test
     Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
       Aws::EC2::Client.stub :new, mock_ec2_client do
         # given - a stack initialized with a before_create_task
-        task = CollectAvailabilityZonesTask.new
         stack = ::Convection::Control::Stack.new('EC2 VPC Test Stack', @template) do
-          before_create_task task
+          before_create_task CollectAvailabilityZonesTask.new
         end
 
         # when - any changes to the stack are applied
