@@ -61,7 +61,7 @@ class TestTasksWithEc2 < Minitest::Test
     end
   end
 
-  def test_before_create_task_is_executed_and_deregistered
+  def test_before_create_task_is_deregistered
     Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
       Aws::EC2::Client.stub :new, mock_ec2_client do
         # given - a stack initialized with a before_create_task
