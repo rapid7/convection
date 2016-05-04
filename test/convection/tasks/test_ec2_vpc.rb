@@ -37,7 +37,8 @@ class TestTasksWithEc2 < Minitest::Test
       cf_client.expect(:create_stack, nil, any_args)
       cf_client.expect(:describe_stacks, nil)
       def cf_client.describe_stacks(*)
-        raise Aws::CloudFormation::Errors::ValidationError.new('foo', 'bar')
+        context = nil # we don't need any request context here.
+        raise Aws::CloudFormation::Errors::ValidationError.new(context, 'Stack does not exist.')
       end
 
       Aws::EC2::Client.stub :new, ec2_client do
@@ -46,7 +47,7 @@ class TestTasksWithEc2 < Minitest::Test
           before_create_task task
         end
         def stack.availability_zones
-          %w(foo bar baz)
+          %w(us-east-1 us-west-1 eu-central-1 eu-west-1)
         end
 
         refute_empty stack.tasks[:before_create]
