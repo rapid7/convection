@@ -29,32 +29,81 @@ class TestTasksWithEc2 < Minitest::Test
     end
   end
 
-  def test_before_create_tasks
-    cf_client = Minitest::Mock.new
-    ec2_client = Minitest::Mock.new
-    Aws::CloudFormation::Client.stub :new, cf_client do
-      any_args = [->(*) { true }]
-      cf_client.expect(:create_stack, nil, any_args)
-      cf_client.expect(:describe_stacks, nil)
-      def cf_client.describe_stacks(*)
-        context = nil # we don't need any request context here.
-        raise Aws::CloudFormation::Errors::ValidationError.new(context, 'Stack does not exist.')
-      end
+  def test_before_create_task_is_registered
+    Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
+      Aws::EC2::Client.stub :new, mock_ec2_client do
+        # when - a stack is initialized with a before_create_task
+        stack = ::Convection::Control::Stack.new('EC2 VPC Test Stack', @template) do
+          before_create_task CollectAvailabilityZonesTask.new
+        end
 
-      Aws::EC2::Client.stub :new, ec2_client do
+        # then - at least one task should be present
+        refute_empty stack.tasks[:before_create]
+      end
+    end
+  end
+
+  def test_before_create_task_is_executed
+    Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
+      Aws::EC2::Client.stub :new, mock_ec2_client do
+        # given - a stack initialized with a before_create_task
         task = CollectAvailabilityZonesTask.new
         stack = ::Convection::Control::Stack.new('EC2 VPC Test Stack', @template) do
           before_create_task task
         end
-        def stack.availability_zones
-          %w(us-east-1 us-west-1 eu-central-1 eu-west-1)
+
+        # when - any changes to the stack are applied
+        stack.apply
+
+        # then - the task should have been executed
+        assert task.availability_zones.include?('eu-central-1')
+      end
+    end
+  end
+
+  def test_before_create_task_is_executed_and_deregistered
+    Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
+      Aws::EC2::Client.stub :new, mock_ec2_client do
+        # given - a stack initialized with a before_create_task
+        task = CollectAvailabilityZonesTask.new
+        stack = ::Convection::Control::Stack.new('EC2 VPC Test Stack', @template) do
+          before_create_task task
         end
 
-        refute_empty stack.tasks[:before_create]
-
+        # when - any changes to the stack are applied
         stack.apply
+
+        # then - the task should have been deregistered
         assert_empty stack.tasks[:before_create]
       end
     end
+  end
+
+  private
+
+  def mock_cloudformation_client
+    cf_client = Minitest::Mock.new
+    any_args = [->(*) { true }]
+    cf_client.expect(:create_stack, nil, any_args)
+    cf_client.expect(:describe_stacks, nil)
+    def cf_client.describe_stacks(*)
+      context = nil # we don't need any request context here.
+      raise Aws::CloudFormation::Errors::ValidationError.new(context, 'Stack does not exist.')
+    end
+
+    cf_client
+  end
+
+  def mock_ec2_client
+    zones = %w(eu-central-1 eu-west-1).map do |zone|
+      mock = Minitest::Mock.new
+      mock.expect(:zone_name, zone)
+    end
+    availability_zone_description = Minitest::Mock.new
+    availability_zone_description.expect(:availability_zones, zones)
+
+    ec2_client = Minitest::Mock.new
+    ec2_client.expect(:describe_availability_zones, availability_zone_description)
+    ec2_client
   end
 end
