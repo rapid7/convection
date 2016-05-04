@@ -48,6 +48,8 @@ module Convection
             last_event = nil
           end
           say_status(*d.to_thor)
+        else
+          say_status(*d.to_thor)
         end
       end
     end
