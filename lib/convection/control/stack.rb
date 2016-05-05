@@ -275,19 +275,19 @@ module Convection
       end
 
       def after_create_task(task)
-        @tasks[:after_create].unshift(task)
+        @tasks[:after_create] << task
       end
 
       def after_delete_task(task)
-        @tasks[:after_delete].unshift(task)
+        @tasks[:after_delete] << task
       end
 
       def before_create_task(task)
-        @tasks[:before_create].push(task)
+        @tasks[:before_create] << task
       end
 
       def before_delete_task(task)
-        @tasks[:before_delete].push(task)
+        @tasks[:before_delete] << task
       end
 
       private
