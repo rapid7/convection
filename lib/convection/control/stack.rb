@@ -20,6 +20,7 @@ module Convection
       attr_reader :resources
       attr_reader :attribute_mapping_values
       attr_reader :outputs
+      attr_reader :tasks
 
       ## AWS-SDK
       attr_accessor :region
@@ -52,7 +53,7 @@ module Convection
       ## Internal status
       NOT_CREATED = 'NOT_CREATED'.freeze
 
-      def initialize(name, template, options = {})
+      def initialize(name, template, options = {}, &block)
         @name = name
         @template = template.clone(self)
         @errors = []
@@ -83,6 +84,8 @@ module Convection
         @id = nil
         @outputs = {}
         @resources = {}
+        @tasks = { after_create: [], after_delete: [], before_create: [], before_delete: [] }
+        instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
 
@@ -188,6 +191,12 @@ module Convection
             o[:stack_name] = id
           end)
         else
+          ## Execute before create tasks
+          @tasks[:before_create].delete_if do |task|
+            task.call(self)
+            task.success?
+          end
+
           ## Create
           @cf_client.create_stack(request_options.tap do |o|
             o[:stack_name] = cloud_name
@@ -197,6 +206,12 @@ module Convection
           end)
 
           get_status(cloud_name) # Get ID of new stack
+
+          ## Execute after create tasks
+          @tasks[:after_create].delete_if do |task|
+            task.call(self)
+            task.success?
+          end
         end
 
         watch(&block) if block # Block execution on stack status
@@ -205,6 +220,12 @@ module Convection
       end
 
       def delete(&block)
+        ## Execute before delete tasks
+        @tasks[:before_delete].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
+
         @cf_client.delete_stack(
           :stack_name => id
         )
@@ -213,6 +234,12 @@ module Convection
         watch(&block) if block
 
         get_status
+
+        ## Execute after delete tasks
+        @tasks[:after_delete].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -246,6 +273,22 @@ module Convection
         result = @cf_client.validate_template(:template_body => template.to_json)
         fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
+      end
+
+      def after_create_task(task)
+        @tasks[:after_create] << task
+      end
+
+      def after_delete_task(task)
+        @tasks[:after_delete] << task
+      end
+
+      def before_create_task(task)
+        @tasks[:before_create] << task
+      end
+
+      def before_delete_task(task)
+        @tasks[:before_delete] << task
       end
 
       private

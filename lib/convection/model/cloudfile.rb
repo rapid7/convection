@@ -24,12 +24,12 @@ module Convection
         @attributes.set(stack, key, value)
       end
 
-      def stack(stack_name, template, options = {})
+      def stack(stack_name, template, options = {}, &block)
         options[:region] ||= region
         options[:cloud] = name
         options[:attributes] = attributes
 
-        @stacks[stack_name] = Control::Stack.new(stack_name, template, options)
+        @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
         @deck << @stacks[stack_name]
       end
     end
