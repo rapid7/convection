@@ -27,9 +27,31 @@ module Convection
     end
 
     desc 'diff', 'Show changes that will be applied by converge'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     def diff
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.diff { |d| say_status(*d.to_thor) }
+
+      last_event = nil
+
+      @cloud.diff do |d|
+        if d.is_a? Model::Event
+          if options[:'very-verbose']
+            say_status(*d.to_thor)
+          elsif options[:verbose]
+            say_status(*d.to_thor) if d.name == :compare
+          end
+          last_event = d
+        elsif d.is_a? Model::Diff
+          if !options[:'very-verbose'] && !options[:verbose]
+            say_status(*last_event.to_thor) unless last_event.nil?
+            last_event = nil
+          end
+          say_status(*d.to_thor)
+        else
+          say_status(*d.to_thor)
+        end
+      end
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
