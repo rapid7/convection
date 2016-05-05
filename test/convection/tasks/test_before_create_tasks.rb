@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TestTasksWithEc2 < Minitest::Test
+class TestBeforeCreateTasks < Minitest::Test
   class CollectAvailabilityZonesTask
     attr_writer :availability_zones
 
