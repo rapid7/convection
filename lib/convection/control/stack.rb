@@ -205,15 +205,15 @@ module Convection
           end)
 
           get_status(cloud_name) # Get ID of new stack
-
-          ## Execute after create tasks
-          @tasks[:after_create].delete_if do |task|
-            task.call(self)
-            task.success?
-          end
         end
 
         watch(&block) if block # Block execution on stack status
+
+        ## Execute after create tasks
+        @tasks[:after_create].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
