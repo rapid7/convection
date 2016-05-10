@@ -61,7 +61,7 @@ module Convection
             ## Allocate the next available subnet
             @subnet_allocated += 1
             subnets = network.subnet(:Bits => @subnet_length,
-                                      :NumSubnets => @subnet_allocated)
+                                     :NumSubnets => @subnet_allocated)
             s.network(subnets[@subnet_allocated - 1])
 
             s.instance_exec(&block) if block
