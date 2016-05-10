@@ -48,7 +48,6 @@ module Convection
           ## Add a canned trust policy for EMR
           def trust_emr(&block)
             trust_service('elasticmapreduce', 'trust-emr', &block)
-            trust_service('', '', &block)
           end
 
           ## Add a canned trust policy for Cloudtrail
