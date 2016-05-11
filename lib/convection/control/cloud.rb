@@ -49,7 +49,9 @@ module Convection
           sleep rand @cloudfile.splay || 2
 
           difference = stack.diff
-          next block.call(Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)) if difference.empty?
+          if difference.empty?
+            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+          end
 
           difference.each { |diff| block.call(diff) }
         end
