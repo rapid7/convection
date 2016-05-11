@@ -46,7 +46,6 @@ module Convection
       def diff(to_stack, &block)
         @cloudfile.deck.each do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
-          sleep rand @cloudfile.splay || 2
 
           difference = stack.diff
           if difference.empty?
@@ -56,6 +55,7 @@ module Convection
           difference.each { |diff| block.call(diff) }
 
           break if !to_stack.nil? && stack.name == to_stack
+          sleep rand @cloudfile.splay || 2
         end
       end
     end
