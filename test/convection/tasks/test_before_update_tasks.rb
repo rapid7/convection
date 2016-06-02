@@ -19,12 +19,13 @@ class TestBeforeUpdateTasks < Minitest::Test
     Aws::CloudFormation::Client.stub :new, mock_cloudformation_client do
       Aws::EC2::Client.stub :new, mock_ec2_client do
         # when - a stack is initialized with a before_update_task
+        task = CollectAvailabilityZonesTask.new
         stack = ::Convection::Control::Stack.new('EC2 VPC Test Stack', @template) do
-          before_update_task CollectAvailabilityZonesTask.new
+          before_update_task task
         end
 
-        # then - at least one task should be present
-        refute_empty stack.tasks[:before_update]
+        # then - the given stack should be present
+        assert_includes stack.tasks[:before_update], task
       end
     end
   end
