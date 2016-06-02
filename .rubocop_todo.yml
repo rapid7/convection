@@ -40,6 +40,8 @@ Metrics/LineLength:
 # Offense count: 32
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
+  Exclude:
+    - 'lib/convection/control/stack.rb'
   Max: 37
 
 # Offense count: 5
