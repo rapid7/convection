@@ -178,13 +178,6 @@ module Convection
           o[:capabilities] = capabilities
         end
 
-        ## Execute before create tasks
-        before_task_type = exist? ? :before_update : :before_create
-        @tasks[before_task_type].delete_if do |task|
-          task.call(self)
-          task.success?
-        end
-
         # Get the state of existence before creation
         existing_stack = exist?
         if existing_stack
@@ -194,11 +187,23 @@ module Convection
             return
           end
 
+          ## Execute before update tasks
+          @tasks[:before_update].delete_if do |task|
+            task.call(self)
+            task.success?
+          end
+
           ## Update
           @cf_client.update_stack(request_options.tap do |o|
             o[:stack_name] = id
           end)
         else
+          ## Execute before create tasks
+          @tasks[:before_create].delete_if do |task|
+            task.call(self)
+            task.success?
+          end
+
           ## Create
           @cf_client.create_stack(request_options.tap do |o|
             o[:stack_name] = cloud_name
