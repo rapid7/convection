@@ -6,6 +6,11 @@ module Convection
       module Resource
         ## Role DSL
         module IAMRole
+          def assume_role_policy(policy_name, &block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
+            trust_relationship.instance_exec(&block) if block
+          end
+
           def policy(policy_name, &block)
             add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
