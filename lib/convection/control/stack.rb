@@ -84,7 +84,7 @@ module Convection
         @id = nil
         @outputs = {}
         @resources = {}
-        @tasks = { after_create: [], after_delete: [], before_create: [], before_delete: [] }
+        @tasks = { after_create: [], after_delete: [], after_update: [], before_create: [], before_delete: [], before_update: [] }
         instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
@@ -178,11 +178,19 @@ module Convection
           o[:capabilities] = capabilities
         end
 
-        if exist?
+        # Get the state of existence before creation
+        existing_stack = exist?
+        if existing_stack
           if diff.empty? ## No Changes. Just get resources and move on
             block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
             get_status
             return
+          end
+
+          ## Execute before update tasks
+          @tasks[:before_update].delete_if do |task|
+            task.call(self)
+            task.success?
           end
 
           ## Update
@@ -210,7 +218,8 @@ module Convection
         watch(&block) if block # Block execution on stack status
 
         ## Execute after create tasks
-        @tasks[:after_create].delete_if do |task|
+        after_task_type = existing_stack ? :after_update : :after_create
+        @tasks[after_task_type].delete_if do |task|
           task.call(self)
           task.success?
         end
@@ -282,12 +291,20 @@ module Convection
         @tasks[:after_delete] << task
       end
 
+      def after_update_task(task)
+        @tasks[:after_update] << task
+      end
+
       def before_create_task(task)
         @tasks[:before_create] << task
       end
 
       def before_delete_task(task)
         @tasks[:before_delete] << task
+      end
+
+      def before_update_task(task)
+        @tasks[:before_update] << task
       end
 
       private

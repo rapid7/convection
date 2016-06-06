@@ -41,6 +41,7 @@ module TestHelper
     cf_client.expect(:create_stack, nil, any_args)
     cf_client.expect(:delete_stack, nil, any_args)
     cf_client.expect(:describe_stacks, nil)
+    cf_client.expect(:update_stack, nil, any_args)
     def cf_client.describe_stacks(*)
       context = nil # we don't need any request context here.
       raise Aws::CloudFormation::Errors::ValidationError.new(context, 'Stack does not exist.')
@@ -60,5 +61,12 @@ module TestHelper
     ec2_client = Minitest::Mock.new
     ec2_client.expect(:describe_availability_zones, availability_zone_description)
     ec2_client
+  end
+
+  # Stub both exist/exist? since aliases are not overridden when stubbing in minitest.
+  def stub_existence(stack, exists, &block)
+    stack.stub(:exist, exists) do
+      stack.stub(:exist?, exists, &block)
+    end
   end
 end
