@@ -8,7 +8,6 @@ module Convection
         # AWS::EC2::VPNGatewayRoutePropagation
         ##
         class EC2VPNGatewayRoutePropagation < Resource
-
           type 'AWS::EC2::VPNGatewayRoutePropagation'
           property :route_table_ids, 'RouteTableIds'
           property :vpn_gateway_id, 'VpnGatewayId'
