@@ -11,7 +11,7 @@ module Convection
           include Model::Mixin::Taggable
 
           type 'AWS::EC2::VPNGateway'
-          property :conn_type, 'Type'
+          property :connection_type, 'Type'
 
           def render(*args)
             super.tap do |resource|

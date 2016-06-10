@@ -11,7 +11,7 @@ module Convection
           include Model::Mixin::Taggable
 
           type 'AWS::EC2::VPNConnection'
-          property :conn_type, 'Type'
+          property :connection_type, 'Type'
           property :static_routes_only, 'StaticRoutesOnly'
           property :customer_gateway_id, 'CustomerGatewayId'
           property :vpn_gateway_id, 'VpnGatewayId'

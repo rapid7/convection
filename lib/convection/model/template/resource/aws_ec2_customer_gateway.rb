@@ -11,7 +11,7 @@ module Convection
           include Model::Mixin::Taggable
 
           type 'AWS::EC2::CustomerGateway'
-          property :conn_type, 'Type'
+          property :connection_type, 'Type'
           property :bgp_asn, 'BgpAsn'
           property :ip_address, 'IpAddress'
 
