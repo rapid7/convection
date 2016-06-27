@@ -43,6 +43,19 @@ module Convection
             properties['LifecycleConfiguration'].set(config)
           end
 
+          def logging_configuration(opts = {}, &block)
+            config = ResourceProperty::S3LoggingConfiguration.new(self)
+
+            # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
+            warn 'DEPRECATED: Defining logging_configuration with an options Hash is deprecated. Please use a configuration block instead.'
+            ResourceProperty::S3LoggingConfiguration.properties.each do |_name, property|
+              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+            end
+
+            config.instance_exec(&block) if block
+            properties['LoggingConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
