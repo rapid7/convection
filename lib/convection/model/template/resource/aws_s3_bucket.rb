@@ -48,6 +48,12 @@ module Convection
             properties['NotificationConfiguration'].set(config)
           end
 
+          def replication_configuration(&block)
+            config = ResourceProperty::S3ReplicationConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['ReplicationConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
