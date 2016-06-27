@@ -30,6 +30,19 @@ module Convection
             cors_configuration(*args)
           end
 
+          def lifecycle_configuration(opts = {}, &block)
+            config = ResourceProperty::S3LifecycleConfiguration.new(self)
+
+            # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
+            warn 'DEPRECATED: Defining lifecycle_configuration with an options Hash is deprecated. Please use a configuration block instead.'
+            ResourceProperty::S3LifecycleConfiguration.properties.each do |_name, property|
+              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+            end
+
+            config.instance_exec(&block) if block
+            properties['LifecycleConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
