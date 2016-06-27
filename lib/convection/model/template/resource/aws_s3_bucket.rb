@@ -30,6 +30,12 @@ module Convection
             cors_configuration(*args)
           end
 
+          def lifecycle_configuration(&block)
+            config = ResourceProperty::S3LifecycleConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['LifecycleConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
