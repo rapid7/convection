@@ -95,6 +95,19 @@ module Convection
             properties['VersioningConfiguration'].set(config)
           end
 
+          def website_configuration(&block)
+            config = ResourceProperty::S3WebsiteConfiguration.new(self)
+
+            # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
+            warn 'DEPRECATED: Defining website_configuration with an options Hash is deprecated. Please use a configuration block instead.'
+            ResourceProperty::S3WebsiteConfiguration.properties.each do |_name, property|
+              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+            end
+
+            config.instance_exec(&block) if block
+            properties['WebsiteConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
