@@ -13,7 +13,7 @@ module Convection
           type 'AWS::S3::Bucket'
           property :bucket_name, 'BucketName'
           property :access_control, 'AccessControl'
-          property :cors_configurationm, 'CorsConfiguration'
+          property :cors_configuration, 'CorsConfiguration'
           property :lifecycle_configuration, 'LifecycleConfiguration'
           property :logging_configuration, 'LoggingConfiguration'
           property :notification_configuration, 'NotificationConfiguration'
