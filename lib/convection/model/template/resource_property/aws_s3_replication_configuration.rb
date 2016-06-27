@@ -8,7 +8,7 @@ module Convection
         # Amazon S3 Replication Configuration}
         class S3ReplicationConfiguration < ResourceProperty
           property :role, 'Role'
-          property :rules, 'Rules'
+          property :rules, 'Rules', :type => :list
 
           def rule(&block)
             rule = ResourceProperty::S3ReplicationConfigurationRule.new(self)

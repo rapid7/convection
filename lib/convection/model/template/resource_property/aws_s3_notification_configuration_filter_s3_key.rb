@@ -12,7 +12,7 @@ module Convection
           def rule(&block)
             rule = ResourceProperty::S3NotificationConfigurationFilterS3KeyRule.new(self)
             rule.instance_exec(&block) if block
-            properties['Rules'] << rule
+            rules << rule
           end
         end
       end
