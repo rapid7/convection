@@ -15,7 +15,6 @@ module Convection
             rule.instance_exec(&block) if block
             rules << rule
           end
-          alias_method :replication_rule, :rule
         end
       end
     end

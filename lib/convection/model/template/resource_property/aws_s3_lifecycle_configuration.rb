@@ -14,7 +14,6 @@ module Convection
             rule.instance_exec(&block) if block
             rules << rule
           end
-          alias_method :lifecycle_rule, :rule
         end
       end
     end
