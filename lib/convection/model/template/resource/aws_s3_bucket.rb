@@ -60,6 +60,12 @@ module Convection
             properties['VersioningConfiguration'].set(config)
           end
 
+          def website_configuration(&block)
+            config = ResourceProperty::S3WebsiteConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['WebsiteConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
