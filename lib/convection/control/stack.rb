@@ -89,6 +89,15 @@ module Convection
         @current_template = {}
         @last_event_seen = nil
 
+        # First pass evaluation of stack
+        # This is important because it:
+        #   * Catches syntax errors before starting a converge
+        #   * Builds a list of all resources that allows stacks early in
+        #     the dependency tree to know about later stacks.  Some
+        #     clouds use this, for example, to create security groups early
+        #     in the dependency tree to avoid the chicken-and-egg problem.
+        @template.execute
+
         ## Get initial state
         get_status(cloud_name)
         return unless exist?
@@ -379,7 +388,6 @@ module Convection
       ## TODO No. This will become unnecessary as current_state is fleshed out
       def resource_attributes
         @attribute_mapping_values = {}
-        @template.execute ## Populate mappings fro the template
 
         @resources.each do |logical, resource|
           next unless @template.attribute_mappings.include?(logical)

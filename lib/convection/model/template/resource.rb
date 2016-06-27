@@ -285,6 +285,7 @@ module Convection
         ##
         attribute :type
         attr_reader :name
+        attr_reader :parent
         attr_reader :template
         attr_reader :properties
         attr_reader :resource_attributes
@@ -293,6 +294,7 @@ module Convection
 
         def initialize(name, parent)
           @name = name
+          @parent = parent
           @template = parent.template
           @type = self.class.type
           @depends_on = []
