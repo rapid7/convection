@@ -19,6 +19,11 @@ module Convection
           property :notification_configuration, 'NotificationConfiguration'
           property :versioning_configuration, 'VersioningConfiguration'
 
+          def cors_configurationm(*args)
+            warn 'DEPRECATED: "cors_configurationm" is deprecated. Please use "cors_configuration" instead. https://github.com/rapid7/convection/pull/135'
+            cors_configuration(*args)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
