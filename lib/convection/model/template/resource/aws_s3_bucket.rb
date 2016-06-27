@@ -19,6 +19,12 @@ module Convection
           property :notification_configuration, 'NotificationConfiguration'
           property :versioning_configuration, 'VersioningConfiguration'
 
+          def cors_configuration(&block)
+            config = ResourceProperty::S3CorsConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['CorsConfiguration'].set(config)
+          end
+
           def cors_configurationm(*args)
             warn 'DEPRECATED: "cors_configurationm" is deprecated. Please use "cors_configuration" instead. https://github.com/rapid7/convection/pull/135'
             cors_configuration(*args)
