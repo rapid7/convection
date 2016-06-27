@@ -36,6 +36,12 @@ module Convection
             properties['LifecycleConfiguration'].set(config)
           end
 
+          def logging_configuration(&block)
+            config = ResourceProperty::S3LoggingConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['LoggingConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
