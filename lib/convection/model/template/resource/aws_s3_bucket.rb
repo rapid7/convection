@@ -54,6 +54,12 @@ module Convection
             properties['ReplicationConfiguration'].set(config)
           end
 
+          def versioning_configuration(&block)
+            config = ResourceProperty::S3VersioningConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['VersioningConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
