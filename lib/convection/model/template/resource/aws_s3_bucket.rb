@@ -42,6 +42,12 @@ module Convection
             properties['LoggingConfiguration'].set(config)
           end
 
+          def notification_configuration(&block)
+            config = ResourceProperty::S3NotificationConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['NotificationConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
