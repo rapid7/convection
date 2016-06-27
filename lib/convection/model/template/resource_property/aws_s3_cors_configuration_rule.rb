@@ -6,7 +6,7 @@ module Convection
       class ResourceProperty
         # Represents an {http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-cors-corsrule.html
         # Amazon S3 Cors Configuration Rule}
-        class S3CorsConfiguration < ResourceProperty
+        class S3CorsConfigurationRule < ResourceProperty
           property :allowed_headers, 'AllowedHeaders', :type => :list
           property :allowed_methods, 'AllowedMethods', :type => :list
           property :allowed_origins, 'AllowedOrigins', :type => :list
