@@ -24,12 +24,12 @@ Once evaluated by Convection stacks will be represented as CloudFormation JSON.
 
 ### Defining a task to execute on a stack
 A stack has the following life-cycle phases:
-* After creation (`after_create`)
-* After deletion (`after_delete`)
-* After being updated (`after_update`)
-* Before creation (`before_create`)
-* Before deletion (`before_delete`)
-* Before being updated (`before_update`)
+1. Before creation (`before_create`)
+2. After creation (`after_create`)
+3. Before being updated (`before_update`)
+4. After being updated (`after_update`)
+5. Before deletion (`before_delete`)
+6. After deletion (`after_delete`)
 
 To define tasks on a stack (using the `VPC` stack defined above for example):
 
