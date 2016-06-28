@@ -24,6 +24,7 @@ Once evaluated by Convection stacks will be represented as CloudFormation JSON.
 
 ### Defining a task to execute on a stack
 A stack has the following life-cycle phases:
+
 1. Before creation (`before_create`)
 2. After creation (`after_create`)
 3. Before being updated (`before_update`)
