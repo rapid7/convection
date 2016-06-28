@@ -37,8 +37,13 @@ To define tasks on a stack (using the `VPC` stack defined above for example):
 ```ruby
 # lookup_vpc_task.rb
 class LookupVpcTask
+  def initialize(wait_seconds)
+    @wait_seconds = wait_seconds
+  end
+
   # REQUIRED: Convection expects Tasks to respond to #call.
   def call(stack)
+    sleep wait_seconds # Do not actually sleep like this. This is just for an example.
     id = stack.get('vpc', 'id')
     @result = vpc_found?(id)
   end
