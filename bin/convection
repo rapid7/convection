@@ -15,9 +15,11 @@ module Convection
     end
 
     desc 'converge STACK', 'Converge your cloud'
+    option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
+    option :stack_list, :type => :array, :desc => 'A ordered comma separated list of stacks to converge'
     def converge(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(stack) do |event, errors|
+      @cloud.converge(options) do |event, errors|
         say_status(*event.to_thor)
         errors.each do |error|
           say "* #{ error.message }"

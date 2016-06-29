@@ -32,6 +32,10 @@ module Convection
         @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
         @deck << @stacks[stack_name]
       end
+
+      def stackgroup(group_name, group_list)
+        @stackgroup[group_name] = group_list
+      end
     end
   end
 
@@ -45,11 +49,13 @@ module Convection
       attr_reader :attributes
       attr_reader :stacks
       attr_reader :deck
+      attr_reader :stackgroups
 
       def initialize(cloudfile)
         @attributes = Model::Attributes.new
         @stacks = {}
         @deck = []
+        @stackgroup = {}
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
       end
