@@ -9,9 +9,9 @@ RSpec.shared_context 'with a mock EC2 client' do
 
   let(:ec2_client) do
     client = double(:ec2_client, describe_availability_zones: ec2_availability_zone_description)
-    client.stub(:describe_stacks) do
+    allow(client).to receive(:describe_stacks) {
       fail Aws::CloudFormation::Errors::ValidationError.new(context, 'Stack does not exist.')
-    end
+    }
 
     client
   end

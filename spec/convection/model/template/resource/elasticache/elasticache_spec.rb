@@ -96,8 +96,8 @@ class Convection::Model::Template::Resource
       it 'params has value my_parm_value' do
         expect(params.value?('my_parm_value')).to eq(true)
       end
-
     end
+
     private
 
     def template_json
