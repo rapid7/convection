@@ -30,6 +30,42 @@ module Convection
             cors_configuration(*args)
           end
 
+          def lifecycle_configuration(&block)
+            config = ResourceProperty::S3LifecycleConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['LifecycleConfiguration'].set(config)
+          end
+
+          def logging_configuration(&block)
+            config = ResourceProperty::S3LoggingConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['LoggingConfiguration'].set(config)
+          end
+
+          def notification_configuration(&block)
+            config = ResourceProperty::S3NotificationConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['NotificationConfiguration'].set(config)
+          end
+
+          def replication_configuration(&block)
+            config = ResourceProperty::S3ReplicationConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['ReplicationConfiguration'].set(config)
+          end
+
+          def versioning_configuration(&block)
+            config = ResourceProperty::S3VersioningConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['VersioningConfiguration'].set(config)
+          end
+
+          def website_configuration(&block)
+            config = ResourceProperty::S3WebsiteConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['WebsiteConfiguration'].set(config)
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
