@@ -268,6 +268,7 @@ module Convection
           alias_method :push, :set
 
           def render
+            return default if value.nil? || value.empty?
             value.map do |val|
               next val.reference if val.is_a?(Resource)
               val.respond_to?(:render) ? val.render : val
@@ -284,17 +285,23 @@ module Convection
         ##
         attribute :type
         attr_reader :name
+        attr_reader :parent
         attr_reader :template
         attr_reader :properties
+        attr_reader :resource_attributes
         attr_reader :exist
         alias_method :exist?, :exist
 
         def initialize(name, parent)
           @name = name
+          @parent = parent
           @template = parent.template
           @type = self.class.type
           @depends_on = []
+          @deletion_policy = nil
           @exist = false
+
+          @resource_attributes = []
 
           ## Instantiate properties
           @properties = Model::Collection.new
@@ -315,6 +322,14 @@ module Convection
         def depends_on(resource)
           @depends_on << (resource.is_a?(Resource) ? resource.name : resource)
         end
+
+        # rubocop:disable Style/TrivialAccessors
+        #   We don't want to use an accessor (e.g. deletion_policy=) because
+        #   this is a DSL method
+        def deletion_policy(deletion_policy)
+          @deletion_policy = deletion_policy
+        end
+        # rubocop:enable Style/TrivialAccessors
 
         def reference
           {
@@ -343,7 +358,9 @@ module Convection
             'Type' => type,
             'Properties' => properties.map(true, &:render)
           }.tap do |resource|
+            resource_attributes.map { |a| a.render resource }
             resource['DependsOn'] = @depends_on unless @depends_on.empty?
+            resource['DeletionPolicy'] = @deletion_policy unless @deletion_policy.nil?
             render_condition(resource)
           end
         end

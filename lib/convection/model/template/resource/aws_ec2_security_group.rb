@@ -19,11 +19,12 @@ module Convection
             security_group_ingress << rule
           end
 
-          def egress_rule(protocol = nil, port = nil, &block)
+          def egress_rule(protocol = nil, port = nil, destination = nil, &block)
             rule = Model::Template::Resource::EC2SecurityGroup::Rule.new("#{ name }EgressGroupRule", @template)
             rule.protocol = protocol unless protocol.nil?
             rule.from = port unless port.nil?
             rule.to = port unless port.nil?
+            rule.destination = destination unless destination.nil?
 
             rule.instance_exec(&block) if block
             security_group_egress << rule
@@ -55,17 +56,19 @@ module Convection
             attribute :protocol
 
             attribute :source
+            attribute :destination
             attribute :destination_group
             attribute :source_group
             attribute :source_group_owner
 
             def render
               {
-                'IpProtocol' => Mixin::Protocol.lookup(protocol),
-                'FromPort' => from,
-                'ToPort' => to
+                'IpProtocol' => Mixin::Protocol.lookup(protocol)
               }.tap do |rule|
+                rule['FromPort'] = from unless from.nil?
+                rule['ToPort'] = to unless to.nil?
                 rule['CidrIp'] = source unless source.nil?
+                rule['CidrIp'] = destination unless destination.nil?
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
                 rule['SourceSecurityGroupId'] = source_group unless source_group.nil?
                 rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group_owner.nil?

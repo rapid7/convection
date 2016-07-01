@@ -6,6 +6,11 @@ module Convection
       module Resource
         ## Role DSL
         module IAMRole
+          def assume_role_policy(policy_name, &block)
+            @trust_relationship = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
+            trust_relationship.instance_exec(&block) if block
+          end
+
           def policy(policy_name, &block)
             add_policy = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             add_policy.instance_exec(&block) if block
@@ -24,40 +29,35 @@ module Convection
             @template.resources[profile.name] = profile
           end
 
-          ## Add a canned trust policy for EC2 instances
-          def trust_ec2_instances(&block)
-            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-ec2-instances', :template => @template)
+          ## Add a canned trust policy for any AWS service
+          def trust_service(name, policy_name = nil, &block)
+            policy_name ||= "trust-#{name}-service"
+            @trust_relationship = Model::Mixin::Policy.new(:name => policy_name, :template => @template)
             trust_relationship.allow do
               action 'sts:AssumeRole'
-              principal :Service => 'ec2.amazonaws.com'
+              principal :Service => "#{name}.amazonaws.com"
             end
             trust_relationship.instance_exec(&block) if block
-            trust_relationship
+          end
+
+          ## Add a canned trust policy for EC2 instances
+          def trust_ec2_instances(&block)
+            trust_service('ec2', 'trust-ec2-instances', &block)
           end
 
           ## Add a canned trust policy for Flow Logs
           def trust_flow_logs(&block)
-            @trust_relationship = Model::Mixin::Policy.new(:name => 'trust-flow-logs', :template => @template)
-            trust_relationship.allow do
-              action 'sts:AssumeRole'
-              principal :Service => 'vpc-flow-logs.amazonaws.com'
-            end
-            trust_relationship.instance_exec(&block) if block
-            trust_relationship
+            trust_service('vpc-flow-logs', 'trust-flow-logs', &block)
+          end
+
+          ## Add a canned trust policy for EMR
+          def trust_emr(&block)
+            trust_service('elasticmapreduce', 'trust-emr', &block)
           end
 
           ## Add a canned trust policy for Cloudtrail
           def trust_cloudtrail(&block)
-            @trust_relationship =
-              Model::Mixin::Policy.new(:name => 'trust-cloudtrail-instances', :template => @template)
-
-            trust_relationship.allow do
-              action 'sts:AssumeRole'
-              principal :Service => 'cloudtrail.amazonaws.com'
-            end
-
-            trust_relationship.instance_exec(&block) if block
-            trust_relationship
+            trust_service('cloudtrail', 'trust-cloudtrail-instances', &block)
           end
 
           ## Add a policy to allow instance to self-terminate
@@ -98,6 +98,8 @@ module Convection
           type 'AWS::IAM::Role'
           property :path, 'Path'
           property :policies, 'Policies', :type => :list
+          property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
+          alias managed_policy managed_policy_arn
 
           attr_accessor :trust_relationship
           attr_reader :instance_profile

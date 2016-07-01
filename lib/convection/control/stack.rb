@@ -20,6 +20,7 @@ module Convection
       attr_reader :resources
       attr_reader :attribute_mapping_values
       attr_reader :outputs
+      attr_reader :tasks
 
       ## AWS-SDK
       attr_accessor :region
@@ -52,7 +53,7 @@ module Convection
       ## Internal status
       NOT_CREATED = 'NOT_CREATED'.freeze
 
-      def initialize(name, template, options = {})
+      def initialize(name, template, options = {}, &block)
         @name = name
         @template = template.clone(self)
         @errors = []
@@ -83,8 +84,19 @@ module Convection
         @id = nil
         @outputs = {}
         @resources = {}
+        @tasks = { after_create: [], after_delete: [], after_update: [], before_create: [], before_delete: [], before_update: [] }
+        instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
+
+        # First pass evaluation of stack
+        # This is important because it:
+        #   * Catches syntax errors before starting a converge
+        #   * Builds a list of all resources that allows stacks early in
+        #     the dependency tree to know about later stacks.  Some
+        #     clouds use this, for example, to create security groups early
+        #     in the dependency tree to avoid the chicken-and-egg problem.
+        @template.execute
 
         ## Get initial state
         get_status(cloud_name)
@@ -131,8 +143,7 @@ module Convection
         [CREATE_IN_PROGRESS, ROLLBACK_IN_PROGRESS, DELETE_IN_PROGRESS,
          UPDATE_IN_PROGRESS, UPDATE_COMPLETE_CLEANUP_IN_PROGRESS,
          UPDATE_ROLLBACK_IN_PROGRESS,
-         UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS
-        ].include?(status)
+         UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS].include?(status)
       end
 
       def complete?
@@ -176,11 +187,19 @@ module Convection
           o[:capabilities] = capabilities
         end
 
-        if exist?
+        # Get the state of existence before creation
+        existing_stack = exist?
+        if existing_stack
           if diff.empty? ## No Changes. Just get resources and move on
             block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
             get_status
             return
+          end
+
+          ## Execute before update tasks
+          @tasks[:before_update].delete_if do |task|
+            task.call(self)
+            task.success?
           end
 
           ## Update
@@ -188,6 +207,12 @@ module Convection
             o[:stack_name] = id
           end)
         else
+          ## Execute before create tasks
+          @tasks[:before_create].delete_if do |task|
+            task.call(self)
+            task.success?
+          end
+
           ## Create
           @cf_client.create_stack(request_options.tap do |o|
             o[:stack_name] = cloud_name
@@ -200,11 +225,24 @@ module Convection
         end
 
         watch(&block) if block # Block execution on stack status
+
+        ## Execute after create tasks
+        after_task_type = existing_stack ? :after_update : :after_create
+        @tasks[after_task_type].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
 
       def delete(&block)
+        ## Execute before delete tasks
+        @tasks[:before_delete].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
+
         @cf_client.delete_stack(
           :stack_name => id
         )
@@ -213,6 +251,12 @@ module Convection
         watch(&block) if block
 
         get_status
+
+        ## Execute after delete tasks
+        @tasks[:after_delete].delete_if do |task|
+          task.call(self)
+          task.success?
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -246,6 +290,30 @@ module Convection
         result = @cf_client.validate_template(:template_body => template.to_json)
         fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
+      end
+
+      def after_create_task(task)
+        @tasks[:after_create] << task
+      end
+
+      def after_delete_task(task)
+        @tasks[:after_delete] << task
+      end
+
+      def after_update_task(task)
+        @tasks[:after_update] << task
+      end
+
+      def before_create_task(task)
+        @tasks[:before_create] << task
+      end
+
+      def before_delete_task(task)
+        @tasks[:before_delete] << task
+      end
+
+      def before_update_task(task)
+        @tasks[:before_update] << task
       end
 
       private
@@ -320,7 +388,6 @@ module Convection
       ## TODO No. This will become unnecessary as current_state is fleshed out
       def resource_attributes
         @attribute_mapping_values = {}
-        @template.execute ## Populate mappings fro the template
 
         @resources.each do |logical, resource|
           next unless @template.attribute_mappings.include?(logical)

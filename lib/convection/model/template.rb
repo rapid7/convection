@@ -248,36 +248,33 @@ module Convection
       end
 
       def validate_resources(rendered_stack)
-        validate_compare(
-          rendered_stack['Resources'].count,
-          CF_MAX_RESOURCES,
-          ExcessiveResourcesError)
+        validate_compare(rendered_stack['Resources'].count,
+                         CF_MAX_RESOURCES,
+                         ExcessiveResourcesError)
 
         largest_resource_name = resources.keys.max || ''
-        validate_compare(
-          largest_resource_name.length,
-          CF_MAX_RESOURCE_NAME,
-          ExcessiveResourceNameError)
+        validate_compare(largest_resource_name.length,
+                         CF_MAX_RESOURCE_NAME,
+                         ExcessiveResourceNameError)
       end
 
       def validate_mappings(rendered_stack)
         mappings = rendered_stack ['Mappings']
-        validate_compare(
-          mappings.count,
-          CF_MAX_MAPPINGS,
-          ExcessiveMappingsError)
+        validate_compare(mappings.count,
+                         CF_MAX_MAPPINGS,
+                         ExcessiveMappingsError)
         mappings.each do |_, value|
           validate_compare(
             value.count,
             CF_MAX_MAPPING_ATTRIBUTES,
-            ExcessiveMappingAttributesError)
+            ExcessiveMappingAttributesError
+          )
         end
 
         mappings.keys.each do |key|
-          validate_compare(
-            key.length,
-            CF_MAX_MAPPING_NAME,
-            ExcessiveMappingNameError)
+          validate_compare(key.length,
+                           CF_MAX_MAPPING_NAME,
+                           ExcessiveMappingNameError)
         end
 
         ## XXX What are we trying to do here @aburke
@@ -288,60 +285,52 @@ module Convection
         end
 
         mapping_attributes.each do |attribute|
-          validate_compare(
-            attribute.length,
-            CF_MAX_MAPPING_ATTRIBUTE_NAME,
-            ExcessiveMappingAttributeNameError)
+          validate_compare(attribute.length,
+                           CF_MAX_MAPPING_ATTRIBUTE_NAME,
+                           ExcessiveMappingAttributeNameError)
         end
       end
 
       def validate_parameters(rendered_stack)
         parameters = rendered_stack['Parameters']
-        validate_compare(
-          parameters.count,
-          CF_MAX_PARAMETERS,
-          ExcessiveParametersError)
+        validate_compare(parameters.count,
+                         CF_MAX_PARAMETERS,
+                         ExcessiveParametersError)
         largest_parameter_name = parameters.keys.max
         largest_parameter_name ||= ''
-        validate_compare(
-          largest_parameter_name.length,
-          CF_MAX_PARAMETER_NAME_CHARACTERS,
-          ExcessiveParameterNameError)
+        validate_compare(largest_parameter_name.length,
+                         CF_MAX_PARAMETER_NAME_CHARACTERS,
+                         ExcessiveParameterNameError)
         parameters.values.each do |value|
-          validate_compare(
-            JSON.generate(value).bytesize,
-            CF_MAX_PARAMETER_VALUE_BYTESIZE,
-            ExcessiveParameterBytesizeError)
+          validate_compare(JSON.generate(value).bytesize,
+                           CF_MAX_PARAMETER_VALUE_BYTESIZE,
+                           ExcessiveParameterBytesizeError)
         end
       end
 
       def validate_outputs(rendered_stack)
         outputs = rendered_stack['Outputs']
-        validate_compare(
-          outputs.count,
-          CF_MAX_OUTPUTS,
-          ExcessiveOutputsError)
+        validate_compare(outputs.count,
+                         CF_MAX_OUTPUTS,
+                         ExcessiveOutputsError)
         largest_output_name = outputs.keys.max
         largest_output_name ||= ''
-        validate_compare(
-          largest_output_name.length,
-          CF_MAX_OUTPUT_NAME_CHARACTERS,
-          ExcessiveOutputNameError)
+        validate_compare(largest_output_name.length,
+                         CF_MAX_OUTPUT_NAME_CHARACTERS,
+                         ExcessiveOutputNameError)
       end
 
       def validate_description(rendered_stack)
-        validate_compare(
-          rendered_stack['Description'].bytesize,
-          CF_MAX_DESCRIPTION_BYTESIZE,
-          ExcessiveDescriptionError)
+        validate_compare(rendered_stack['Description'].bytesize,
+                         CF_MAX_DESCRIPTION_BYTESIZE,
+                         ExcessiveDescriptionError)
       end
 
       def validate_bytesize(rendered_stack)
         json = JSON.generate(rendered_stack)
-        validate_compare(
-          json.bytesize,
-          CF_MAX_BYTESIZE,
-          ExcessiveTemplateSizeError)
+        validate_compare(json.bytesize,
+                         CF_MAX_BYTESIZE,
+                         ExcessiveTemplateSizeError)
       end
     end
   end
@@ -351,4 +340,6 @@ require_relative 'template/parameter'
 require_relative 'template/mapping'
 require_relative 'template/condition'
 require_relative 'template/resource'
+require_relative 'template/resource_property'
+require_relative 'template/resource_attribute'
 require_relative 'template/output'

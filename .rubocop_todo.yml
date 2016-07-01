@@ -23,7 +23,9 @@ Metrics/AbcSize:
 # Offense count: 3
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 267
+  Exclude:
+    - 'lib/convection/control/stack.rb'
+  Max: 304
 
 # Offense count: 6
 Metrics/CyclomaticComplexity:
@@ -38,7 +40,9 @@ Metrics/LineLength:
 # Offense count: 32
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
-  Max: 35
+  Exclude:
+    - 'lib/convection/control/stack.rb'
+  Max: 37
 
 # Offense count: 5
 Metrics/PerceivedComplexity:

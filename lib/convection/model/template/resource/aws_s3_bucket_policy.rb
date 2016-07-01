@@ -15,7 +15,7 @@ module Convection
           property :bucket, 'Bucket'
           attr_reader :document # , 'PolicyDocument'
 
-          def_delegators :@document, :allow, :id, :version, :statement
+          def_delegators :@document, :allow, :deny, :id, :version, :statement
           def_delegator :@document, :name, :policy_name
 
           def initialize(*args)
