@@ -88,6 +88,8 @@ module Convection
         instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
+        @credential_error_count = 0
+        @credential_error_max_retries = 10
 
         # First pass evaluation of stack
         # This is important because it:
@@ -106,6 +108,13 @@ module Convection
         get_template
         resource_attributes
         get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
+      rescue Aws::EC2::Errors::RequestExpired => e
+        if @credential_error_count <= @credential_error_max_retries
+          puts 'AWS Credentials have expired, please re-authenticate...'
+          sleep 5
+          @credential_error_count += 1
+          retry
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -232,6 +241,13 @@ module Convection
           task.call(self)
           task.success?
         end
+      rescue Aws::EC2::Errors::RequestExpired => e
+        if @credential_error_count <= @credential_error_max_retries
+          puts 'AWS Credentials have expired, please re-authenticate...'
+          sleep 5
+          @credential_error_count += 1
+          retry
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -257,6 +273,13 @@ module Convection
           task.call(self)
           task.success?
         end
+      rescue Aws::EC2::Errors::RequestExpired => e
+        if @credential_error_count <= @credential_error_max_retries
+          puts 'AWS Credentials have expired, please re-authenticate...'
+          sleep 5
+          @credential_error_count += 1
+          retry
+        end
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -273,6 +296,13 @@ module Convection
 
           sleep poll
           get_status
+        end
+      rescue Aws::EC2::Errors::RequestExpired => e
+        if @credential_error_count <= @credential_error_max_retries
+          puts 'AWS Credentials have expired, please re-authenticate...'
+          sleep 5
+          @credential_error_count += 1
+          retry
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
