@@ -23,9 +23,6 @@ class Convection::Model::Template::Resource
     end
 
     it 'combines all event pattern calls into a single event pattern JSON object' do
-      p template_json
-      p subject
-      p subject['EventPattern']
       expect(subject['EventPattern']).to include(
         'source' => %w(aws.ec2),
         'detail' => { 'state' => %w(running) },
