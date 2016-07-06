@@ -17,7 +17,9 @@ module Convection
           property :lifecycle_configuration, 'LifecycleConfiguration'
           property :logging_configuration, 'LoggingConfiguration'
           property :notification_configuration, 'NotificationConfiguration'
+          property :replication_configuration, 'ReplicationConfiguration'
           property :versioning_configuration, 'VersioningConfiguration'
+          property :website_configuration, 'WebsiteConfiguration'
 
           def cors_configuration(opts = {}, &block)
             config = ResourceProperty::S3CorsConfiguration.new(self)
@@ -84,17 +86,8 @@ module Convection
             properties['NotificationConfiguration'].set(config)
           end
 
-          def replication_configuration(opts = {}, &block)
+          def replication_configuration(&block)
             config = ResourceProperty::S3ReplicationConfiguration.new(self)
-
-            # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
-            warn 'DEPRECATED: Defining replication_configuration with an options Hash is deprecated. ' \
-              'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
-            ResourceProperty::S3ReplicationConfiguration.properties.each do |_name, property|
-              property_name = property.property_name
-              config.property property_name, opts[property_name] if opts.key?(property_name)
-            end
-
             config.instance_exec(&block) if block
             properties['ReplicationConfiguration'].set(config)
           end
@@ -114,17 +107,8 @@ module Convection
             properties['VersioningConfiguration'].set(config)
           end
 
-          def website_configuration(opts = {}, &block)
+          def website_configuration(&block)
             config = ResourceProperty::S3WebsiteConfiguration.new(self)
-
-            # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
-            warn 'DEPRECATED: Defining website_configuration with an options Hash is deprecated. ' \
-              'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
-            ResourceProperty::S3WebsiteConfiguration.properties.each do |_name, property|
-              property_name = property.property_name
-              config.property property_name, opts[property_name] if opts.key?(property_name)
-            end
-
             config.instance_exec(&block) if block
             properties['WebsiteConfiguration'].set(config)
           end
