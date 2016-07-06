@@ -25,7 +25,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining cors_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3CorsConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -43,7 +44,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining lifecycle_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3LifecycleConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -56,7 +58,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining logging_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3LoggingConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -69,7 +72,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining notification_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3NotificationConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -82,7 +86,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining replication_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3ReplicationConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -95,7 +100,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining versioning_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3VersioningConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -108,7 +114,8 @@ module Convection
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
             warn 'DEPRECATED: Defining website_configuration with an options Hash is deprecated. Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3WebsiteConfiguration.properties.each do |_name, property|
-              config.properties[property.property_name] = opts[property_name] if opts.key?(property_name)
+              property_name = property.property_name
+              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
