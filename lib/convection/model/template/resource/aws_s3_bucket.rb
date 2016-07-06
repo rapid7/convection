@@ -56,7 +56,7 @@ module Convection
             properties['LoggingConfiguration'].set(config)
           end
 
-          def notification_configuration(&block)
+          def notification_configuration(opts = {}, &block)
             config = ResourceProperty::S3NotificationConfiguration.new(self)
 
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
@@ -69,7 +69,7 @@ module Convection
             properties['NotificationConfiguration'].set(config)
           end
 
-          def replication_configuration(&block)
+          def replication_configuration(opts = {}, &block)
             config = ResourceProperty::S3ReplicationConfiguration.new(self)
 
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
@@ -82,7 +82,7 @@ module Convection
             properties['ReplicationConfiguration'].set(config)
           end
 
-          def versioning_configuration(&block)
+          def versioning_configuration(opts = {}, &block)
             config = ResourceProperty::S3VersioningConfiguration.new(self)
 
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
@@ -95,7 +95,7 @@ module Convection
             properties['VersioningConfiguration'].set(config)
           end
 
-          def website_configuration(&block)
+          def website_configuration(opts = {}, &block)
             config = ResourceProperty::S3WebsiteConfiguration.new(self)
 
             # TODO: Remove this deprecation and remove the opts declaration/usage hash above/below.
