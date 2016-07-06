@@ -27,7 +27,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3CorsConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -47,7 +47,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3LifecycleConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -62,7 +62,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3LoggingConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -77,7 +77,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3NotificationConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -92,7 +92,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3ReplicationConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -107,7 +107,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3VersioningConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
@@ -122,7 +122,7 @@ module Convection
               'Please use a configuration block instead. https://github.com/rapid7/convection/pull/143' if opts && opts.any?
             ResourceProperty::S3WebsiteConfiguration.properties.each do |_name, property|
               property_name = property.property_name
-              config.properties[property_name] = opts[property_name] if opts.key?(property_name)
+              config.property property_name, opts[property_name] if opts.key?(property_name)
             end
 
             config.instance_exec(&block) if block
