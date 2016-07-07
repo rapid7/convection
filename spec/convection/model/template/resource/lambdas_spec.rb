@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'pp'
+
 class Convection::Model::Template::Resource
   describe Lambda do
     let(:template) do
