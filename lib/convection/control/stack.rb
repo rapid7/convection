@@ -237,7 +237,7 @@ module Convection
       end
 
       def delete(&block)
-        ## execute before delete tasks
+        ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
           run_task(:before_delete, task, &block)
         end
