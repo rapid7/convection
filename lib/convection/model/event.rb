@@ -20,7 +20,6 @@ module Convection
                         Control::Stack::DELETE_FAILED, Control::Stack::UPDATE_FAILED,
                         Control::Stack::UPDATE_ROLLBACK_IN_PROGRESS, Control::Stack::UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS,
                         Control::Stack::UPDATE_ROLLBACK_FAILED, Control::Stack::TASK_FAILED],
-               :blue => [Control::Stack::TASK_IN_PROGRESS],
                :default => :yellow
 
       class << self
