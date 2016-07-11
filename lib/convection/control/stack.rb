@@ -208,6 +208,7 @@ module Convection
             else
               block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :error)) if block
             end
+            task.success?
           end
 
           ## Update
@@ -224,6 +225,7 @@ module Convection
             else
               block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
             end
+            task.success?
           end
 
           ## Create
@@ -249,6 +251,7 @@ module Convection
           else
             block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
           end
+          task.success?
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -264,6 +267,7 @@ module Convection
           else
             block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
           end
+          task.success?
         end
 
         @cf_client.delete_stack(
@@ -284,6 +288,7 @@ module Convection
           else
             block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
           end
+          task.success?
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
