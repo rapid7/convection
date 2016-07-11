@@ -52,7 +52,7 @@ module Convection
 
       ## Internal status
       NOT_CREATED = 'NOT_CREATED'.freeze
-      TASK_COMPLETED = 'TASK_COMPLETED'.freeze
+      TASK_COMPLETE = 'TASK_COMPLETE'.freeze
       TASK_FAILED = 'TASK_FAILED'.freeze
       TASK_IN_PROGRESS = 'TASK_IN_PROGRESS'.freeze
 
@@ -427,16 +427,16 @@ module Convection
 
       def run_task(phase, task, &block)
         phase = phase.to_s.split.join(' ')
-        block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{phase} #{task} in progress for stack #{name}.", :info)) if block
+        block.call(Model::Event.new(TASK_IN_PROGRESS, "Task (#{phase}) #{task} in progress for stack #{name}.", :info)) if block
 
         task.call(self)
         return task.success? unless block
 
         if task.success?
-          block.call(Model::Event.new(TASK_COMPLETED, "Task #{phase} #{task} successfully completed for stack #{name}.", :info))
+          block.call(Model::Event.new(TASK_COMPLETE, "Task (#{phase}) #{task} successfully completed for stack #{name}.", :info))
           true
         else
-          block.call(Model::Event.new(TASK_FAILED, "Task #{phase} #{task} failed to complete for stack #{name}.", :error))
+          block.call(Model::Event.new(TASK_FAILED, "Task (#{phase}) #{task} failed to complete for stack #{name}.", :error))
           false
         end
       end
