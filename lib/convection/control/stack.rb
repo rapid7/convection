@@ -201,14 +201,7 @@ module Convection
 
           ## Execute before update tasks
           @tasks[:before_update].delete_if do |task|
-            block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{task} in progress for stack #{name}.", :info)) if block
-            task.call(self)
-            if task.success?
-              block.call(Model::Event.new(TASK_COMPLETED, "Task #{task} successfully completed for stack #{name}.", :info)) if block
-            else
-              block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :error)) if block
-            end
-            task.success?
+            run_task(:before_update, task, &block)
           end
 
           ## Update
@@ -218,14 +211,7 @@ module Convection
         else
           ## Execute before create tasks
           @tasks[:before_create].delete_if do |task|
-            block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{task} in progress for stack #{name}.", :info)) if block
-            task.call(self)
-            if task.success?
-              block.call(Model::Event.new(TASK_COMPLETED, "Task #{task} successfully completed for stack #{name}.", :info)) if block
-            else
-              block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
-            end
-            task.success?
+            run_task(:before_create, task, &block)
           end
 
           ## Create
@@ -244,14 +230,7 @@ module Convection
         ## Execute after create tasks
         after_task_type = existing_stack ? :after_update : :after_create
         @tasks[after_task_type].delete_if do |task|
-          block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{task} in progress for stack #{name}.", :info)) if block
-          task.call(self)
-          if task.success?
-            block.call(Model::Event.new(TASK_COMPLETED, "Task #{task} successfully completed for stack #{name}.", :info)) if block
-          else
-            block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
-          end
-          task.success?
+          run_task(after_task_type, task, &block)
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -260,14 +239,7 @@ module Convection
       def delete(&block)
         ## execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
-          block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{task} in progress for stack #{name}.", :info)) if block
-          task.call(self)
-          if task.success?
-            block.call(Model::Event.new(TASK_COMPLETED, "Task #{task} successfully completed for stack #{name}.", :info)) if block
-          else
-            block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
-          end
-          task.success?
+          run_task(:before_delete, task, &block)
         end
 
         @cf_client.delete_stack(
@@ -281,14 +253,7 @@ module Convection
 
         ## Execute after delete tasks
         @tasks[:after_delete].delete_if do |task|
-          block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{task} in progress for stack #{name}.", :info)) if block
-          task.call(self)
-          if task.success?
-            block.call(Model::Event.new(TASK_COMPLETED, "Task #{task} successfully completed for stack #{name}.", :info)) if block
-          else
-            block.call(Model::Event.new(TASK_FAILED, "Task #{task} failed to complete for stack #{name}.", :info)) if block
-          end
-          task.success?
+          run_task(:after_delete, task, &block)
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -457,6 +422,22 @@ module Convection
             :key => p[0].to_s,
             :value => p[1].to_s
           }
+        end
+      end
+
+      def run_task(phase, task, &block)
+        phase = phase.to_s.split.join(' ')
+        block.call(Model::Event.new(TASK_IN_PROGRESS, "Task #{phase} #{task} in progress for stack #{name}.", :info)) if block
+
+        task.call(self)
+        return task.success? unless block
+
+        if task.success?
+          block.call(Model::Event.new(TASK_COMPLETED, "Task #{phase} #{task} successfully completed for stack #{name}.", :info))
+          true
+        else
+          block.call(Model::Event.new(TASK_FAILED, "Task #{phase} #{task} failed to complete for stack #{name}.", :error))
+          false
         end
       end
     end
