@@ -82,6 +82,15 @@ module Convection
         o.instance_exec(&block) if block
         outputs[name] = o
       end
+
+      # @param name [String] the name of the new metadata configuration to set
+      # @param value [Hash] an arbritrary JSON object to set as the
+      #   value of the new metadata configuration
+      def metadata(name = nil, value)
+        return @metadata unless name
+
+        @metadata[name] = Model::Template::Metadata.new(name, value)
+      end
     end
   end
 
@@ -180,6 +189,7 @@ module Convection
       attr_reader :conditions
       attr_reader :resources
       attr_reader :outputs
+      attr_reader :metadata
 
       def template
         self
@@ -199,6 +209,7 @@ module Convection
         @conditions = Collection.new
         @resources = Collection.new
         @outputs = Collection.new
+        @metadata = Collection.new
       end
 
       def clone(stack_)
@@ -222,7 +233,8 @@ module Convection
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
           'Resources' => resources.map(&:render),
-          'Outputs' => outputs.map(&:render)
+          'Outputs' => outputs.map(&:render),
+          'Metadata' => metadata.map(&:render)
         }
       end
 
@@ -343,3 +355,4 @@ require_relative 'template/resource'
 require_relative 'template/resource_property'
 require_relative 'template/resource_attribute'
 require_relative 'template/output'
+require_relative 'template/metadata'
