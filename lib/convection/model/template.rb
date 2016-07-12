@@ -189,7 +189,6 @@ module Convection
       attr_reader :conditions
       attr_reader :resources
       attr_reader :outputs
-      attr_reader :metadata
 
       def template
         self
