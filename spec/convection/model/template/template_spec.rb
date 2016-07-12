@@ -43,21 +43,13 @@ class Convection::Model::Template
       expect(subject['Resources']['TestInstance2']['DependsOn'][0]).to eq('TestInstance1')
     end
 
-    it 'template has key Parameters' do
-      expect(subject['Parameters']).to be_a(Hash)
-    end
+    it { is_expected.to have_key('Parameters') }
 
-    it 'template has key Mappings' do
-      expect(subject['Mappings']).to be_a(Hash)
-    end
+    it { is_expected.to have_key('Mappings') }
 
-    it 'template has key Conditions' do
-      expect(subject['Conditions']).to be_a(Hash)
-    end
+    it { is_expected.to have_key('Conditions') }
 
-    it 'template has key Resources' do
-      expect(subject['Resources']).to be_a(Hash)
-    end
+    it { is_expected.to have_key('Resources') }
 
     private
 

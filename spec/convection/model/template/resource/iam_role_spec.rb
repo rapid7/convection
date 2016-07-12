@@ -25,7 +25,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'the policy statement documents principal is bar.amazonaws.com' do
-      expect(subject['Statement'].include?('bar.amazonaws.com'))
+      expect(subject['Statement'][0]['Principal']).to have_value('bar.amazonaws.com')
     end
 
     private

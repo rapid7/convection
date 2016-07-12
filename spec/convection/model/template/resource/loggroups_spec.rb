@@ -22,7 +22,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'resource values are properly set' do
-      expect(subject['Resources'].include?('testgroup'))
+      expect(subject['Resources']).to have_key('testgroup')
     end
 
     private
