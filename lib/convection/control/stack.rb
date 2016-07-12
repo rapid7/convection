@@ -218,7 +218,8 @@ module Convection
             get_status
             return
           elsif !resource_changes? && resource_dependent_changes?
-            block.call(Model::Event.new(UPDATE_FAILED, "Stack #{ name } has no convergable changes (you must update Resources to update Conditions, Metadata, or Outputs)", :warn)) if block
+            message = "Stack #{ name } has no convergable changes (you must update Resources to update Conditions, Metadata, or Outputs)"
+            block.call(Model::Event.new(UPDATE_FAILED, message, :warn)) if block
             get_status
             return
           end
