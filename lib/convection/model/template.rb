@@ -86,7 +86,7 @@ module Convection
       # @param name [String] the name of the new metadata configuration to set
       # @param value [Hash] an arbritrary JSON object to set as the
       #   value of the new metadata configuration
-      def metadata(name = nil, value)
+      def metadata(name = nil, value = nil)
         return @metadata unless name
 
         @metadata[name] = Model::Template::Metadata.new(name, value)
