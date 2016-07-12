@@ -30,15 +30,15 @@ class Convection::Model::Template::Resource
     end
 
     it 'defines the cidr block correctly' do
-      expect(subject['DBSecurityGroupIngress'][1]['CIDRIP']).to eq('my_cidr_value')
+      expect(subject['DBSecurityGroupIngress']).to include(hash_including('CIDRIP' => 'my_cidr_value'))
     end
 
     it 'defines EC2SecurityGroupName correctly' do
-      expect(subject['DBSecurityGroupIngress'][0]['EC2SecurityGroupName']).to eq('MyEC2SecGroup')
+      expect(subject['DBSecurityGroupIngress']).to include(hash_including('EC2SecurityGroupName' => 'MyEC2SecGroup'))
     end
 
     it 'defines EC2SecurityGroupOwnerId correctly' do
-      expect(subject['DBSecurityGroupIngress'][0]['EC2SecurityGroupOwnerId']).to eq('123456789012')
+      expect(subject['DBSecurityGroupIngress']).to include(hash_including('EC2SecurityGroupOwnerId' => '123456789012'))
     end
 
     private
