@@ -4,7 +4,6 @@ AllCops:
   Include:
     - lib/**/*
     - bin/**/*
-    - test/**/*
     - Gemfile
     - Rakefile
     - Thorfile

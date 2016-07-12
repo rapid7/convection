@@ -70,13 +70,12 @@ Style/Alias:
 Style/ClassAndModuleChildren:
   Exclude:
     - 'lib/convection/model/template.rb'
-    - 'test/test_helper.rb'
+    - 'spec/**/*'
 
 # Offense count: 4
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
-    - 'test/**/*'
     - 'lib/convection/model/attributes.rb'
     - 'lib/convection/model/mixin/colorize.rb'
     - 'lib/convection/model/template/condition.rb'
