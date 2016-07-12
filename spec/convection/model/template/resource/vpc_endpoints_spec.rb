@@ -38,8 +38,8 @@ class Convection::Model::Template::Resource
       expect(subject['ServiceName']).to be_a(Hash)
     end
 
-    #"ServiceName"=>
-    #{"Fn::Join"=>[".", ["com.amazonaws", {"Ref"=>"AWS::Region"}, "s3"]]},
+    # "ServiceName"=>
+    #   {"Fn::Join"=>[".", ["com.amazonaws", {"Ref"=>"AWS::Region"}, "s3"]]},
     it 'ServiceName Fn::Join is a array' do
       expect(subject['ServiceName']['Fn::Join']).to be_a(Array)
     end

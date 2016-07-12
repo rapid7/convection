@@ -55,7 +55,7 @@ class Convection::Model::Template::ResourceAttribute
       expect(subject['UpdatePolicy']['AutoScalingRollingUpdate']['MaxBatchSize']).to eq(2)
     end
 
-    #TODO add tests for TestLaunchConfig and MyEC2SecGroup
+    # TODO: add tests for TestLaunchConfig and MyEC2SecGroup
 
     private
 

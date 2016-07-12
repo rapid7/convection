@@ -11,7 +11,6 @@ class Convection::Model::Template::Resource
           ec2_security_group 'MyEC2SecGroup', '123456789012'
           cidr_ip 'my_cidr_value'
         end
-
       end
     end
 

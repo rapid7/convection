@@ -65,7 +65,7 @@ class Convection::Model::Template
         Convection.template do
           description 'Validations Test Template - Too Many Parameters'
 
-          (CF_MAX_PARAMETERS + 1).times do |i| 
+          (CF_MAX_PARAMETERS + 1).times do |i|
             parameter "Parameter#{i}" do
               type 'String'
               description 'Example Parameter'

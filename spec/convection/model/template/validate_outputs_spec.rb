@@ -44,7 +44,7 @@ class Convection::Model::Template
         Convection.template do
           description 'Validations Test Template - Too Many Outputs'
 
-          (CF_MAX_OUTPUTS + 1).times do |i| 
+          (CF_MAX_OUTPUTS + 1).times do |i|
             output "TestOutput#{i}" do
               description 'An Important Attribute'
               value get_att('Resource', 'Attribute')
