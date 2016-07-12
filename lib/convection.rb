@@ -7,8 +7,8 @@ module Convection
       Model::Template.new(*args, &block)
     end
 
-    def stack(*args)
-      Control::Stack.new(*args)
+    def stack(*args, &block)
+      Control::Stack.new(*args, &block)
     end
   end
 end
