@@ -1,6 +1,9 @@
 module Convection
   module Model
     class Template
+      ##
+      # Metadata Attribute
+      ##
       class Metadata
         attr_accessor :name
         attr_accessor :value
