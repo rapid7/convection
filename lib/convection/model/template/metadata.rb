@@ -1,5 +1,3 @@
-require_relative '../../dsl/intrinsic_functions'
-
 module Convection
   module Model
     class Template
