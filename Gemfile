@@ -5,7 +5,6 @@ gemspec
 
 group :development do
   gem 'bundler', '~> 1.7'
-  gem 'minitest' # TODO: Remove me. LONG LIVE RSPEC!
   gem 'rspec'
   gem 'rake', '~> 10.0'
   gem 'rubocop', '~> 0.40.0'
