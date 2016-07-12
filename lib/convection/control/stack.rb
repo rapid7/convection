@@ -190,8 +190,8 @@ module Convection
       def resource_dependent_changes?
         ours = {
           'Conditions' => @template.conditions.map(&:render),
-          'Metadata' => @template.metadata.map(&:render)
-          'Outputs' => @template.outputs.map(&:render),
+          'Metadata' => @template.metadata.map(&:render),
+          'Outputs' => @template.outputs.map(&:render)
         }
         theirs = {
           'Conditions' => @current_template['Conditions'],
