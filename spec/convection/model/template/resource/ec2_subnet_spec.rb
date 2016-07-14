@@ -13,7 +13,6 @@ class Convection::Model::Template::Resource
           vpc fn_ref('DemoVPC')
           public_ips true
         end
-
       end
     end
 
