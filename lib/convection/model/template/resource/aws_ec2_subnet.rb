@@ -45,6 +45,7 @@ module Convection
           type 'AWS::EC2::Subnet'
           property :availability_zone, 'AvailabilityZone'
           property :vpc, 'VpcId'
+          property :public_ips, 'MapPublicIpOnLaunch'
           cidr_property :network, 'CidrBlock'
 
           def render(*args)
