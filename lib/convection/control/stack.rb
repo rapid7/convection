@@ -180,6 +180,26 @@ module Convection
         @template.diff(@current_template)
       end
 
+      def resource_changes?
+        ours = { 'Resources' => @template.resources.map(&:render) }
+        thiers = { 'Resources' => @current_template['Resources'] }
+
+        ours.diff(thiers).any?
+      end
+
+      def resource_dependent_changes?
+        ours = {
+          'Conditions' => @template.conditions.map(&:render),
+          'Outputs' => @template.outputs.map(&:render)
+        }
+        theirs = {
+          'Conditions' => @current_template['Conditions'],
+          'Outputs' => @current_template['Outputs']
+        }
+
+        ours.diff(theirs).any?
+      end
+
       ##
       # Controllers
       ##
@@ -195,6 +215,11 @@ module Convection
         if existing_stack
           if diff.empty? ## No Changes. Just get resources and move on
             block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
+            get_status
+            return
+          elsif !resource_changes? && resource_dependent_changes?
+            message = "Stack #{ name } has no convergable changes (you must update Resources to update Conditions, Metadata, or Outputs)"
+            block.call(Model::Event.new(UPDATE_FAILED, message, :warn)) if block
             get_status
             return
           end
