@@ -37,7 +37,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'sets tags' do
-      expect(subject['Tags']).to include(hash_including({'Key'=>'Name', 'Value'=>'subnet'}))
+      expect(subject['Tags']).to include(hash_including('Key' => 'Name', 'Value' => 'subnet'))
     end
 
     private
