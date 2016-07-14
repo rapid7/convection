@@ -4,7 +4,7 @@ class Convection::Model::Template::Resource
   describe EC2Subnet do
     let(:template) do
       Convection.template do
-        description 'Elasticache Test Template'
+        description 'Ec2 Subnet'
 
         ec2_subnet 'PublicSubnet' do
           network '10.10.11.0/24'
