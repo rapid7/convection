@@ -4,13 +4,21 @@ require 'json'
 module Convection
   module Control
     ##
-    # Instantiation of a template in an account/region
+    # The Stack class provides a state wrapper for CloudFormation
+    # Stacks. It tracks the state of the managed stack, and
+    # creates/updates accordingly. Stack is also region-aware, and can
+    # be used within a template to define resources that depend upon
+    # availability-zones or other region-specific neuances that cannot
+    # be represented as maps or require iteration.
     ##
     class Stack
       attr_reader :id
       attr_reader :name
       attr_accessor :template
+      # @return [Boolean] whether the stack exists and has a status
+      #   other than DELETED.
       attr_reader :exist
+      # @return [String] CloudFormation Stack status
       attr_reader :status
       alias_method :exist?, :exist
 
@@ -56,6 +64,19 @@ module Convection
       TASK_FAILED = 'TASK_FAILED'.freeze
       TASK_IN_PROGRESS = 'TASK_IN_PROGRESS'.freeze
 
+      # @param name [String] the name of the CloudFormation Stack
+      # @param template [Convection::Model::Template] a wrapper of the
+      #   CloudFormation template (can be rendered into CF JSON)
+      # @param options [Hash] an options hash to pass in advanced
+      #   configuration options. Undocumented options will be passed
+      #   directly to {#create_stack} or {#update_stack}.
+      # @option options [String] :region AWS region, format us-east-1. Default us-east-1
+      # @option options [Hash] :credentials optional instance of {Aws::Credentials}
+      # @option options [Hash] :parameters CloudFormation Stack parameters
+      # @option options [String] :tags CloudFormation Stack tags
+      # @option options [String] :on_failure the create failure action. Default: `DELETE`
+      # @option options [Array<String>] :capabilities A list of capabilities (such as `CAPABILITY_IAM`).
+      #   See also [Aws::CloudFormation::Client#create_stack](http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method).
       def initialize(name, template, options = {}, &block)
         @name = name
         @template = template.clone(self)
@@ -149,10 +170,14 @@ module Convection
          UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS].include?(status)
       end
 
+      # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_COMPLETE states.
       def complete?
         [CREATE_COMPLETE, ROLLBACK_COMPLETE, UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
+      # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_FAILED states.
       def fail?
         [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)
       end
@@ -172,6 +197,8 @@ module Convection
         @template.render
       end
 
+      # @param pretty [Boolean] whether to to pretty-print the JSON output
+      # @return the renedered CloudFormation Template JSON.
       def to_json(pretty = false)
         @template.to_json(nil, pretty)
       end
@@ -200,9 +227,13 @@ module Convection
         ours.diff(theirs).any?
       end
 
-      ##
-      # Controllers
-      ##
+      # @!group Controllers
+
+      # Render the CloudFormation template and apply the Stack using
+      # the CloudFormation client.
+      #
+      # @param block [Proc] a configuration block to pass any
+      #   {Convection::Model::Event}s to.
       def apply(&block)
         request_options = @options.clone.tap do |o|
           o[:template_body] = to_json
@@ -261,6 +292,10 @@ module Convection
         @errors << e
       end
 
+      # Delete the CloudFormation Stack using the CloudFormation client.
+      #
+      # @param block [Proc] a configuration block to pass any
+      #   {Convection::Model::Event}s to.
       def delete(&block)
         ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
@@ -284,6 +319,8 @@ module Convection
         @errors << e
       end
 
+      # @!endgroup
+
       def watch(poll = 2, &block)
         get_status
 
@@ -301,6 +338,10 @@ module Convection
         @errors << e
       end
 
+      # @param block [Proc] a block to pass each availability zone
+      #   (with its index)
+      # @return [Array<String>] the list of availability zones found by
+      #   the call to ec2 client's describe availability zones
       def availability_zones(&block)
         @availability_zones ||=
           @ec2_client.describe_availability_zones.availability_zones.map(&:zone_name).sort

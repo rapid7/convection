@@ -40,7 +40,6 @@ Or install it yourself as:
 ##Documentation
 We highly recommend consulting the [getting started guide](https://github.com/rapid7/convection/blob/master/documentation/getting-started.md) for a in depth walk through on how to to set up your project and create and deploy a stack. Example stacks and resources are available in the [convection/example](https://github.com/rapid7/convection/tree/master/example) folder
 
-
 ## License
 _Copyright (c) 2015 John Manero, Rapid7 LLC._
 
