@@ -356,29 +356,39 @@ module Convection
         puts "\nTemplate validated successfully"
       end
 
+      # @!group Task methods
+
+      # Register a given task to run after creation of a stack.
       def after_create_task(task)
         @tasks[:after_create] << task
       end
 
+      # Register a given task to run after deletion of a stack.
       def after_delete_task(task)
         @tasks[:after_delete] << task
       end
 
+      # Register a given task to run after an update of a stack.
       def after_update_task(task)
         @tasks[:after_update] << task
       end
 
+      # Register a given task to run before creation of a stack.
       def before_create_task(task)
         @tasks[:before_create] << task
       end
 
+      # Register a given task to run before deletion of a stack.
       def before_delete_task(task)
         @tasks[:before_delete] << task
       end
 
+      # Register a given task to run before an update of a stack.
       def before_update_task(task)
         @tasks[:before_update] << task
       end
+
+      # @!endgroup
 
       private
 
