@@ -76,7 +76,7 @@ module Convection
       # @option options [String] :tags CloudFormation Stack tags
       # @option options [String] :on_failure the create failure action. Default: `DELETE`
       # @option options [Array<String>] :capabilities A list of capabilities (such as `CAPABILITY_IAM`).
-      #   See also [Aws::CloudFormation::Client#create_stack](http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method).
+      #   See also {http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method Aws::CloudFormation::Client#create_stack}
       def initialize(name, template, options = {}, &block)
         @name = name
         @template = template.clone(self)
@@ -140,9 +140,8 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
-      ##
-      # Attribute Accessors
-      ##
+      # @!group Attribute accessors
+
       def include?(stack, key = nil)
         return @attributes.include?(name, stack) if key.nil?
         @attributes.include?(stack, key)
@@ -160,9 +159,10 @@ module Convection
         @attributes.get(*args)
       end
 
-      ##
-      # Stack State
-      ##
+      # @!endgroup
+
+      # @!group Stack state methods
+
       def in_progress?
         [CREATE_IN_PROGRESS, ROLLBACK_IN_PROGRESS, DELETE_IN_PROGRESS,
          UPDATE_IN_PROGRESS, UPDATE_COMPLETE_CLEANUP_IN_PROGRESS,
@@ -189,6 +189,8 @@ module Convection
       def success?
         !error? && complete?
       end
+
+      # @!endgroup
 
       ##
       # Rendderers
