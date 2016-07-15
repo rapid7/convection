@@ -69,9 +69,9 @@ module Convection
       #   CloudFormation template (can be rendered into CF JSON)
       # @param options [Hash] an options hash to pass in advanced
       #   configuration options. Undocumented options will be passed
-      #   directly to {#create_stack} or {#update_stack}.
+      #   directly to CloudFormation's #create_stack or #update_stack.
       # @option options [String] :region AWS region, format us-east-1. Default us-east-1
-      # @option options [Hash] :credentials optional instance of {Aws::Credentials}
+      # @option options [Hash] :credentials optional instance of `Aws::Credentials`
       # @option options [Hash] :parameters CloudFormation Stack parameters
       # @option options [String] :tags CloudFormation Stack tags
       # @option options [String] :on_failure the create failure action. Default: `DELETE`
