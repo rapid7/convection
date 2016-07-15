@@ -182,19 +182,21 @@ module Convection
         [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)
       end
 
+      # @return [Boolean] whether any errors occurred modifying the
+      #   stack.
       def error?
         !errors.empty?
       end
 
+      # @return [Boolean] whether the Stack state is now {#complete?} (with no errors present).
       def success?
         !error? && complete?
       end
 
       # @!endgroup
 
-      ##
-      # Rendderers
-      ##
+      # @!group Render/diff methods
+
       def render
         @template.render
       end
@@ -205,10 +207,16 @@ module Convection
         @template.to_json(nil, pretty)
       end
 
+      # @return [Hash] a set of differences between the current
+      #   template (in CloudFormation) and the state of the rendered
+      #   template (what *would* be converged).
       def diff
         @template.diff(@current_template)
       end
 
+      # @return [Boolean] whether the Resources section of the rendered
+      #   template has any changes compared to the current template (in
+      #   CloudFormation).
       def resource_changes?
         ours = { 'Resources' => @template.resources.map(&:render) }
         thiers = { 'Resources' => @current_template['Resources'] }
@@ -216,6 +224,13 @@ module Convection
         ours.diff(thiers).any?
       end
 
+      # @return [Boolean] whether the any template sections dependent
+      #   on the Resources section of the rendered template has any
+      #   changes compared to the current template (in CloudFormation).
+      #   For example Conditions, Metadata, and Outputs depend on
+      #   changes to resources to be able to converge. See also
+      #   {https://github.com/rapid7/convection/issues/140
+      #   rapid7/convection#140}.
       def resource_dependent_changes?
         ours = {
           'Conditions' => @template.conditions.map(&:render),
@@ -228,6 +243,8 @@ module Convection
 
         ours.diff(theirs).any?
       end
+
+      # @!endgroup
 
       # @!group Controllers
 
