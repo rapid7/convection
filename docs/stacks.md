@@ -65,7 +65,7 @@ You would then change your Cloudfile to give the optional configuration block to
 ```ruby
 # Cloudfile
 stack 'vpc', VPC do
-  after_create LookupVpcTask.new(300) # wait up to 5 minutes when looking for a new VPC
-  after_update LookupVpcTask.new(60) # only wait 1 minute when looking for an existing VPC
+  after_create_task LookupVpcTask.new(300) # wait up to 5 minutes when looking for a new VPC
+  after_update_task LookupVpcTask.new(60) # only wait 1 minute when looking for an existing VPC
 end
 ```
