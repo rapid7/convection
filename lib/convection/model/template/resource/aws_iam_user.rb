@@ -46,6 +46,8 @@ module Convection
           property :login_profile, 'LoginProfile'
           property :group, 'Groups', :type => :list
           property :policies, 'Policies', :type => :list
+          property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
+          alias managed_policy managed_policy_arn
         end
       end
     end
