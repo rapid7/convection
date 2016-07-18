@@ -1,4 +1,5 @@
 #See the getting started guide for a description of this file and what it does.
+#to run this file make sure you are following the project layout in the getting started guide
 require 'convection'
 
 module Templates
