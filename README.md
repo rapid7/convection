@@ -38,7 +38,7 @@ Or install it yourself as:
 - To validate your stack is not missing a required resource run `convection validate my-stack-name`.
 
 ##Documentation
-We highly recommend consulting the [getting started guide](https://github.com/rapid7/convection/documentation/blob/master/guides/getting-started.md) for a in depth walk through on how to to set up your project and create and deploy a stack. Example stacks and resources are available in the [convection/example](https://github.com/rapid7/convection/tree/master/example) folder
+We highly recommend consulting the [getting started guide](https://github.com/rapid7/convection/blob/master/documentation/getting-started.md) for a in depth walk through on how to to set up your project and create and deploy a stack. Example stacks and resources are available in the [convection/example](https://github.com/rapid7/convection/tree/master/example) folder
 
 
 ## License
