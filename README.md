@@ -22,15 +22,15 @@ Or install it yourself as:
     $ gem install convection
 
 ##CLI Commands
-####Converging:
+###### Converging:
 - To converge all stacks in your cloudfile run `convection converge`. If you provide the name of your stack as a additional argument such as `convection converge my-stack-name` then all stacks above and including the stack you specified will be converged.
-####Diff:
+###### Diff:
 - To display diff between your local changes and the version of your stack in cloud formation of your changes run `convection diff`.
-####Help:
+###### Help:
 - To print out a list of available cli options with their descriptions run `convection help`.
-####Print:
+###### Print:
 - To print out the cloud formation template for a specific stack run `convection print my-stack-name`.
-####Validate:
+###### Validate:
 - To validate your stack is not missing a required resource run `convection validate my-stack-name`.
 
 ##Documentation
