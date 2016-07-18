@@ -1,0 +1,11 @@
+#See the getting started guide for a description of this file and what it does.
+Dir.glob('./../../templates/**.rb') do |file|
+  require_relative file
+end
+
+require 'convection'
+
+region 'us-east-1'
+name 'convection-demo'
+
+stack 'vpc', Templates::VPC
