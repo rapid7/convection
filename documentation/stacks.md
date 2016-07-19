@@ -1,23 +1,34 @@
 # Convection Stacks
+**NOTE**: Examples in this file can be found in `example/stacks`.
+
 ### Defining a stack
 Defining a stack is as simple as a few lines of Ruby:
 
 ```ruby
-# vpc.rb
-VPC = Convection.template do
-  description 'EC2 VPC Test Template'
+# templates/vpc.rb
+require 'convection'
 
-  ec2_vpc 'TargetVPC' do
-    network '10.0.0.0'
-    subnet_length 24
-    enable_dns
+module Templates
+  VPC = Convection.template do
+    description 'EC2 VPC Test Template'
+
+    ec2_vpc 'TargetVPC' do
+      network '10.10.10.0/23'
+    end
   end
 end
 ```
 
+### Using a defined stack
 ```ruby
 # Cloudfile
-stack 'vpc', VPC
+require_relative './templates/vpc.rb'
+
+user = ENV['USER'] || 'anon'
+name "#{user}-demo-cloud"
+region 'us-east-1'
+
+stack 'vpc', Templates::VPC
 ```
 
 Once evaluated by Convection stacks will be represented as CloudFormation JSON.
@@ -25,38 +36,42 @@ Once evaluated by Convection stacks will be represented as CloudFormation JSON.
 ### Defining a task to execute on a stack
 A stack has the following life-cycle phases:
 
-1. Before creation (`before_create`)
-2. After creation (`after_create`)
-3. Before being updated (`before_update`)
-4. After being updated (`after_update`)
-5. Before deletion (`before_delete`)
-6. After deletion (`after_delete`)
+1. Before creation (`before_create_task`)
+2. After creation (`after_create_task`)
+3. Before being updated (`before_update_task`)
+4. After being updated (`after_update_task`)
+5. Before deletion (`before_delete_task`)
+6. After deletion (`after_delete_task`)
 
 To define tasks on a stack (using the `VPC` stack defined above for example):
 
 ```ruby
-# lookup_vpc_task.rb
-class LookupVpcTask
-  def initialize(wait_seconds)
-    @wait_seconds = wait_seconds
-  end
+# tasks/lookup_vpc_task.rb
+module Tasks
+  class LookupVpcTask
+    # REQUIRED: Convection expects tasks to respond to #call.
+    def call(stack)
+      @vpc_id = stack.get('vpc', 'id')
+      @result = vpc_found?
+    end
 
-  # REQUIRED: Convection expects Tasks to respond to #call.
-  def call(stack)
-    sleep wait_seconds # Do not actually sleep like this. This is just for an example.
-    id = stack.get('vpc', 'id')
-    @result = vpc_found?(id)
-  end
+    # REQUIRED: Convection expects tasks to respond to #success?.
+    def success?
+      @result
+    end
 
-  # REQUIRED: Convection expects Tasks to respond to #success?.
-  def success?
-    @result
-  end
+    # OPTIONAL: Convection emits the task as `task.to_s` in certain log messages.
+    def to_s
+      return 'VPC lookup' unless @vpc_id
 
-  private
+      "VPC lookup of #{@vpc_id.inspect}"
+    end
 
-  def vpc_found?(id)
-    true
+    private
+
+    def vpc_found?
+      true # XXX: This could be a call to the aws-sdk APIs.
+    end
   end
 end
 ```
@@ -64,8 +79,8 @@ end
 You would then change your Cloudfile to give the optional configuration block to the stack declaration:
 ```ruby
 # Cloudfile
-stack 'vpc', VPC do
-  after_create_task LookupVpcTask.new(300) # wait up to 5 minutes when looking for a new VPC
-  after_update_task LookupVpcTask.new(60) # only wait 1 minute when looking for an existing VPC
+stack 'vpc', Templates::VPC do
+  after_create_task Tasks::LookupVpcTask.new
+  after_update_task Tasks::LookupVpcTask.new
 end
 ```
