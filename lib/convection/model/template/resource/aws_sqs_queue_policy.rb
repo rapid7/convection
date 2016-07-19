@@ -7,6 +7,17 @@ module Convection
       class Resource
         ##
         # AWS::SQS::QueuePolicy
+        #
+        # @example
+        # sqs_queue_policy 'QueuePolicy' do
+        #   queue "my-queue"
+        #   allow do
+        #     principal '*'
+        #     sqs_resource my_region, my_account, "my-queue"
+        #     action 'sqs:SendMessage'
+        #     condition :ArnEquals => { "AWS:SourceArn" => "arn:aws:sns:...." }
+        #   end
+        # end
         ##
         class SQSQueuePolicy < Resource
           extend Forwardable

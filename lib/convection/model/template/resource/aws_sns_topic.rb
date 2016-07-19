@@ -6,6 +6,14 @@ module Convection
       class Resource
         ##
         # AWS::SNS::Topic
+        #
+        # @example
+        # sns_topic 'MyTopic' do
+        #   display_name 'my topic'
+        #   topic_name "example-topic"
+        #   subscription [{"Protocol" => "sqs", "Endpoint" => "arn:aws:sqs:....}]
+        # end
+        #
         ##
         class SNSTopic < Resource
           type 'AWS::SNS::Topic'
