@@ -1,9 +1,6 @@
-require 'pp'
 
 class MyModuleHandler < YARD::Handlers::Ruby::Base
   handles method_call(:property)
-
-
 
   def process
     name = statement.parameters.first.jump(:tstring_content, :ident).source
