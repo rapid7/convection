@@ -6,19 +6,18 @@ module Convection
       class Resource
         ##
         # AWS::S3::Bucket
-        # @example
-        #
-        # s3_bucket 'BucketWithSNSNotification' do
-        #   bucket_name "my-bucket.blah.com"
-        #   notification_configuration(
-        #     'TopicConfigurations' => [
-        #        {'Event' => 's3:ObjectCreated:*', 'Topic' => "arn:aws:sns:sns-topic-arn...."}
-        #     ])
-        #   with_output
-        # end
         #
         ##
         class S3Bucket < Resource
+          # @example
+          # s3_bucket 'BucketWithSNSNotification' do
+          #   bucket_name "my-bucket.blah.com"
+          #   notification_configuration(
+          #     'TopicConfigurations' => [
+          #        {'Event' => 's3:ObjectCreated:*', 'Topic' => "arn:aws:sns:sns-topic-arn...."}
+          #     ])
+          #   with_output
+          # end
           include Model::Mixin::Taggable
 
           type 'AWS::S3::Bucket'

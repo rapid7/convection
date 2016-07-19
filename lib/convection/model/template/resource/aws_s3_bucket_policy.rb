@@ -8,18 +8,18 @@ module Convection
         ##
         # AWS::S3::BucketPolicy
         #
-        # @example
-        # s3_bucket_policy 'BucketPolicy' do
-        #   bucket "my-bucket"
-        #
-        #   allow do
-        #     principal :AWS => '*'
-        #     s3_resource "my-bucket", '*'
-        #     action 's3:GetObject'
-        #   end
-        # end
         ##
         class S3BucketPolicy < Resource
+          # @example
+          # s3_bucket_policy 'BucketPolicy' do
+          #   bucket "my-bucket"
+          #
+          #   allow do
+          #     principal :AWS => '*'
+          #     s3_resource "my-bucket", '*'
+          #     action 's3:GetObject'
+          #   end
+          # end
           extend Forwardable
 
           type 'AWS::S3::BucketPolicy'
