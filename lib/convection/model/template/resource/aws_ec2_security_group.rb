@@ -39,6 +39,12 @@ module Convection
       class Resource
         ##
         # AWS::EC2::SecurityGroup
+        #
+        # @example
+        #   ec2_security_group 'SuperSecretSecurityGroup' do
+        #     description 'This is a super secure group that nobody should know about.'
+        #     vpc 'vpc-deadb33f'
+        #   end
         ##
         class EC2SecurityGroup < Resource
           include DSL::Template::Resource::EC2SecurityGroup
@@ -47,9 +53,25 @@ module Convection
           attr_reader :security_group_ingress
           attr_reader :security_group_egress
 
-          ##
-          # Ingress/Egress Rule
+          # @example Egress rule
+          #   ec2_security_group 'SuperSecretSecurityGroup' do
+          #     # other properties...
           #
+          #     egress_rule :tcp, 443 do
+          #       # The source CIDR block.
+          #       destination '10.10.10.0/24'
+          #     end
+          #   end
+          #
+          # @example Ingress rule
+          #   ec2_security_group 'SuperSecretSecurityGroup' do
+          #     # other properties...
+          #
+          #     ingress_rule :tcp, 8080 do
+          #       # The source security group ID.
+          #       source_group stack.get('security-groups', 'HttpProxy')
+          #     end
+          #   end
           class Rule < Resource
             attribute :from
             attribute :to
