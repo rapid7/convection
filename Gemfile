@@ -10,5 +10,5 @@ group :development do
   gem 'rubocop', '~> 0.40.0'
   gem 'simplecov'
   gem 'thor-scmversion', '= 1.7.0'
-  gem 'yard'
+  gem 'yard_extensions'
 end
