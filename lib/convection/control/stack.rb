@@ -39,29 +39,49 @@ module Convection
       attr_reader :tags
       attr_accessor :on_failure
 
-      ## Valid Stack Statuses
+      # Represents a stack that has successfully been converged.
       CREATE_COMPLETE = 'CREATE_COMPLETE'.freeze
+      # Represents a stack that has not successfully been converged.
       CREATE_FAILED = 'CREATE_FAILED'.freeze
+      # Represents a stack that is currently being converged for the first time.
       CREATE_IN_PROGRESS = 'CREATE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been deleted.
       DELETE_COMPLETE = 'DELETE_COMPLETE'.freeze
+      # Represents a stack that has not successfully been deleted.
       DELETE_FAILED = 'DELETE_FAILED'.freeze
+      # Represents a stack that is currently being deleted.
       DELETE_IN_PROGRESS = 'DELETE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been rolled back.
       ROLLBACK_COMPLETE = 'ROLLBACK_COMPLETE'.freeze
+      # Represents a stack that has not successfully been rolled back.
       ROLLBACK_FAILED = 'ROLLBACK_FAILED'.freeze
+      # Represents a stack that is currently being rolled back.
       ROLLBACK_IN_PROGRESS = 'ROLLBACK_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been updated (re-converged).
       UPDATE_COMPLETE = 'UPDATE_COMPLETE'.freeze
+      # Represents a stack that is currently performing post-update cleanup.
       UPDATE_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS'.freeze
+      # Represents a stack that has not successfully been updated.
       UPDATE_FAILED = 'UPDATE_FAILED'.freeze
+      # Represents a stack that is currently being updated (re-converged).
       UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully rolled back an update (re-converge).
       UPDATE_ROLLBACK_COMPLETE = 'UPDATE_ROLLBACK_COMPLETE'.freeze
+      # Represents a stack that is currently performing post-update-rollback cleanup.
       UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been rolled back after an update.
       UPDATE_ROLLBACK_FAILED = 'UPDATE_ROLLBACK_FAILED'.freeze
+      # Represents a stack that is currently performing a update rollback.
       UPDATE_ROLLBACK_IN_PROGRESS = 'UPDATE_ROLLBACK_IN_PROGRESS'.freeze
 
-      ## Internal status
+      # Represents a stack that has not been created. The default state
+      # for a convection stack before getting its status.
       NOT_CREATED = 'NOT_CREATED'.freeze
+      # Represents a stack task being completed.
       TASK_COMPLETE = 'TASK_COMPLETE'.freeze
+      # Represents a stack task having failed.
       TASK_FAILED = 'TASK_FAILED'.freeze
+      # Represents a stack task that is currently in progress.
       TASK_IN_PROGRESS = 'TASK_IN_PROGRESS'.freeze
 
       # rubocop:disable Metrics/LineLength
@@ -144,19 +164,28 @@ module Convection
 
       # @!group Attribute accessors
 
+      # @overload include?(key)
+      #   @param key [String] the name of the attribute to find
+      # @overload include?(stack_name, key)
+      #   @param stack_name [String] the name of the stack to check within
+      #   @param key [String] the name of the attribute to find
+      # @return [Boolean] whether the stack includes the specified key.
       def include?(stack, key = nil)
         return @attributes.include?(name, stack) if key.nil?
         @attributes.include?(stack, key)
       end
 
+      # @see Convection::Model::Attributes#get
       def [](key)
         @attributes.get(name, key)
       end
 
+      # @see Convection::Model::Attributes#set
       def []=(key, value)
         @attributes.set(name, key, value)
       end
 
+      # @see Convection::Model::Attributes#get
       def get(*args)
         @attributes.get(*args)
       end
@@ -165,6 +194,8 @@ module Convection
 
       # @!group Stack state methods
 
+      # @return [Boolean] whether or not the CloudFormation Stack is in
+      #   one of several *IN_PROGRESS states.
       def in_progress?
         [CREATE_IN_PROGRESS, ROLLBACK_IN_PROGRESS, DELETE_IN_PROGRESS,
          UPDATE_IN_PROGRESS, UPDATE_COMPLETE_CLEANUP_IN_PROGRESS,
@@ -199,12 +230,14 @@ module Convection
 
       # @!group Render/diff methods
 
+      # @see Convection::Model::Template#render
       def render
         @template.render
       end
 
       # @param pretty [Boolean] whether to to pretty-print the JSON output
       # @return the renedered CloudFormation Template JSON.
+      # @see Convection::Model::Template#to_json
       def to_json(pretty = false)
         @template.to_json(nil, pretty)
       end
@@ -212,6 +245,7 @@ module Convection
       # @return [Hash] a set of differences between the current
       #   template (in CloudFormation) and the state of the rendered
       #   template (what *would* be converged).
+      # @see Convection::Model::Template#diff
       def diff
         @template.diff(@current_template)
       end
@@ -342,6 +376,8 @@ module Convection
 
       # @!endgroup
 
+      # Loops through current events until the CloudFormation Stack has
+      # finished being modified.
       def watch(poll = 2, &block)
         get_status
 
@@ -371,6 +407,9 @@ module Convection
         @availability_zones
       end
 
+      # Validates a rendered template against the CloudFormation API.
+      #
+      # @raise unless the validation was successful
       def validate
         result = @cf_client.validate_template(:template_body => template.to_json)
         fail result.context.http_response.inspect unless result.successful?

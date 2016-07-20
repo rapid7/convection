@@ -11,6 +11,7 @@ module Convection
         @cloudfile = Model::Cloudfile.new(cloudfile)
       end
 
+      # @see Convection::Model::Cloudfile#stacks
       def stacks
         @cloudfile.stacks
       end
