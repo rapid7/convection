@@ -4,13 +4,21 @@ require 'json'
 module Convection
   module Control
     ##
-    # Instantiation of a template in an account/region
+    # The Stack class provides a state wrapper for CloudFormation
+    # Stacks. It tracks the state of the managed stack, and
+    # creates/updates accordingly. Stack is also region-aware, and can
+    # be used within a template to define resources that depend upon
+    # availability-zones or other region-specific neuances that cannot
+    # be represented as maps or require iteration.
     ##
     class Stack
       attr_reader :id
       attr_reader :name
       attr_accessor :template
+      # @return [Boolean] whether the stack exists and has a status
+      #   other than DELETED.
       attr_reader :exist
+      # @return [String] CloudFormation Stack status
       attr_reader :status
       alias_method :exist?, :exist
 
@@ -31,31 +39,65 @@ module Convection
       attr_reader :tags
       attr_accessor :on_failure
 
-      ## Valid Stack Statuses
+      # Represents a stack that has successfully been converged.
       CREATE_COMPLETE = 'CREATE_COMPLETE'.freeze
+      # Represents a stack that has not successfully been converged.
       CREATE_FAILED = 'CREATE_FAILED'.freeze
+      # Represents a stack that is currently being converged for the first time.
       CREATE_IN_PROGRESS = 'CREATE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been deleted.
       DELETE_COMPLETE = 'DELETE_COMPLETE'.freeze
+      # Represents a stack that has not successfully been deleted.
       DELETE_FAILED = 'DELETE_FAILED'.freeze
+      # Represents a stack that is currently being deleted.
       DELETE_IN_PROGRESS = 'DELETE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been rolled back.
       ROLLBACK_COMPLETE = 'ROLLBACK_COMPLETE'.freeze
+      # Represents a stack that has not successfully been rolled back.
       ROLLBACK_FAILED = 'ROLLBACK_FAILED'.freeze
+      # Represents a stack that is currently being rolled back.
       ROLLBACK_IN_PROGRESS = 'ROLLBACK_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been updated (re-converged).
       UPDATE_COMPLETE = 'UPDATE_COMPLETE'.freeze
+      # Represents a stack that is currently performing post-update cleanup.
       UPDATE_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS'.freeze
+      # Represents a stack that has not successfully been updated.
       UPDATE_FAILED = 'UPDATE_FAILED'.freeze
+      # Represents a stack that is currently being updated (re-converged).
       UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully rolled back an update (re-converge).
       UPDATE_ROLLBACK_COMPLETE = 'UPDATE_ROLLBACK_COMPLETE'.freeze
+      # Represents a stack that is currently performing post-update-rollback cleanup.
       UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS = 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS'.freeze
+      # Represents a stack that has successfully been rolled back after an update.
       UPDATE_ROLLBACK_FAILED = 'UPDATE_ROLLBACK_FAILED'.freeze
+      # Represents a stack that is currently performing a update rollback.
       UPDATE_ROLLBACK_IN_PROGRESS = 'UPDATE_ROLLBACK_IN_PROGRESS'.freeze
 
-      ## Internal status
+      # Represents a stack that has not been created. The default state
+      # for a convection stack before getting its status.
       NOT_CREATED = 'NOT_CREATED'.freeze
+      # Represents a stack task being completed.
       TASK_COMPLETE = 'TASK_COMPLETE'.freeze
+      # Represents a stack task having failed.
       TASK_FAILED = 'TASK_FAILED'.freeze
+      # Represents a stack task that is currently in progress.
       TASK_IN_PROGRESS = 'TASK_IN_PROGRESS'.freeze
 
+      # rubocop:disable Metrics/LineLength
+      # @param name [String] the name of the CloudFormation Stack
+      # @param template [Convection::Model::Template] a wrapper of the
+      #   CloudFormation template (can be rendered into CF JSON)
+      # @param options [Hash] an options hash to pass in advanced
+      #   configuration options. Undocumented options will be passed
+      #   directly to CloudFormation's #create_stack or #update_stack.
+      # @option options [String] :region AWS region, format us-east-1. Default us-east-1
+      # @option options [Hash] :credentials optional instance of `Aws::Credentials`
+      # @option options [Hash] :parameters CloudFormation Stack parameters
+      # @option options [String] :tags CloudFormation Stack tags
+      # @option options [String] :on_failure the create failure action. Default: `DELETE`
+      # @option options [Array<String>] :capabilities A list of capabilities (such as `CAPABILITY_IAM`).
+      #   See also {http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method Aws::CloudFormation::Client#create_stack}
       def initialize(name, template, options = {}, &block)
         @name = name
         @template = template.clone(self)
@@ -112,6 +154,7 @@ module Convection
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
+      # rubocop:enable Metrics/LineLength
 
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
@@ -119,29 +162,40 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
-      ##
-      # Attribute Accessors
-      ##
+      # @!group Attribute accessors
+
+      # @overload include?(key)
+      #   @param key [String] the name of the attribute to find
+      # @overload include?(stack_name, key)
+      #   @param stack_name [String] the name of the stack to check within
+      #   @param key [String] the name of the attribute to find
+      # @return [Boolean] whether the stack includes the specified key.
       def include?(stack, key = nil)
         return @attributes.include?(name, stack) if key.nil?
         @attributes.include?(stack, key)
       end
 
+      # @see Convection::Model::Attributes#get
       def [](key)
         @attributes.get(name, key)
       end
 
+      # @see Convection::Model::Attributes#set
       def []=(key, value)
         @attributes.set(name, key, value)
       end
 
+      # @see Convection::Model::Attributes#get
       def get(*args)
         @attributes.get(*args)
       end
 
-      ##
-      # Stack State
-      ##
+      # @!endgroup
+
+      # @!group Stack state methods
+
+      # @return [Boolean] whether or not the CloudFormation Stack is in
+      #   one of several *IN_PROGRESS states.
       def in_progress?
         [CREATE_IN_PROGRESS, ROLLBACK_IN_PROGRESS, DELETE_IN_PROGRESS,
          UPDATE_IN_PROGRESS, UPDATE_COMPLETE_CLEANUP_IN_PROGRESS,
@@ -149,37 +203,56 @@ module Convection
          UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS].include?(status)
       end
 
+      # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_COMPLETE states.
       def complete?
         [CREATE_COMPLETE, ROLLBACK_COMPLETE, UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
+      # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_FAILED states.
       def fail?
         [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)
       end
 
+      # @return [Boolean] whether any errors occurred modifying the
+      #   stack.
       def error?
         !errors.empty?
       end
 
+      # @return [Boolean] whether the Stack state is now {#complete?} (with no errors present).
       def success?
         !error? && complete?
       end
 
-      ##
-      # Rendderers
-      ##
+      # @!endgroup
+
+      # @!group Render/diff methods
+
+      # @see Convection::Model::Template#render
       def render
         @template.render
       end
 
+      # @param pretty [Boolean] whether to to pretty-print the JSON output
+      # @return the renedered CloudFormation Template JSON.
+      # @see Convection::Model::Template#to_json
       def to_json(pretty = false)
         @template.to_json(nil, pretty)
       end
 
+      # @return [Hash] a set of differences between the current
+      #   template (in CloudFormation) and the state of the rendered
+      #   template (what *would* be converged).
+      # @see Convection::Model::Template#diff
       def diff
         @template.diff(@current_template)
       end
 
+      # @return [Boolean] whether the Resources section of the rendered
+      #   template has any changes compared to the current template (in
+      #   CloudFormation).
       def resource_changes?
         ours = { 'Resources' => @template.resources.map(&:render) }
         thiers = { 'Resources' => @current_template['Resources'] }
@@ -187,6 +260,13 @@ module Convection
         ours.diff(thiers).any?
       end
 
+      # @return [Boolean] whether the any template sections dependent
+      #   on the Resources section of the rendered template has any
+      #   changes compared to the current template (in CloudFormation).
+      #   For example Conditions, Metadata, and Outputs depend on
+      #   changes to resources to be able to converge. See also
+      #   {https://github.com/rapid7/convection/issues/140
+      #   rapid7/convection#140}.
       def resource_dependent_changes?
         ours = {
           'Conditions' => @template.conditions.map(&:render),
@@ -200,9 +280,15 @@ module Convection
         ours.diff(theirs).any?
       end
 
-      ##
-      # Controllers
-      ##
+      # @!endgroup
+
+      # @!group Controllers
+
+      # Render the CloudFormation template and apply the Stack using
+      # the CloudFormation client.
+      #
+      # @param block [Proc] a configuration block to pass any
+      #   {Convection::Model::Event}s to.
       def apply(&block)
         request_options = @options.clone.tap do |o|
           o[:template_body] = to_json
@@ -261,6 +347,10 @@ module Convection
         @errors << e
       end
 
+      # Delete the CloudFormation Stack using the CloudFormation client.
+      #
+      # @param block [Proc] a configuration block to pass any
+      #   {Convection::Model::Event}s to.
       def delete(&block)
         ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
@@ -284,6 +374,10 @@ module Convection
         @errors << e
       end
 
+      # @!endgroup
+
+      # Loops through current events until the CloudFormation Stack has
+      # finished being modified.
       def watch(poll = 2, &block)
         get_status
 
@@ -301,6 +395,10 @@ module Convection
         @errors << e
       end
 
+      # @param block [Proc] a block to pass each availability zone
+      #   (with its index)
+      # @return [Array<String>] the list of availability zones found by
+      #   the call to ec2 client's describe availability zones
       def availability_zones(&block)
         @availability_zones ||=
           @ec2_client.describe_availability_zones.availability_zones.map(&:zone_name).sort
@@ -309,35 +407,48 @@ module Convection
         @availability_zones
       end
 
+      # Validates a rendered template against the CloudFormation API.
+      #
+      # @raise unless the validation was successful
       def validate
         result = @cf_client.validate_template(:template_body => template.to_json)
         fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
       end
 
+      # @!group Task methods
+
+      # Register a given task to run after creation of a stack.
       def after_create_task(task)
         @tasks[:after_create] << task
       end
 
+      # Register a given task to run after deletion of a stack.
       def after_delete_task(task)
         @tasks[:after_delete] << task
       end
 
+      # Register a given task to run after an update of a stack.
       def after_update_task(task)
         @tasks[:after_update] << task
       end
 
+      # Register a given task to run before creation of a stack.
       def before_create_task(task)
         @tasks[:before_create] << task
       end
 
+      # Register a given task to run before deletion of a stack.
       def before_delete_task(task)
         @tasks[:before_delete] << task
       end
 
+      # Register a given task to run before an update of a stack.
       def before_update_task(task)
         @tasks[:before_update] << task
       end
+
+      # @!endgroup
 
       private
 

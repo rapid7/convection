@@ -24,6 +24,9 @@ module Convection
         @attributes.set(stack, key, value)
       end
 
+      # Adds a stack with the provided options to the list of stacks.
+      #
+      # @see Convection::Control::Stack#initialize
       def stack(stack_name, template, options = {}, &block)
         options[:region] ||= region
         options[:cloud] = name
