@@ -1,0 +1,62 @@
+/* Pygment syntax highlighting setup for viewdocs.io */
+.highlight { background: #ffffff; }
+.highlight .pl-bp { color: #999999 } /* Name.Builtin.Pseudo */
+.highlight .pl-c { color: #999988; font-style: italic } /* Comment */
+.highlight .pl-c1 { color: #999988; font-style: italic } /* Comment.Single */
+.highlight .pl-cm { color: #999988; font-style: italic } /* Comment.Multiline */
+.highlight .pl-cp { color: #999999; font-weight: bold } /* Comment.Preproc */
+.highlight .pl-cs { color: #999999; font-weight: bold; font-style: italic } /* Comment.Special */
+.highlight .pl-err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.highlight .pl-gd .x { color: #000000; background-color: #ffaaaa } /* Generic.Deleted.Specific */
+.highlight .pl-gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
+.highlight .pl-ge { font-style: italic } /* Generic.Emph */
+.highlight .pl-gh { color: #999999 } /* Generic.Heading */
+.highlight .pl-gi .x { color: #000000; background-color: #aaffaa } /* Generic.Inserted.Specific */
+.highlight .pl-gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
+.highlight .pl-go { color: #888888 } /* Generic.Output */
+.highlight .pl-gp { color: #555555 } /* Generic.Prompt */
+.highlight .pl-gr { color: #aa0000 } /* Generic.Error */
+.highlight .pl-gs { font-weight: bold } /* Generic.Strong */
+.highlight .pl-gt { color: #aa0000 } /* Generic.Traceback */
+.highlight .pl-gu { color: #800080; font-weight: bold; } /* Generic.Subheading */
+.highlight .pl-il { color: #009999 } /* Literal.Number.Integer.Long */
+.highlight .pl-k { font-weight: bold } /* Keyword */
+.highlight .pl-kc { font-weight: bold } /* Keyword.Constant */
+.highlight .pl-kd { font-weight: bold } /* Keyword.Declaration */
+.highlight .pl-kn { font-weight: bold } /* Keyword.Namespace */
+.highlight .pl-kp { font-weight: bold } /* Keyword.Pseudo */
+.highlight .pl-kr { font-weight: bold } /* Keyword.Reserved */
+.highlight .pl-kt { color: #445588; font-weight: bold } /* Keyword.Type */
+.highlight .pl-m { color: #009999 } /* Literal.Number */
+.highlight .pl-mf { color: #009999 } /* Literal.Number.Float */
+.highlight .pl-mh { color: #009999 } /* Literal.Number.Hex */
+.highlight .pl-mi { color: #009999 } /* Literal.Number.Integer */
+.highlight .pl-mo { color: #009999 } /* Literal.Number.Oct */
+.highlight .pl-na { color: #008080 } /* Name.Attribute */
+.highlight .pl-nb { color: #0086B3 } /* Name.Builtin */
+.highlight .pl-nc { color: #445588; font-weight: bold } /* Name.Class */
+.highlight .pl-ne { color: #990000; font-weight: bold } /* Name.Exception */
+.highlight .pl-nf { color: #990000; font-weight: bold } /* Name.Function */
+.highlight .pl-ni { color: #800080 } /* Name.Entity */
+.highlight .pl-nn { color: #555555 } /* Name.Namespace */
+.highlight .pl-no { color: #008080 } /* Name.Constant */
+.highlight .pl-nt { color: #000080 } /* Name.Tag */
+.highlight .pl-nv { color: #008080 } /* Name.Variable */
+.highlight .pl-o { font-weight: bold } /* Operator */
+.highlight .pl-ow { font-weight: bold } /* Operator.Word */
+.highlight .pl-s { color: #d14 } /* Literal.String */
+.highlight .pl-s1 { color: #d14 } /* Literal.String.Single */
+.highlight .pl-s2 { color: #d14 } /* Literal.String.Double */
+.highlight .pl-sb { color: #d14 } /* Literal.String.Backtick */
+.highlight .pl-sc { color: #d14 } /* Literal.String.Char */
+.highlight .pl-sd { color: #d14 } /* Literal.String.Doc */
+.highlight .pl-se { color: #d14 } /* Literal.String.Escape */
+.highlight .pl-sh { color: #d14 } /* Literal.String.Heredoc */
+.highlight .pl-si { color: #d14 } /* Literal.String.Interpol */
+.highlight .pl-sr { color: #009926 } /* Literal.String.Regex */
+.highlight .pl-ss { color: #990073 } /* Literal.String.Symbol */
+.highlight .pl-sx { color: #d14 } /* Literal.String.Other */
+.highlight .pl-vc { color: #008080 } /* Name.Variable.Class */
+.highlight .pl-vg { color: #008080 } /* Name.Variable.Global */
+.highlight .pl-vi { color: #008080 } /* Name.Variable.Instance */
+.highlight .pl-w { color: #bbbbbb } /* Text.Whitespace */
