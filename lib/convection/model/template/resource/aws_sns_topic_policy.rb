@@ -5,20 +5,17 @@ module Convection
   module Model
     class Template
       class Resource
-        ##
-        # AWS::SNS::TopicPolicy
-        ##
+        # @example
+        #   sns_topic_policy 'TopicPolicy' do
+        #     topic "my-sns-topic"
+        #     allow do
+        #       principal :Service => 's3.amazonaws.com'
+        #       sns_resource my_region, my_account, "my-sns-topic"
+        #       action 'sns:Publish'
+        #       condition :ArnLike => { "AWS:SourceArn" => "arn:aws:s3:......." }
+        #     end
+        #   end
         class SNSTopicPolicy < Resource
-          # @example
-          # sns_topic_policy 'TopicPolicy' do
-          #   topic "my-sns-topic"
-          #   allow do
-          #     principal :Service => 's3.amazonaws.com'
-          #     sns_resource my_region, my_account, "my-sns-topic"
-          #     action 'sns:Publish'
-          #     condition :ArnLike => { "AWS:SourceArn" => "arn:aws:s3:......." }
-          #   end
-          # end
           extend Forwardable
 
           type 'AWS::SNS::TopicPolicy'

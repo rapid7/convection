@@ -4,16 +4,12 @@ module Convection
   module Model
     class Template
       class Resource
-        ##
-        # AWS::SQS::Queue
-        #
-        ##
+        # @example
+        #   sqs_queue 'NotifyQueue' do
+        #     queue_name "my-notify-queue"
+        #     visibility_timeout 3600
+        #   end
         class SQSQueue < Resource
-          # @example
-          # sqs_queue 'NotifyQueue' do
-          #   queue_name "my-notify-queue"
-          #   visibility_timeout 3600
-          # end
           include Model::Mixin::Taggable
 
           type 'AWS::SQS::Queue'
