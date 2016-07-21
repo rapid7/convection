@@ -28,19 +28,9 @@
 <p>This gem aims to provide a reusable model for AWS CloudFormation in Ruby. It exposes a DSL for template definition, and a simple, decoupled abstraction of a CloudFormation Stack to compile and apply templates.</p>
 
 <h2>
-<a id="branches" class="anchor" href="#branches" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Branches</h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
 
-<p>We strive to use <a href="http://semver.org">Semantic Versioning</a> as much as possible for convection.</p>
-
-<h3>
-<a id="master" class="anchor" href="#master" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>master</code>
-</h3>
-
-<p><strong>NOTE</strong>: The <code>master</code> branch is fully supported by the convection maintainers.</p>
-
-<p>The latest and greatest code that we intend to release to Rubygems is merged into this branch.
-Today that code happens to be part of the <code>v0.2.x</code> minor version since we have not deemed convection feature complete (we'll release a <code>v1.0.0</code> release at that point).
-Backwards incompatible changes until this time <em>may</em> be added by bumping the <strong>minor</strong> (not major) version of the project. These will be explicitly called out in the release notes for the version that introduced them and if possible a deprecation message and compatibility will be kept making users aware of a potential the breaking change in the future.</p>
+<p>Please read our <a href="CONTRIBUTING.md">Contributing guidelines</a> for more information on contributing to Convection.</p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
@@ -60,243 +50,47 @@ Backwards incompatible changes until this time <em>may</em> be added by bumping 
 </code></pre>
 
 <h2>
-<a id="template-dsl" class="anchor" href="#template-dsl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Template DSL</h2>
+<a id="cli-commands" class="anchor" href="#cli-commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CLI Commands</h2>
 
-<p>The core DSL provides all of the available JSON primatives of CloudFormation in the form of ruby methods. These primatives are used to compose higher-order methods for commonly used definitions:</p>
-
-<div class="highlight highlight-source-ruby"><pre><span class="pl-k">require</span> <span class="pl-s"><span class="pl-pds">'</span>convection<span class="pl-pds">'</span></span>
-
-<span class="pl-c">## Create a new instance of Convection::Model::Template</span>
-<span class="pl-c1">Convection</span>.template <span class="pl-k">do</span>
-  description <span class="pl-s"><span class="pl-pds">'</span>An example template<span class="pl-pds">'</span></span>
-
-  parameter <span class="pl-s"><span class="pl-pds">'</span>InstanceSize<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-    type <span class="pl-s"><span class="pl-pds">'</span>String<span class="pl-pds">'</span></span>
-    description <span class="pl-s"><span class="pl-pds">'</span>Instance Size<span class="pl-pds">'</span></span>
-    default <span class="pl-s"><span class="pl-pds">'</span>m3.medium<span class="pl-pds">'</span></span>
-
-    allow <span class="pl-s"><span class="pl-pds">'</span>m3.medium<span class="pl-pds">'</span></span>
-    allow <span class="pl-s"><span class="pl-pds">'</span>m3.large<span class="pl-pds">'</span></span>
-    allow <span class="pl-s"><span class="pl-pds">'</span>m3.xlarge<span class="pl-pds">'</span></span>
-  <span class="pl-k">end</span>
-
-  <span class="pl-c">## The `resource` method can be used to define any resource</span>
-  <span class="pl-c">## supported by CloudFormation: See http://docs.aws.amazon.com/\</span>
-  <span class="pl-c">## AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html</span>
-  resource <span class="pl-s"><span class="pl-pds">'</span>AnEC2Instance<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-    type <span class="pl-s"><span class="pl-pds">'</span>AWS::EC2::Instance<span class="pl-pds">'</span></span>
-    property <span class="pl-s"><span class="pl-pds">'</span>AvailabilityZone<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>us-east-1a<span class="pl-pds">'</span></span>
-    property <span class="pl-s"><span class="pl-pds">'</span>ImageId<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-76e27e1e<span class="pl-pds">'</span></span> <span class="pl-c">## Ubuntu 14.04 hvm:ebs</span>
-    property <span class="pl-s"><span class="pl-pds">'</span>KeyName<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>
-    property <span class="pl-s"><span class="pl-pds">'</span>SecurityGroupIds<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>sg-dd733c41<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>sg-dd738df3<span class="pl-pds">'</span></span>]
-    property <span class="pl-s"><span class="pl-pds">'</span>Tags<span class="pl-pds">'</span></span>, [{
-      <span class="pl-s"><span class="pl-pds">'</span>Key<span class="pl-pds">'</span></span> =&gt; <span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>,
-      <span class="pl-s"><span class="pl-pds">'</span>Value<span class="pl-pds">'</span></span> =&gt; <span class="pl-s"><span class="pl-pds">'</span>test-1<span class="pl-pds">'</span></span>
-    }]
-
-    property <span class="pl-s"><span class="pl-pds">'</span>DisableApiTermination<span class="pl-pds">'</span></span>, <span class="pl-c1">false</span>
-  <span class="pl-k">end</span>
-
-  <span class="pl-c">## `ec2_instnce` extends `resource`. The following results in JSON</span>
-  <span class="pl-c">## identical to that of Resource[AnEC2Instance]</span>
-  ec2_instance <span class="pl-s"><span class="pl-pds">'</span>AnOtherInstance<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-    availability_zone <span class="pl-s"><span class="pl-pds">'</span>us-east-1a<span class="pl-pds">'</span></span>
-    image_id <span class="pl-s"><span class="pl-pds">'</span>ami-76e27e1e<span class="pl-pds">'</span></span>
-    key_name <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>
-
-    security_group <span class="pl-s"><span class="pl-pds">'</span>sg-dd733c41<span class="pl-pds">'</span></span>
-    security_group <span class="pl-s"><span class="pl-pds">'</span>sg-dd738df3<span class="pl-pds">'</span></span>
-
-    tag <span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>test-2<span class="pl-pds">'</span></span>
-
-    <span class="pl-c">## All of the methods of the `resource` primative are available in</span>
-    <span class="pl-c">## its children:</span>
-    property <span class="pl-s"><span class="pl-pds">'</span>DisableApiTermination<span class="pl-pds">'</span></span>, <span class="pl-c1">false</span>
-  <span class="pl-k">end</span>
-<span class="pl-k">end</span>.to_json</pre></div>
-
-<h3>
-<a id="parameters" class="anchor" href="#parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Parameters</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html</a></p>
-
-<div class="highlight highlight-source-ruby"><pre>parameter <span class="pl-s"><span class="pl-pds">'</span>InstanceType<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  type <span class="pl-s"><span class="pl-pds">'</span>String<span class="pl-pds">'</span></span>
-  description <span class="pl-s"><span class="pl-pds">'</span>Set the thing<span class="pl-cce">\'</span>s instance flavor<span class="pl-pds">'</span></span>
-  default <span class="pl-s"><span class="pl-pds">'</span>m3.medium<span class="pl-pds">'</span></span>
-
-  allow <span class="pl-s"><span class="pl-pds">'</span>m3.medium<span class="pl-pds">'</span></span>
-  allow <span class="pl-s"><span class="pl-pds">'</span>m3.large<span class="pl-pds">'</span></span>
-  allow <span class="pl-s"><span class="pl-pds">'</span>m3.xlarge<span class="pl-pds">'</span></span>
-<span class="pl-k">end</span></pre></div>
-
-<h3>
-<a id="mappings" class="anchor" href="#mappings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mappings</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html</a></p>
-
-<div class="highlight highlight-source-ruby"><pre>mapping <span class="pl-s"><span class="pl-pds">'</span>RegionalAMIs<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  item <span class="pl-s"><span class="pl-pds">'</span>us-east-1<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>hvm<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-76e27e1e<span class="pl-pds">'</span></span>
-  item <span class="pl-s"><span class="pl-pds">'</span>us-west-1<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>hvm<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-d5180890<span class="pl-pds">'</span></span>
-  item <span class="pl-s"><span class="pl-pds">'</span>us-east-1<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pv<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-64e27e0c<span class="pl-pds">'</span></span>
-  item <span class="pl-s"><span class="pl-pds">'</span>us-west-1<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pv<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-c5180880<span class="pl-pds">'</span></span>
-<span class="pl-k">end</span></pre></div>
-
-<h3>
-<a id="conditions" class="anchor" href="#conditions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conditions</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html</a></p>
-
-<div class="highlight highlight-source-ruby"><pre>condition <span class="pl-s"><span class="pl-pds">'</span>ThisCondition<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  fn_equals( fn_ref(<span class="pl-s"><span class="pl-pds">'</span>SomeParameter<span class="pl-pds">'</span></span>), <span class="pl-s"><span class="pl-pds">'</span>value_x<span class="pl-pds">'</span></span> )
-<span class="pl-k">end</span>
-
-condition <span class="pl-s"><span class="pl-pds">'</span>ThatCondition<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  fn_or(
-    fn_equals( fn_ref(<span class="pl-s"><span class="pl-pds">'</span>SomeParameter<span class="pl-pds">'</span></span>), <span class="pl-s"><span class="pl-pds">'</span>value_y<span class="pl-pds">'</span></span> ),
-    fn_equals( fn_ref(<span class="pl-s"><span class="pl-pds">'</span>SomeParameter<span class="pl-pds">'</span></span>), <span class="pl-s"><span class="pl-pds">'</span>value_z<span class="pl-pds">'</span></span> )
-  )
-<span class="pl-k">end</span></pre></div>
-
-<h3>
-<a id="resources" class="anchor" href="#resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Resources</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html</a></p>
-
-<div class="highlight highlight-source-ruby"><pre>resource <span class="pl-s"><span class="pl-pds">'</span>AnInstance<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  type <span class="pl-s"><span class="pl-pds">'</span>AWS::EC2::Instance<span class="pl-pds">'</span></span>
-
-  <span class="pl-c">## Optional condition reference</span>
-  condition <span class="pl-s"><span class="pl-pds">'</span>SomeCondition<span class="pl-pds">'</span></span>
-
-  <span class="pl-c">## Add Resource Properties</span>
-  property <span class="pl-s"><span class="pl-pds">'</span>AvailabilityZone<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>us-east-1a<span class="pl-pds">'</span></span>
-  property <span class="pl-s"><span class="pl-pds">'</span>ImageId<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ami-76e27e1e<span class="pl-pds">'</span></span> <span class="pl-c">## Ubuntu 14.04 hvm:ebs</span>
-  property <span class="pl-s"><span class="pl-pds">'</span>KeyName<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>
-  ...
-<span class="pl-k">end</span></pre></div>
-
-<p>Using a condition to set a resource property:</p>
-
-<div class="highlight highlight-source-ruby"><pre>resource <span class="pl-s"><span class="pl-pds">'</span>MySQL<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  type <span class="pl-s"><span class="pl-pds">'</span>AWS::RDS::DBInstance<span class="pl-pds">'</span></span>
-  ...
-  property <span class="pl-s"><span class="pl-pds">'</span>Iops<span class="pl-pds">'</span></span>, fn_if(<span class="pl-s"><span class="pl-pds">'</span>ThisCondition<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>1000<span class="pl-pds">'</span></span>, fn_ref(<span class="pl-s"><span class="pl-pds">'</span>AWS::NoValue<span class="pl-pds">'</span></span>))
-  ...
-<span class="pl-k">end</span></pre></div>
-
-<h3>
-<a id="outputs" class="anchor" href="#outputs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Outputs</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html</a></p>
-
-<div class="highlight highlight-source-ruby"><pre>output <span class="pl-s"><span class="pl-pds">'</span>SomeName<span class="pl-pds">'</span></span> <span class="pl-k">do</span>
-  description <span class="pl-s"><span class="pl-pds">'</span>An Important Attribute<span class="pl-pds">'</span></span>
-  value get_att(<span class="pl-s"><span class="pl-pds">'</span>Resource<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Attribute<span class="pl-pds">'</span></span>)
-
-  <span class="pl-c">## Optional condition reference</span>
-  condition <span class="pl-s"><span class="pl-pds">'</span>SomeCondition<span class="pl-pds">'</span></span>
-<span class="pl-k">end</span></pre></div>
-
-<h3>
-<a id="intrinsic-functions" class="anchor" href="#intrinsic-functions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Intrinsic Functions</h3>
-
-<p><a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html">http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html</a></p>
-
-<p>All intrinsic functions are available as helper methods:</p>
+<h6>
+<a id="converging" class="anchor" href="#converging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Converging</h6>
 
 <ul>
-<li>base64(content)</li>
-<li>fn_and(conditions...)</li>
-<li>fn_equals(value_1, value_2)</li>
-<li>fn_if(condition, value_true, value_false)</li>
-<li>fn_not(condition)</li>
-<li>fn_or(conditions...)</li>
-<li>find_in_map(map_name, key_1, key_2)</li>
-<li>get_att(resource, attr_name)</li>
-<li>get_azs(region)</li>
-<li>join(delimiter, values...)</li>
-<li>select(index, objects...)</li>
-<li>fn_ref(resource)</li>
+<li>To converge all stacks in your cloudfile run <code>convection converge</code>. If you provide the name of your stack as a additional argument such as <code>convection converge my-stack-name</code> then all stacks above and including the stack you specified will be converged.</li>
 </ul>
 
-<div class="highlight highlight-source-ruby"><pre>ec2_instance <span class="pl-s"><span class="pl-pds">"</span>TestInstanceFoo<span class="pl-pse">#{</span><span class="pl-s1"> i </span><span class="pl-pse"><span class="pl-s1">}</span></span><span class="pl-pds">"</span></span> <span class="pl-k">do</span>
-  image_id find_in_map(<span class="pl-s"><span class="pl-pds">'</span>RegionalAMIs<span class="pl-pds">'</span></span>, fn_ref(<span class="pl-s"><span class="pl-pds">'</span>AWS::Region<span class="pl-pds">'</span></span>), <span class="pl-s"><span class="pl-pds">'</span>hvm<span class="pl-pds">'</span></span>)
-  instance_type <span class="pl-s"><span class="pl-pds">'</span>m3.medium<span class="pl-pds">'</span></span>
-  key_name find_in_map(<span class="pl-s"><span class="pl-pds">'</span>RegionalKeys<span class="pl-pds">'</span></span>, fn_ref(<span class="pl-s"><span class="pl-pds">'</span>AWS::Region<span class="pl-pds">'</span></span>), <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>)
-  security_group fn_ref(<span class="pl-s"><span class="pl-pds">'</span>LousySecurityGroup<span class="pl-pds">'</span></span>)
-  subnet fn_ref(<span class="pl-s"><span class="pl-pds">"</span>TestSubnet<span class="pl-pds">"</span></span>)
-<span class="pl-k">end</span></pre></div>
-
-<h2>
-<a id="stack-control" class="anchor" href="#stack-control" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Stack Control</h2>
-
-<p>The <code>Stack</code> class provides a state wrapper for CloudFormation Stacks. It tracks the state of the managed stack, and creates/updates accordingly. <code>Stack</code> is also region-aware, and can be used within a template to define resources that depend upon availability-zones or other region-specific neuances that cannot be represented as maps or require iteration.</p>
-
-<h3>
-<a id="class-convectioncontrolstack" class="anchor" href="#class-convectioncontrolstack" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Class <code>Convection::Control::Stack</code>
-</h3>
+<h6>
+<a id="diff" class="anchor" href="#diff" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Diff</h6>
 
 <ul>
-<li>
-<p><code>.new(name, template, options = {})</code></p>
-
-<ul>
-<li>
-<em>name</em> CloudFormation Stack name</li>
-<li>
-<em>template</em> Instance of Convection::Model::Template</li>
-<li>
-<em>options</em> - Hash
-
-<ul>
-<li>
-<em>region</em> - AWS region, format <code>us-east-1</code>. Default us-east-1</li>
-<li>
-<em>credentials</em> - Optional instance of AWS::Credentials. See the <a href="http://docs.aws.amazon.com/sdkforruby/api/frames.html">AWS-SDK Documentation</a>
-</li>
-<li>
-<em>parameters</em> - Stack parameters, as a <code>Hash</code> of <code>{ key =&gt; value }</code>
-</li>
-<li>
-<em>tags</em> - Stack tags, as a <code>Hash</code> of <code>{ key =&gt; value }</code>
-</li>
-<li>
-<em>on_failure</em> - Create failure action. Default <code>DELETE</code>
-</li>
-<li>
-<em>capabilities</em> - See the <a href="http://docs.aws.amazon.com/sdkforruby/api/Aws/CloudFormation/Client.html#create_stack-instance_method">AWS-SDK Documentation</a>
-</li>
-<li>Additional options will be passed directly to <code>create_stack</code> and <code>update_stack</code>
-</li>
+<li>To display diff between your local changes and the version of your stack in cloud formation of your changes run <code>convection diff</code>.</li>
 </ul>
-</li>
+
+<h6>
+<a id="help" class="anchor" href="#help" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Help</h6>
+
+<ul>
+<li>To print out a list of available cli options with their descriptions run <code>convection help</code>.</li>
 </ul>
-</li>
-<li><p><code>#status</code> - Returns the stack status</p></li>
-<li>
-<code>#exist?</code> - Returns true if the stack exists and is not in a DELETED state</li>
-<li><code>#complete?</code></li>
-<li><code>#rollback?</code></li>
-<li><code>#fail?</code></li>
-<li>
-<code>#render</code> - Populates the provided template with any environment data included in the stack (e.g. availability zones). Returns a <code>Hash</code>
-</li>
-<li>
-<code>#to_json</code> - Render template and transofrm to a pretty-generated JSON <code>String</code>
-</li>
-<li>
-<code>#apply</code> - Renter template and create/update CloudFormation Stack</li>
-<li>
-<code>#delete</code> - Delete CloudFormation Stack</li>
-<li>
-<code>#availability_zones(&amp;block)</code> - Return an array of strings representing the region's availability zones. Provided codeblock will be called for each AZ.</li>
+
+<h6>
+<a id="print" class="anchor" href="#print" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Print</h6>
+
+<ul>
+<li>To print out the cloud formation template for a specific stack run <code>convection print my-stack-name</code>.</li>
+</ul>
+
+<h6>
+<a id="validate" class="anchor" href="#validate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Validate</h6>
+
+<ul>
+<li>To validate your stack is not missing a required resource run <code>convection validate my-stack-name</code>.</li>
 </ul>
 
 <h2>
-<a id="futures" class="anchor" href="#futures" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Futures</h2>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
 
-<p>*</p>
+<p>We highly recommend consulting the <a href="./docs/getting-started.md">getting started guide</a> for a in depth walk through on how to to set up your project and create and deploy a stack. Example stacks and resources are available in the <a href="https://github.com/rapid7/convection/tree/master/example">convection/example</a> folder</p>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
