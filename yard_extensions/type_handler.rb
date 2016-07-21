@@ -104,7 +104,7 @@ class TypeDslHandler < YARD::Handlers::Ruby::Base
     'AWS::ElastiCache::ReplicationGroup' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html',
     'AWS::ElastiCache::SecurityGroup' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html',
     'AWS::ElastiCache::SecurityGroupIngress' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html',
-    'AWS::ElastiCache::SubnetGroup ' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html',
+    'AWS::ElastiCache::SubnetGroup' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html',
     'AWS::ElasticBeanstalk::Application' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html',
     'AWS::ElasticBeanstalk::ApplicationVersion' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html',
     'AWS::ElasticBeanstalk::ConfigurationTemplate' => 'http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html',
