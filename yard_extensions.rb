@@ -1,5 +1,5 @@
-
-class MyModuleHandler < YARD::Handlers::Ruby::Base
+# A YARD handler to deal with the "property" DSL method.
+class PropertyDslHandler < YARD::Handlers::Ruby::Base
   handles method_call(:property)
 
   def process
@@ -11,6 +11,5 @@ class MyModuleHandler < YARD::Handlers::Ruby::Base
     object.dynamic = true
     object.scope = :class
     object.name
-
   end
 end
