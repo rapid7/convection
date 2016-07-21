@@ -6,7 +6,6 @@ module Convection
       class Resource
         # Creates an Amazon CloudFront web distribution.
         #
-        # @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution.html AWS::CloudFront::Distribution
         # @example
         #   cloudfront_distribution 'MySiteWebsite' do
         #     config do

@@ -5,10 +5,10 @@ class TypeDslHandler < YARD::Handlers::Ruby::Base
 
   def process
     name = call_params.first.dup
-    return if namespace.docstring.include?('docs.aws.amazon.com/AWSCloudFormation')
 
     url = url_for_name(name)
-    namespace.docstring << "\n\nSee also the CloudFormation documentation for {#{url} #{name}}."
+    cf_docs_tag = YARD::Docstring.new("@see #{url} #{name} CloudFormation documentation").tag('see')
+    namespace.docstring.add_tag(cf_docs_tag)
   end
 
   private
