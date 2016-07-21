@@ -2,7 +2,7 @@
 class TypeDslHandler < YARD::Handlers::Ruby::Base
   IRREGULAR_SLUGS ||= {
     'AWS::ElasticLoadBalancing::LoadBalancer' => 'aws-properties-ec2-elb.html'
-  }
+  }.freeze
 
   handles method_call(:type)
   namespace_only # Do not process nested method calls.
