@@ -38,7 +38,7 @@ end
 }
 ```
 
-3. Lets define the properties. Map the json key value pairs to ruby. `"DomainName" : String` in json will be defined in our template as `property :domain_name, 'DomainName'`. So with our first resource it our new convection class will look like
+3. Lets define the properties. Map the json key value pairs to ruby. `"DomainName" : String` in json will be defined in our template as `property :domain_name, 'DomainName'`. So with our first property added our new convection resource class will look like
 
 ```ruby
 require_relative '../resource'
@@ -62,7 +62,7 @@ end
 
 4. You have probably noticed that some of these parameters expect a string array. For those we will add `:type => :list`. See below
 
- ```ruby
+```ruby
 require_relative '../resource'
 
 module Convection
@@ -84,11 +84,13 @@ module Convection
     end
   end
 end
- ```
+```
 
-5. To add tag support to the resource add the below block
+5. To add tag support to the resource add the below block and include
 
 ```ruby
+include Model::Mixin::Taggable
+
 def render(*args)
   super.tap do |resource|
     render_tags(resource)
@@ -109,6 +111,8 @@ module Convection
         # AWS::EC2::DHCPOptions
         ##
         class DHCPOptions < Resource
+          include Model::Mixin::Taggable
+
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
           property :domain_name_servers, 'DomainNameServers', :type => :list
@@ -121,7 +125,6 @@ module Convection
               render_tags(resource)
             end
           end
-
         end
       end
     end

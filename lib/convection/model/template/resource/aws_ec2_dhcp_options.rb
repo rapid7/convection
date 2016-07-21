@@ -8,6 +8,7 @@ module Convection
         # AWS::EC2::DHCPOptions
         ##
         class DHCPOptions < Resource
+          include Model::Mixin::Taggable
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
           property :domain_name_servers, 'DomainNameServers', :type => :list
@@ -20,7 +21,6 @@ module Convection
               render_tags(resource)
             end
           end
-
         end
       end
     end
