@@ -2,8 +2,8 @@
 The following document is a list of guidelines for making contributing to the Convection project.
 
 ## Table Of Contents
-* [Developing](https://github.com/rapid7/convection/blob/master/CONTRIBUTING.md#developing)
-  * [Branches](https://github.com/rapid7/convection/blob/master/CONTRIBUTING.md#branches)
+* [Developing](#developing)
+  * [Branches](#branches)
 
 ## Developing
 ### Branches
