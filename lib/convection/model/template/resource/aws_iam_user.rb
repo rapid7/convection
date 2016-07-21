@@ -35,9 +35,23 @@ module Convection
   module Model
     class Template
       class Resource
-        ##
-        # AWS::IAM::User
-        ##
+        # @example
+        #   iam_user 'User' do
+        #     path "/my_path/region/example-cloud/"
+        #     with_key
+        #
+        #     policy 'bucket-policy' do
+        #       allow do
+        #         s3_resource 'bucket.blah.com', '*'
+        #         s3_resource 'bucket.blah.com'
+        #
+        #         action 's3:GetObject'
+        #         action 's3:PutObject'
+        #         action 's3:DeleteObject'
+        #         action 's3:ListBucket'
+        #       end
+        #     end
+        #   end
         class IAMUser < Resource
           include DSL::Template::Resource::IAMUser
 
