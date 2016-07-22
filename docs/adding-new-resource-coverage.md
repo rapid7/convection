@@ -207,7 +207,7 @@ class Convection::Model::Template::Resource
   end
 end
 ```
-1. Test time, below is our complete spec file with test for the defined parameters
+1. Test time, below is our complete spec file with test for the defined parameters. Note in the test where we reference values in the subject object `subject['DomainName']` the hash key we use is the one set in our property block `property :domain_name, 'DomainName'`.
 ```ruby
 require 'spec_helper'
 

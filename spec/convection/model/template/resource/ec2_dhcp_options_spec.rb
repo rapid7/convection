@@ -4,7 +4,6 @@ class Convection::Model::Template::Resource
   describe DHCPOptions do
     let(:template) do
       Convection.template do
-
         ec2_dhcp_options 'TestOptions' do
           domain_name 'example.com'
           domain_name_servers  '10.0.0.1', '10.0.0.2'
