@@ -2,7 +2,7 @@
 Convection builds on top of the [Amazon CloudFormation](https://aws.amazon.com/cloudformation/) resource managment tooling. Additionally it adds support for providing additional functionalities using thirdparty tools (AWS APIs or otherwise).
 
 ## Convection Stacks
-A Convection Stack (see [Convection::Control::Stack][convection-stack-api)) acts as a Ruby wrapper for a CloudFormation stack. When `Convection::Control::Stack#to_json` is called it is rendered into the CloudFormation template format to be pushed to CloudFormation.
+A Convection Stack (see [Convection::Control::Stack][convection-stack-api]) acts as a Ruby wrapper for a CloudFormation stack. When `Convection::Control::Stack#to_json` is called it is rendered into the CloudFormation template format to be pushed to CloudFormation.
 
 Convection adds the notion of state by comparing the remote stack (from CloudFormation) and local stack (rendered from your Ruby DSL template).
 
