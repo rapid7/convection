@@ -13,7 +13,7 @@ module Convection
         ##
         # AWS::EC2::DHCPOptions
         ##
-        class DHCPOptions < Resource
+        class EC2DHCPOptions < Resource
           type 'AWS::EC2::DHCPOptions'
         end
       end
@@ -50,7 +50,7 @@ module Convection
         ##
         # AWS::EC2::DHCPOptions
         ##
-        class DHCPOptions < Resource
+        class EC2DHCPOptions < Resource
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
         end
@@ -72,7 +72,7 @@ module Convection
         ##
         # AWS::EC2::DHCPOptions
         ##
-        class DHCPOptions < Resource
+        class EC2DHCPOptions < Resource
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
           property :domain_name_servers, 'DomainNameServers', :type => :list
@@ -110,7 +110,7 @@ module Convection
         ##
         # AWS::EC2::DHCPOptions
         ##
-        class DHCPOptions < Resource
+        class EC2DHCPOptions < Resource
           include Model::Mixin::Taggable
 
           type 'AWS::EC2::DHCPOptions'
@@ -177,7 +177,7 @@ end
 require 'spec_helper'
 
 class Convection::Model::Template::Resource
-  describe DHCPOptions do
+  describe EC2DHCPOptions do
     let(:template) do
       Convection.template do
 

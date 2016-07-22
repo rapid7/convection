@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 class Convection::Model::Template::Resource
-  describe DHCPOptions do
+  describe EC2DHCPOptions do
     let(:template) do
       Convection.template do
         ec2_dhcp_options 'TestOptions' do

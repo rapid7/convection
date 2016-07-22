@@ -7,7 +7,7 @@ module Convection
         ##
         # AWS::EC2::DHCPOptions
         ##
-        class DHCPOptions < Resource
+        class EC2DHCPOptions < Resource
           include Model::Mixin::Taggable
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
