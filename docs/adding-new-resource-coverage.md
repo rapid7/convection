@@ -2,7 +2,6 @@
 This guide will document how convection support for AWS::EC2::DHCPOptions was added. This example can be followed to add coverage for other CloudFormation resources
 
 1. Create a new class `convection/lib/convection/model/template/resource/aws_ec2_dhcp_options.rb` See the example below.
-
 ```ruby
 require_relative '../resource'
 
@@ -21,9 +20,7 @@ module Convection
   end
 end
 ```
-
 2. Go to the CloudFormation resource documentation and use that as a guide for how you will define the resource properties. Viewing the [DHCPOptions] (http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html) api doc we can see that we have several resource properties we will need to handle.
-
 ```json
 {
    "Type" : "AWS::EC2::DHCPOptions",
@@ -37,9 +34,7 @@ end
    }
 }
 ```
-
 3. Lets define the properties. Map the json key value pairs to ruby. `"DomainName" : String` in json will be defined in our template as `property :domain_name, 'DomainName'`. So with our first property added our new convection resource class will look like
-
 ```ruby
 require_relative '../resource'
 
@@ -59,9 +54,7 @@ module Convection
   end
 end
 ```
-
 4. You have probably noticed that some of these parameters expect a string array. For those we will add `:type => :list`. See below
-
 ```ruby
 require_relative '../resource'
 
@@ -85,9 +78,7 @@ module Convection
   end
 end
 ```
-
 5. To add tag support to the resource add the below block and include
-
 ```ruby
 include Model::Mixin::Taggable
 
@@ -97,9 +88,7 @@ def render(*args)
   end
 end
 ```
-
 6. The completed class should look like the below. Once you are finished developing the class add a yard doc example.
-
 ```ruby
 require_relative '../resource'
 
@@ -140,7 +129,6 @@ module Convection
   end
 end
 ```
-
 7. Unit Tests! Adding tests for resources is simple, create a new test class. `convection/spec/convection/model/template/resource/ec2_dhcp_options_spec.rb`
 8. Set up the basic structure of the class.
 ```ruby
@@ -180,7 +168,6 @@ class Convection::Model::Template::Resource
   end
 end
 ```
-
 10. Lets add some helper methods to get retrieve our template parameters. See below, NOTE we added the `subject` block and `template_json` method.
 ```ruby
 require 'spec_helper'
@@ -216,12 +203,12 @@ class Convection::Model::Template::Resource
   end
 end
 ```
-1. Test time, below is our complete spec file with test for the defined parameters. Note in the test where we reference values in the subject object `subject['DomainName']` the hash key we use is the one set in our property block `property :domain_name, 'DomainName'`.
+11. Test time, below is our complete spec file with test for the defined parameters. Note in the test where we reference values in the subject object `subject['DomainName']` the hash key we use is the one set in our property block `property :domain_name, 'DomainName'`.
 ```ruby
 require 'spec_helper'
 
 class Convection::Model::Template::Resource
-  describe DHCPOptions do
+  describe EC2DHCPOptions do
     let(:template) do
       Convection.template do
 
