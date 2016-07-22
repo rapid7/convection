@@ -98,7 +98,7 @@ def render(*args)
 end
 ```
 
-6. The completed class should look like the below
+6. The completed class should look like the below. Once you are finished developing the class add a yard doc example.
 
 ```ruby
 require_relative '../resource'
@@ -109,10 +109,19 @@ module Convection
       class Resource
         ##
         # AWS::EC2::DHCPOptions
+        #
+        # @example
+        #   ec2_dhcp_options 'TestOptions' do
+        #     domain_name 'example.com'
+        #     domain_name_servers  '10.0.0.1', '10.0.0.2'
+        #     netbios_name_servers '10.0.0.1', '10.0.0.2'
+        #     netbios_node_type 1
+        #     ntp_servers '10.0.0.1', '10.0.0.2'
+        #     tag 'Name', 'Test'
+        #   end
         ##
         class EC2DHCPOptions < Resource
           include Model::Mixin::Taggable
-
           type 'AWS::EC2::DHCPOptions'
           property :domain_name, 'DomainName'
           property :domain_name_servers, 'DomainNameServers', :type => :list
