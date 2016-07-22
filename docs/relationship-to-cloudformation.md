@@ -18,7 +18,7 @@ You may have multiple Cloudfiles for your different regions or for your test/pro
 name 'test-0'
 region 'us-east-1'
 
-# Mock RDS in the test environment for quicker turn around.
+# Mock RDS (create a ec2 mysql server, etc.) in the test environment for quicker turn around.
 stack 'rds', Templates::MOCK_RDS
 ```
 
@@ -44,7 +44,7 @@ stack 'cdn', Templates::CDN
 name 'prod-1'
 region 'us-west-1'
 
-# Instead of re-creating a CDN per region create a "cdn" mirror in this region.
+# Instead of re-creating a CDN per region create a "cdn mirror" in this region.
 stack 'cdn', Templates::CDN_MIRROR
 ```
 
