@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: Convection::Model
+  
+    &mdash; Documentation by YARD 0.9.2
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "Convection::Model";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (M)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Convection.html" title="Convection (module)">Convection</a></span></span>
+     &raquo; 
+    <span class="title">Model</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <iframe id="search_frame" src="../class_list.html"></iframe>
+
+      <div id="content"><h1>Module: Convection::Model
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/convection/model/diff.rb<span class="defines">,<br />
+  lib/convection/model/event.rb,<br /> lib/convection/model/template.rb,<br /> lib/convection/model/cloudfile.rb,<br /> lib/convection/model/attributes.rb,<br /> lib/convection/model/mixin/policy.rb,<br /> lib/convection/model/mixin/colorize.rb,<br /> lib/convection/model/mixin/taggable.rb,<br /> lib/convection/model/mixin/protocol.rb,<br /> lib/convection/model/template/output.rb,<br /> lib/convection/model/template/mapping.rb,<br /> lib/convection/model/mixin/cidr_block.rb,<br /> lib/convection/model/template/metadata.rb,<br /> lib/convection/model/template/resource.rb,<br /> lib/convection/model/mixin/conditional.rb,<br /> lib/convection/model/template/parameter.rb,<br /> lib/convection/model/template/condition.rb,<br /> lib/convection/model/template/resource/aws_elb.rb,<br /> lib/convection/model/template/resource_property.rb,<br /> lib/convection/model/template/resource_attribute.rb,<br /> lib/convection/model/template/resource/aws_ec2_eip.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc.rb,<br /> lib/convection/model/template/resource/aws_kms_key.rb,<br /> lib/convection/model/template/resource/aws_iam_role.rb,<br /> lib/convection/model/template/resource/aws_iam_user.rb,<br /> lib/convection/model/template/resource/aws_s3_bucket.rb,<br /> lib/convection/model/template/resource/aws_iam_group.rb,<br /> lib/convection/model/template/resource/aws_sns_topic.rb,<br /> lib/convection/model/template/resource/aws_ec2_route.rb,<br /> lib/convection/model/template/resource/aws_sqs_queue.rb,<br /> lib/convection/model/template/resource/aws_ec2_volume.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet.rb,<br /> lib/convection/model/template/resource/aws_iam_policy.rb,<br /> lib/convection/model/template/resource/aws_events_rule.rb,<br /> lib/convection/model/template/resource/aws_ec2_instance.rb,<br /> lib/convection/model/template/resource/aws_logs_loggroup.rb,<br /> lib/convection/model/template/resource/aws_iam_access_key.rb,<br /> lib/convection/model/template/resource/aws_ec2_network_acl.rb,<br /> lib/convection/model/template/resource/aws_lambda_function.rb,<br /> lib/convection/model/template/resource/aws_rds_db_instance.rb,<br /> lib/convection/model/template/resource/aws_ec2_nat_gateway.rb,<br /> lib/convection/model/template/resource/aws_ec2_route_table.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_gateway.rb,<br /> lib/convection/model/template/resource/aws_sns_topic_policy.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_endpoint.rb,<br /> lib/convection/model/template/resource/aws_ec2_dhcp_options.rb,<br /> lib/convection/model/template/resource/aws_sqs_queue_policy.rb,<br /> lib/convection/model/template/resource/aws_s3_bucket_policy.rb,<br /> lib/convection/model/template/resource/aws_lambda_permission.rb,<br /> lib/convection/model/template/resource/aws_route53_recordset.rb,<br /> lib/convection/model/template/resource/aws_cloud_watch_alarm.rb,<br /> lib/convection/model/template/resource/aws_iam_managed_policy.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_connection.rb,<br /> lib/convection/model/template/resource/aws_ec2_security_group.rb,<br /> lib/convection/model/template/resource/aws_rds_db_subnet_group.rb,<br /> lib/convection/model/template/resource/aws_route53_hosted_zone.rb,<br /> lib/convection/model/template/resource/aws_ec2_eip_association.rb,<br /> lib/convection/model/template/resource/aws_elasticache_cluster.rb,<br /> lib/convection/model/template/resource_attribute/update_policy.rb,<br /> lib/convection/model/template/resource/aws_iam_instance_profile.rb,<br /> lib/convection/model/template/resource/aws_ec2_customer_gateway.rb,<br /> lib/convection/model/template/resource/aws_route53_health_check.rb,<br /> lib/convection/model/template/resource/aws_ec2_internet_gateway.rb,<br /> lib/convection/model/template/resource/aws_rds_db_security_group.rb,<br /> lib/convection/model/template/resource/aws_ec2_network_acl_entry.rb,<br /> lib/convection/model/template/resource/aws_rds_db_parameter_group.rb,<br /> lib/convection/model/template/resource/aws_cloudfront_distribution.rb,<br /> lib/convection/model/template/resource_property/aws_ec2_mount_point.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_connection_route.rb,<br /> lib/convection/model/template/resource/aws_elasticache_subnet_group.rb,<br /> lib/convection/model/template/resource/aws_ec2_security_group_ingres.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_gateway_attachment.rb,<br /> lib/convection/model/template/resource_property/aws_lambda_vpc_config.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_origin.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_peering_connection.rb,<br /> lib/convection/model/template/resource/aws_elasticache_security_group.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_logging.rb,<br /> lib/convection/model/template/resource/aws_directory_service_simple_ad.rb,<br /> lib/convection/model/template/resource_property/aws_events_rule_target.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_scaling_policy.rb,<br /> lib/convection/model/template/resource/aws_elasticache_parameter_group.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_application.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_environment.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_s3origin.rb,<br /> lib/convection/model/template/resource_property/aws_lambda_function_code.rb,<br /> lib/convection/model/template/resource/aws_elasticache_replication_group.rb,<br /> lib/convection/model/template/resource_property/aws_s3_cors_configuration.rb,<br /> lib/convection/model/template/resource_property/aws_ec2_network_interface.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_auto_scaling_group.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_customorigin.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_restrictions.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_gateway_route_propagation.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_launch_configuration.rb,<br /> lib/convection/model/template/resource_property/aws_ec2_block_device_mapping.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_cachebehavior.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_georestriction.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet_network_acl_association.rb,<br /> lib/convection/model/template/resource/aws_elasticache_security_group_ingress.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet_route_table_association.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_forwardedvalues.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_applicationversion.rb,<br /> lib/convection/model/template/resource_property/aws_s3_cors_configuration_rule.rb,<br /> lib/convection/model/template/resource_property/aws_ec2_block_store_block_device.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_viewercertificate.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_configurationtemplate.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_distribution_config.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_customerrorresponse.rb,<br /> lib/convection/model/template/resource_property/aws_cloudfront_defaultcachebehavior.rb</span>
+</dd>
+  </dl>
+  
+</div>
+
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Model/Mixin.html" title="Convection::Model::Mixin (module)">Mixin</a></span>
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Model/Attributes.html" title="Convection::Model::Attributes (class)">Attributes</a></span>, <span class='object_link'><a href="Model/Cloudfile.html" title="Convection::Model::Cloudfile (class)">Cloudfile</a></span>, <span class='object_link'><a href="Model/Collection.html" title="Convection::Model::Collection (class)">Collection</a></span>, <span class='object_link'><a href="Model/Diff.html" title="Convection::Model::Diff (class)">Diff</a></span>, <span class='object_link'><a href="Model/Event.html" title="Convection::Model::Event (class)">Event</a></span>, <span class='object_link'><a href="Model/Smash.html" title="Convection::Model::Smash (class)">Smash</a></span>, <span class='object_link'><a href="Model/Tags.html" title="Convection::Model::Tags (class)">Tags</a></span>, <span class='object_link'><a href="Model/Template.html" title="Convection::Model::Template (class)">Template</a></span>
+    
+  
+</p>
+
+
+
+
+
+
+
+
+
+</div>
+
+      <div id="footer">
+  Generated on Sat Jul 23 16:22:11 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.2 (ruby-2.2.2).
+</div>
+
+    </div>
+  </body>
+</html>

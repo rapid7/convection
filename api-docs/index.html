@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.2
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <iframe id="search_frame" src="class_list.html"></iframe>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-Convection+rdoc-image-3Ahttps-3A-2F-2Ftravis-ci.org-2Frapid7-2Fconvection.svg">Convection <a href="https://travis-ci.org/rapid7/convection"><img src="https://travis-ci.org/rapid7/convection.svg"></a></h1>
+
+<p><em>A fully generic, modular DSL for AWS CloudFormation</em></p>
+
+<p>This gem aims to provide a reusable model for AWS CloudFormation in Ruby.
+It exposes a DSL for template definition, and a simple, decoupled
+abstraction of a CloudFormation Stack to compile and apply templates.</p>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>Please read our <a href="CONTRIBUTING.md">Contributing guidelines</a> for
+more information on contributing to Convection.</p>
+
+<h2 id="label-Installation">Installation</h2>
+
+<p>Add this line to your application&#39;s Gemfile:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>convection</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre class="code ruby"><code class="ruby">$ bundle</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre class="code ruby"><code class="ruby">$ gem install convection</code></pre>
+
+<h2 id="label-CLI+Commands">CLI Commands</h2>
+
+<h6 id="label-Converging">Converging</h6>
+<ul><li>
+<p>To converge all stacks in your cloudfile run <code>convection
+converge</code>. If you provide the name of your stack as a additional
+argument such as <code>convection converge my-stack-name</code> then all
+stacks above and including the stack you specified will be converged.</p>
+</li></ul>
+
+<h6 id="label-Diff">Diff</h6>
+<ul><li>
+<p>To display diff between your local changes and the version of your stack in
+cloud formation of your changes run <code>convection diff</code>.</p>
+</li></ul>
+
+<h6 id="label-Help">Help</h6>
+<ul><li>
+<p>To print out a list of available cli options with their descriptions run
+<code>convection help</code>.</p>
+</li></ul>
+
+<h6 id="label-Print">Print</h6>
+<ul><li>
+<p>To print out the cloud formation template for a specific stack run
+<code>convection print my-stack-name</code>.</p>
+</li></ul>
+
+<h6 id="label-Validate">Validate</h6>
+<ul><li>
+<p>To validate your stack is not missing a required resource run
+<code>convection validate my-stack-name</code>.</p>
+</li></ul>
+
+<h2 id="label-Documentation">Documentation</h2>
+
+<p>We highly recommend consulting the <a
+href="./docs/getting-started.md">getting started guide</a> for a in depth
+walk through on how to to set up your project and create and deploy a
+stack. Example stacks and resources are available in the <a
+href="https://github.com/rapid7/convection/tree/master/example">convection/example</a>
+folder</p>
+
+<h2 id="label-License">License</h2>
+
+<p><em>Copyright © 2015 John Manero, Rapid7 LLC.</em></p>
+
+<pre class="code ruby"><code class="ruby">MIT License
+===========
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+&quot;Software&quot;), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</code></pre>
+</div></div>
+
+      <div id="footer">
+  Generated on Sat Jul 23 16:22:11 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.2 (ruby-2.2.2).
+</div>
+
+    </div>
+  </body>
+</html>

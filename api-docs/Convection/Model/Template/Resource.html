@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Convection::Model::Template::Resource
+  
+    &mdash; Documentation by YARD 0.9.2
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "Convection::Model::Template::Resource";
+  relpath = '../../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../../class_list.html"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../../_index.html">Index (R)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../Convection.html" title="Convection (module)">Convection</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Model.html" title="Convection::Model (module)">Model</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Template.html" title="Convection::Model::Template (class)">Template</a></span></span>
+     &raquo; 
+    <span class="title">Resource</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <iframe id="search_frame" src="../../../class_list.html"></iframe>
+
+      <div id="content"><h1>Class: Convection::Model::Template::Resource
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Convection::Model::Template::Resource</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="../../DSL/Helpers.html" title="Convection::DSL::Helpers (module)">DSL::Helpers</a></span>, <span class='object_link'><a href="../../DSL/Template/Resource.html" title="Convection::DSL::Template::Resource (module)">DSL::Template::Resource</a></span>, <span class='object_link'><a href="../Mixin/Conditional.html" title="Convection::Model::Mixin::Conditional (module)">Mixin::Conditional</a></span></dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/convection/model/template/resource.rb<span class="defines">,<br />
+  lib/convection/model/template/resource/aws_elb.rb,<br /> lib/convection/model/template/resource/aws_ec2_eip.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc.rb,<br /> lib/convection/model/template/resource/aws_kms_key.rb,<br /> lib/convection/model/template/resource/aws_iam_role.rb,<br /> lib/convection/model/template/resource/aws_iam_user.rb,<br /> lib/convection/model/template/resource/aws_s3_bucket.rb,<br /> lib/convection/model/template/resource/aws_iam_group.rb,<br /> lib/convection/model/template/resource/aws_sns_topic.rb,<br /> lib/convection/model/template/resource/aws_ec2_route.rb,<br /> lib/convection/model/template/resource/aws_sqs_queue.rb,<br /> lib/convection/model/template/resource/aws_ec2_volume.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet.rb,<br /> lib/convection/model/template/resource/aws_iam_policy.rb,<br /> lib/convection/model/template/resource/aws_events_rule.rb,<br /> lib/convection/model/template/resource/aws_ec2_instance.rb,<br /> lib/convection/model/template/resource/aws_logs_loggroup.rb,<br /> lib/convection/model/template/resource/aws_iam_access_key.rb,<br /> lib/convection/model/template/resource/aws_ec2_network_acl.rb,<br /> lib/convection/model/template/resource/aws_lambda_function.rb,<br /> lib/convection/model/template/resource/aws_rds_db_instance.rb,<br /> lib/convection/model/template/resource/aws_ec2_nat_gateway.rb,<br /> lib/convection/model/template/resource/aws_ec2_route_table.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_gateway.rb,<br /> lib/convection/model/template/resource/aws_sns_topic_policy.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_endpoint.rb,<br /> lib/convection/model/template/resource/aws_ec2_dhcp_options.rb,<br /> lib/convection/model/template/resource/aws_sqs_queue_policy.rb,<br /> lib/convection/model/template/resource/aws_s3_bucket_policy.rb,<br /> lib/convection/model/template/resource/aws_lambda_permission.rb,<br /> lib/convection/model/template/resource/aws_route53_recordset.rb,<br /> lib/convection/model/template/resource/aws_cloud_watch_alarm.rb,<br /> lib/convection/model/template/resource/aws_iam_managed_policy.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_connection.rb,<br /> lib/convection/model/template/resource/aws_ec2_security_group.rb,<br /> lib/convection/model/template/resource/aws_rds_db_subnet_group.rb,<br /> lib/convection/model/template/resource/aws_route53_hosted_zone.rb,<br /> lib/convection/model/template/resource/aws_ec2_eip_association.rb,<br /> lib/convection/model/template/resource/aws_elasticache_cluster.rb,<br /> lib/convection/model/template/resource/aws_iam_instance_profile.rb,<br /> lib/convection/model/template/resource/aws_ec2_customer_gateway.rb,<br /> lib/convection/model/template/resource/aws_route53_health_check.rb,<br /> lib/convection/model/template/resource/aws_ec2_internet_gateway.rb,<br /> lib/convection/model/template/resource/aws_rds_db_security_group.rb,<br /> lib/convection/model/template/resource/aws_ec2_network_acl_entry.rb,<br /> lib/convection/model/template/resource/aws_rds_db_parameter_group.rb,<br /> lib/convection/model/template/resource/aws_cloudfront_distribution.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_connection_route.rb,<br /> lib/convection/model/template/resource/aws_elasticache_subnet_group.rb,<br /> lib/convection/model/template/resource/aws_ec2_security_group_ingres.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_gateway_attachment.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpc_peering_connection.rb,<br /> lib/convection/model/template/resource/aws_elasticache_security_group.rb,<br /> lib/convection/model/template/resource/aws_directory_service_simple_ad.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_scaling_policy.rb,<br /> lib/convection/model/template/resource/aws_elasticache_parameter_group.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_application.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_environment.rb,<br /> lib/convection/model/template/resource/aws_elasticache_replication_group.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_auto_scaling_group.rb,<br /> lib/convection/model/template/resource/aws_ec2_vpn_gateway_route_propagation.rb,<br /> lib/convection/model/template/resource/aws_auto_scaling_launch_configuration.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet_network_acl_association.rb,<br /> lib/convection/model/template/resource/aws_elasticache_security_group_ingress.rb,<br /> lib/convection/model/template/resource/aws_ec2_subnet_route_table_association.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_applicationversion.rb,<br /> lib/convection/model/template/resource/aws_elasticbeanstalk_configurationtemplate.rb</span>
+</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Resource</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><div id="subclasses">
+  <h2>Direct Known Subclasses</h2>
+  <p class="children"><span class='object_link'><a href="Resource/AutoScalingGroup.html" title="Convection::Model::Template::Resource::AutoScalingGroup (class)">AutoScalingGroup</a></span>, <span class='object_link'><a href="Resource/CloudFrontDistribution.html" title="Convection::Model::Template::Resource::CloudFrontDistribution (class)">CloudFrontDistribution</a></span>, <span class='object_link'><a href="Resource/CloudWatchAlarm.html" title="Convection::Model::Template::Resource::CloudWatchAlarm (class)">CloudWatchAlarm</a></span>, <span class='object_link'><a href="Resource/DirectoryServiceSimpleAD.html" title="Convection::Model::Template::Resource::DirectoryServiceSimpleAD (class)">DirectoryServiceSimpleAD</a></span>, <span class='object_link'><a href="Resource/EC2CustomerGateway.html" title="Convection::Model::Template::Resource::EC2CustomerGateway (class)">EC2CustomerGateway</a></span>, <span class='object_link'><a href="Resource/EC2DHCPOptions.html" title="Convection::Model::Template::Resource::EC2DHCPOptions (class)">EC2DHCPOptions</a></span>, <span class='object_link'><a href="Resource/EC2EIP.html" title="Convection::Model::Template::Resource::EC2EIP (class)">EC2EIP</a></span>, <span class='object_link'><a href="Resource/EC2Instance.html" title="Convection::Model::Template::Resource::EC2Instance (class)">EC2Instance</a></span>, <span class='object_link'><a href="Resource/EC2InternetGateway.html" title="Convection::Model::Template::Resource::EC2InternetGateway (class)">EC2InternetGateway</a></span>, <span class='object_link'><a href="Resource/EC2NatGateway.html" title="Convection::Model::Template::Resource::EC2NatGateway (class)">EC2NatGateway</a></span>, <span class='object_link'><a href="Resource/EC2NetworkACL.html" title="Convection::Model::Template::Resource::EC2NetworkACL (class)">EC2NetworkACL</a></span>, <span class='object_link'><a href="Resource/EC2NetworkACLEntry.html" title="Convection::Model::Template::Resource::EC2NetworkACLEntry (class)">EC2NetworkACLEntry</a></span>, <span class='object_link'><a href="Resource/EC2Route.html" title="Convection::Model::Template::Resource::EC2Route (class)">EC2Route</a></span>, <span class='object_link'><a href="Resource/EC2RouteTable.html" title="Convection::Model::Template::Resource::EC2RouteTable (class)">EC2RouteTable</a></span>, <span class='object_link'><a href="Resource/EC2SecurityGroup.html" title="Convection::Model::Template::Resource::EC2SecurityGroup (class)">EC2SecurityGroup</a></span>, <span class='object_link'><a href="Resource/EC2SecurityGroup/Rule.html" title="Convection::Model::Template::Resource::EC2SecurityGroup::Rule (class)">EC2SecurityGroup::Rule</a></span>, <span class='object_link'><a href="Resource/EC2SecurityGroupIngres.html" title="Convection::Model::Template::Resource::EC2SecurityGroupIngres (class)">EC2SecurityGroupIngres</a></span>, <span class='object_link'><a href="Resource/EC2Subnet.html" title="Convection::Model::Template::Resource::EC2Subnet (class)">EC2Subnet</a></span>, <span class='object_link'><a href="Resource/EC2SubnetNetworkACLAssociation.html" title="Convection::Model::Template::Resource::EC2SubnetNetworkACLAssociation (class)">EC2SubnetNetworkACLAssociation</a></span>, <span class='object_link'><a href="Resource/EC2SubnetRouteTableAssociation.html" title="Convection::Model::Template::Resource::EC2SubnetRouteTableAssociation (class)">EC2SubnetRouteTableAssociation</a></span>, <span class='object_link'><a href="Resource/EC2VPC.html" title="Convection::Model::Template::Resource::EC2VPC (class)">EC2VPC</a></span>, <span class='object_link'><a href="Resource/EC2VPCEndpoint.html" title="Convection::Model::Template::Resource::EC2VPCEndpoint (class)">EC2VPCEndpoint</a></span>, <span class='object_link'><a href="Resource/EC2VPCGatewayAttachment.html" title="Convection::Model::Template::Resource::EC2VPCGatewayAttachment (class)">EC2VPCGatewayAttachment</a></span>, <span class='object_link'><a href="Resource/EC2VPCPeeringConnection.html" title="Convection::Model::Template::Resource::EC2VPCPeeringConnection (class)">EC2VPCPeeringConnection</a></span>, <span class='object_link'><a href="Resource/EC2VPNConnection.html" title="Convection::Model::Template::Resource::EC2VPNConnection (class)">EC2VPNConnection</a></span>, <span class='object_link'><a href="Resource/EC2VPNConnectionRoute.html" title="Convection::Model::Template::Resource::EC2VPNConnectionRoute (class)">EC2VPNConnectionRoute</a></span>, <span class='object_link'><a href="Resource/EC2VPNGateway.html" title="Convection::Model::Template::Resource::EC2VPNGateway (class)">EC2VPNGateway</a></span>, <span class='object_link'><a href="Resource/EC2VPNGatewayRoutePropagation.html" title="Convection::Model::Template::Resource::EC2VPNGatewayRoutePropagation (class)">EC2VPNGatewayRoutePropagation</a></span>, <span class='object_link'><a href="Resource/EC2Volume.html" title="Convection::Model::Template::Resource::EC2Volume (class)">EC2Volume</a></span>, <span class='object_link'><a href="Resource/EIPAssociation.html" title="Convection::Model::Template::Resource::EIPAssociation (class)">EIPAssociation</a></span>, <span class='object_link'><a href="Resource/ELB.html" title="Convection::Model::Template::Resource::ELB (class)">ELB</a></span>, <span class='object_link'><a href="Resource/ElastiCacheCluster.html" title="Convection::Model::Template::Resource::ElastiCacheCluster (class)">ElastiCacheCluster</a></span>, <span class='object_link'><a href="Resource/ElastiCacheParameterGroup.html" title="Convection::Model::Template::Resource::ElastiCacheParameterGroup (class)">ElastiCacheParameterGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheReplicationGroup.html" title="Convection::Model::Template::Resource::ElastiCacheReplicationGroup (class)">ElastiCacheReplicationGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSecurityGroup.html" title="Convection::Model::Template::Resource::ElastiCacheSecurityGroup (class)">ElastiCacheSecurityGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSecurityGroupIngress.html" title="Convection::Model::Template::Resource::ElastiCacheSecurityGroupIngress (class)">ElastiCacheSecurityGroupIngress</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSubnetGroup.html" title="Convection::Model::Template::Resource::ElastiCacheSubnetGroup (class)">ElastiCacheSubnetGroup</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkApplication.html" title="Convection::Model::Template::Resource::ElasticBeanstalkApplication (class)">ElasticBeanstalkApplication</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkApplicationVersion.html" title="Convection::Model::Template::Resource::ElasticBeanstalkApplicationVersion (class)">ElasticBeanstalkApplicationVersion</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkConfigurationTemplate.html" title="Convection::Model::Template::Resource::ElasticBeanstalkConfigurationTemplate (class)">ElasticBeanstalkConfigurationTemplate</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkEnvironment.html" title="Convection::Model::Template::Resource::ElasticBeanstalkEnvironment (class)">ElasticBeanstalkEnvironment</a></span>, <span class='object_link'><a href="Resource/EventsRule.html" title="Convection::Model::Template::Resource::EventsRule (class)">EventsRule</a></span>, <span class='object_link'><a href="Resource/IAMAccessKey.html" title="Convection::Model::Template::Resource::IAMAccessKey (class)">IAMAccessKey</a></span>, <span class='object_link'><a href="Resource/IAMGroup.html" title="Convection::Model::Template::Resource::IAMGroup (class)">IAMGroup</a></span>, <span class='object_link'><a href="Resource/IAMInstanceProfile.html" title="Convection::Model::Template::Resource::IAMInstanceProfile (class)">IAMInstanceProfile</a></span>, <span class='object_link'><a href="Resource/IAMManagedPolicy.html" title="Convection::Model::Template::Resource::IAMManagedPolicy (class)">IAMManagedPolicy</a></span>, <span class='object_link'><a href="Resource/IAMPolicy.html" title="Convection::Model::Template::Resource::IAMPolicy (class)">IAMPolicy</a></span>, <span class='object_link'><a href="Resource/IAMRole.html" title="Convection::Model::Template::Resource::IAMRole (class)">IAMRole</a></span>, <span class='object_link'><a href="Resource/IAMUser.html" title="Convection::Model::Template::Resource::IAMUser (class)">IAMUser</a></span>, <span class='object_link'><a href="Resource/KmsKey.html" title="Convection::Model::Template::Resource::KmsKey (class)">KmsKey</a></span>, <span class='object_link'><a href="Resource/Lambda.html" title="Convection::Model::Template::Resource::Lambda (class)">Lambda</a></span>, <span class='object_link'><a href="Resource/LambdaPermission.html" title="Convection::Model::Template::Resource::LambdaPermission (class)">LambdaPermission</a></span>, <span class='object_link'><a href="Resource/LaunchConfiguration.html" title="Convection::Model::Template::Resource::LaunchConfiguration (class)">LaunchConfiguration</a></span>, <span class='object_link'><a href="Resource/LogGroup.html" title="Convection::Model::Template::Resource::LogGroup (class)">LogGroup</a></span>, <span class='object_link'><a href="Resource/RDSDBInstance.html" title="Convection::Model::Template::Resource::RDSDBInstance (class)">RDSDBInstance</a></span>, <span class='object_link'><a href="Resource/RDSDBParameterGroup.html" title="Convection::Model::Template::Resource::RDSDBParameterGroup (class)">RDSDBParameterGroup</a></span>, <span class='object_link'><a href="Resource/RDSDBSecurityGroup.html" title="Convection::Model::Template::Resource::RDSDBSecurityGroup (class)">RDSDBSecurityGroup</a></span>, <span class='object_link'><a href="Resource/RDSDBSubnetGroup.html" title="Convection::Model::Template::Resource::RDSDBSubnetGroup (class)">RDSDBSubnetGroup</a></span>, <span class='object_link'><a href="Resource/Route53HealthCheck.html" title="Convection::Model::Template::Resource::Route53HealthCheck (class)">Route53HealthCheck</a></span>, <span class='object_link'><a href="Resource/Route53HostedZone.html" title="Convection::Model::Template::Resource::Route53HostedZone (class)">Route53HostedZone</a></span>, <span class='object_link'><a href="Resource/Route53RecordSet.html" title="Convection::Model::Template::Resource::Route53RecordSet (class)">Route53RecordSet</a></span>, <span class='object_link'><a href="Resource/S3Bucket.html" title="Convection::Model::Template::Resource::S3Bucket (class)">S3Bucket</a></span>, <span class='object_link'><a href="Resource/S3BucketPolicy.html" title="Convection::Model::Template::Resource::S3BucketPolicy (class)">S3BucketPolicy</a></span>, <span class='object_link'><a href="Resource/SNSTopic.html" title="Convection::Model::Template::Resource::SNSTopic (class)">SNSTopic</a></span>, <span class='object_link'><a href="Resource/SNSTopicPolicy.html" title="Convection::Model::Template::Resource::SNSTopicPolicy (class)">SNSTopicPolicy</a></span>, <span class='object_link'><a href="Resource/SQSQueue.html" title="Convection::Model::Template::Resource::SQSQueue (class)">SQSQueue</a></span>, <span class='object_link'><a href="Resource/SQSQueuePolicy.html" title="Convection::Model::Template::Resource::SQSQueuePolicy (class)">SQSQueuePolicy</a></span>, <span class='object_link'><a href="Resource/ScalingPolicy.html" title="Convection::Model::Template::Resource::ScalingPolicy (class)">ScalingPolicy</a></span></p>
+</div>
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Resource/AutoScalingGroup.html" title="Convection::Model::Template::Resource::AutoScalingGroup (class)">AutoScalingGroup</a></span>, <span class='object_link'><a href="Resource/CloudFrontDistribution.html" title="Convection::Model::Template::Resource::CloudFrontDistribution (class)">CloudFrontDistribution</a></span>, <span class='object_link'><a href="Resource/CloudWatchAlarm.html" title="Convection::Model::Template::Resource::CloudWatchAlarm (class)">CloudWatchAlarm</a></span>, <span class='object_link'><a href="Resource/DirectoryServiceSimpleAD.html" title="Convection::Model::Template::Resource::DirectoryServiceSimpleAD (class)">DirectoryServiceSimpleAD</a></span>, <span class='object_link'><a href="Resource/EC2CustomerGateway.html" title="Convection::Model::Template::Resource::EC2CustomerGateway (class)">EC2CustomerGateway</a></span>, <span class='object_link'><a href="Resource/EC2DHCPOptions.html" title="Convection::Model::Template::Resource::EC2DHCPOptions (class)">EC2DHCPOptions</a></span>, <span class='object_link'><a href="Resource/EC2EIP.html" title="Convection::Model::Template::Resource::EC2EIP (class)">EC2EIP</a></span>, <span class='object_link'><a href="Resource/EC2Instance.html" title="Convection::Model::Template::Resource::EC2Instance (class)">EC2Instance</a></span>, <span class='object_link'><a href="Resource/EC2InternetGateway.html" title="Convection::Model::Template::Resource::EC2InternetGateway (class)">EC2InternetGateway</a></span>, <span class='object_link'><a href="Resource/EC2NatGateway.html" title="Convection::Model::Template::Resource::EC2NatGateway (class)">EC2NatGateway</a></span>, <span class='object_link'><a href="Resource/EC2NetworkACL.html" title="Convection::Model::Template::Resource::EC2NetworkACL (class)">EC2NetworkACL</a></span>, <span class='object_link'><a href="Resource/EC2NetworkACLEntry.html" title="Convection::Model::Template::Resource::EC2NetworkACLEntry (class)">EC2NetworkACLEntry</a></span>, <span class='object_link'><a href="Resource/EC2Route.html" title="Convection::Model::Template::Resource::EC2Route (class)">EC2Route</a></span>, <span class='object_link'><a href="Resource/EC2RouteTable.html" title="Convection::Model::Template::Resource::EC2RouteTable (class)">EC2RouteTable</a></span>, <span class='object_link'><a href="Resource/EC2SecurityGroup.html" title="Convection::Model::Template::Resource::EC2SecurityGroup (class)">EC2SecurityGroup</a></span>, <span class='object_link'><a href="Resource/EC2SecurityGroupIngres.html" title="Convection::Model::Template::Resource::EC2SecurityGroupIngres (class)">EC2SecurityGroupIngres</a></span>, <span class='object_link'><a href="Resource/EC2Subnet.html" title="Convection::Model::Template::Resource::EC2Subnet (class)">EC2Subnet</a></span>, <span class='object_link'><a href="Resource/EC2SubnetNetworkACLAssociation.html" title="Convection::Model::Template::Resource::EC2SubnetNetworkACLAssociation (class)">EC2SubnetNetworkACLAssociation</a></span>, <span class='object_link'><a href="Resource/EC2SubnetRouteTableAssociation.html" title="Convection::Model::Template::Resource::EC2SubnetRouteTableAssociation (class)">EC2SubnetRouteTableAssociation</a></span>, <span class='object_link'><a href="Resource/EC2VPC.html" title="Convection::Model::Template::Resource::EC2VPC (class)">EC2VPC</a></span>, <span class='object_link'><a href="Resource/EC2VPCEndpoint.html" title="Convection::Model::Template::Resource::EC2VPCEndpoint (class)">EC2VPCEndpoint</a></span>, <span class='object_link'><a href="Resource/EC2VPCGatewayAttachment.html" title="Convection::Model::Template::Resource::EC2VPCGatewayAttachment (class)">EC2VPCGatewayAttachment</a></span>, <span class='object_link'><a href="Resource/EC2VPCPeeringConnection.html" title="Convection::Model::Template::Resource::EC2VPCPeeringConnection (class)">EC2VPCPeeringConnection</a></span>, <span class='object_link'><a href="Resource/EC2VPNConnection.html" title="Convection::Model::Template::Resource::EC2VPNConnection (class)">EC2VPNConnection</a></span>, <span class='object_link'><a href="Resource/EC2VPNConnectionRoute.html" title="Convection::Model::Template::Resource::EC2VPNConnectionRoute (class)">EC2VPNConnectionRoute</a></span>, <span class='object_link'><a href="Resource/EC2VPNGateway.html" title="Convection::Model::Template::Resource::EC2VPNGateway (class)">EC2VPNGateway</a></span>, <span class='object_link'><a href="Resource/EC2VPNGatewayRoutePropagation.html" title="Convection::Model::Template::Resource::EC2VPNGatewayRoutePropagation (class)">EC2VPNGatewayRoutePropagation</a></span>, <span class='object_link'><a href="Resource/EC2Volume.html" title="Convection::Model::Template::Resource::EC2Volume (class)">EC2Volume</a></span>, <span class='object_link'><a href="Resource/EIPAssociation.html" title="Convection::Model::Template::Resource::EIPAssociation (class)">EIPAssociation</a></span>, <span class='object_link'><a href="Resource/ELB.html" title="Convection::Model::Template::Resource::ELB (class)">ELB</a></span>, <span class='object_link'><a href="Resource/ElastiCacheCluster.html" title="Convection::Model::Template::Resource::ElastiCacheCluster (class)">ElastiCacheCluster</a></span>, <span class='object_link'><a href="Resource/ElastiCacheParameterGroup.html" title="Convection::Model::Template::Resource::ElastiCacheParameterGroup (class)">ElastiCacheParameterGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheReplicationGroup.html" title="Convection::Model::Template::Resource::ElastiCacheReplicationGroup (class)">ElastiCacheReplicationGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSecurityGroup.html" title="Convection::Model::Template::Resource::ElastiCacheSecurityGroup (class)">ElastiCacheSecurityGroup</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSecurityGroupIngress.html" title="Convection::Model::Template::Resource::ElastiCacheSecurityGroupIngress (class)">ElastiCacheSecurityGroupIngress</a></span>, <span class='object_link'><a href="Resource/ElastiCacheSubnetGroup.html" title="Convection::Model::Template::Resource::ElastiCacheSubnetGroup (class)">ElastiCacheSubnetGroup</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkApplication.html" title="Convection::Model::Template::Resource::ElasticBeanstalkApplication (class)">ElasticBeanstalkApplication</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkApplicationVersion.html" title="Convection::Model::Template::Resource::ElasticBeanstalkApplicationVersion (class)">ElasticBeanstalkApplicationVersion</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkConfigurationTemplate.html" title="Convection::Model::Template::Resource::ElasticBeanstalkConfigurationTemplate (class)">ElasticBeanstalkConfigurationTemplate</a></span>, <span class='object_link'><a href="Resource/ElasticBeanstalkEnvironment.html" title="Convection::Model::Template::Resource::ElasticBeanstalkEnvironment (class)">ElasticBeanstalkEnvironment</a></span>, <span class='object_link'><a href="Resource/EventsRule.html" title="Convection::Model::Template::Resource::EventsRule (class)">EventsRule</a></span>, <span class='object_link'><a href="Resource/HashProperty.html" title="Convection::Model::Template::Resource::HashProperty (class)">HashProperty</a></span>, <span class='object_link'><a href="Resource/HashPropertyInstance.html" title="Convection::Model::Template::Resource::HashPropertyInstance (class)">HashPropertyInstance</a></span>, <span class='object_link'><a href="Resource/IAMAccessKey.html" title="Convection::Model::Template::Resource::IAMAccessKey (class)">IAMAccessKey</a></span>, <span class='object_link'><a href="Resource/IAMGroup.html" title="Convection::Model::Template::Resource::IAMGroup (class)">IAMGroup</a></span>, <span class='object_link'><a href="Resource/IAMInstanceProfile.html" title="Convection::Model::Template::Resource::IAMInstanceProfile (class)">IAMInstanceProfile</a></span>, <span class='object_link'><a href="Resource/IAMManagedPolicy.html" title="Convection::Model::Template::Resource::IAMManagedPolicy (class)">IAMManagedPolicy</a></span>, <span class='object_link'><a href="Resource/IAMPolicy.html" title="Convection::Model::Template::Resource::IAMPolicy (class)">IAMPolicy</a></span>, <span class='object_link'><a href="Resource/IAMRole.html" title="Convection::Model::Template::Resource::IAMRole (class)">IAMRole</a></span>, <span class='object_link'><a href="Resource/IAMUser.html" title="Convection::Model::Template::Resource::IAMUser (class)">IAMUser</a></span>, <span class='object_link'><a href="Resource/KmsKey.html" title="Convection::Model::Template::Resource::KmsKey (class)">KmsKey</a></span>, <span class='object_link'><a href="Resource/Lambda.html" title="Convection::Model::Template::Resource::Lambda (class)">Lambda</a></span>, <span class='object_link'><a href="Resource/LambdaPermission.html" title="Convection::Model::Template::Resource::LambdaPermission (class)">LambdaPermission</a></span>, <span class='object_link'><a href="Resource/LaunchConfiguration.html" title="Convection::Model::Template::Resource::LaunchConfiguration (class)">LaunchConfiguration</a></span>, <span class='object_link'><a href="Resource/ListProperty.html" title="Convection::Model::Template::Resource::ListProperty (class)">ListProperty</a></span>, <span class='object_link'><a href="Resource/ListPropertyInstance.html" title="Convection::Model::Template::Resource::ListPropertyInstance (class)">ListPropertyInstance</a></span>, <span class='object_link'><a href="Resource/LogGroup.html" title="Convection::Model::Template::Resource::LogGroup (class)">LogGroup</a></span>, <span class='object_link'><a href="Resource/Property.html" title="Convection::Model::Template::Resource::Property (class)">Property</a></span>, <span class='object_link'><a href="Resource/PropertyInstance.html" title="Convection::Model::Template::Resource::PropertyInstance (class)">PropertyInstance</a></span>, <span class='object_link'><a href="Resource/RDSDBInstance.html" title="Convection::Model::Template::Resource::RDSDBInstance (class)">RDSDBInstance</a></span>, <span class='object_link'><a href="Resource/RDSDBParameterGroup.html" title="Convection::Model::Template::Resource::RDSDBParameterGroup (class)">RDSDBParameterGroup</a></span>, <span class='object_link'><a href="Resource/RDSDBSecurityGroup.html" title="Convection::Model::Template::Resource::RDSDBSecurityGroup (class)">RDSDBSecurityGroup</a></span>, <span class='object_link'><a href="Resource/RDSDBSubnetGroup.html" title="Convection::Model::Template::Resource::RDSDBSubnetGroup (class)">RDSDBSubnetGroup</a></span>, <span class='object_link'><a href="Resource/Route53HealthCheck.html" title="Convection::Model::Template::Resource::Route53HealthCheck (class)">Route53HealthCheck</a></span>, <span class='object_link'><a href="Resource/Route53HostedZone.html" title="Convection::Model::Template::Resource::Route53HostedZone (class)">Route53HostedZone</a></span>, <span class='object_link'><a href="Resource/Route53RecordSet.html" title="Convection::Model::Template::Resource::Route53RecordSet (class)">Route53RecordSet</a></span>, <span class='object_link'><a href="Resource/S3Bucket.html" title="Convection::Model::Template::Resource::S3Bucket (class)">S3Bucket</a></span>, <span class='object_link'><a href="Resource/S3BucketPolicy.html" title="Convection::Model::Template::Resource::S3BucketPolicy (class)">S3BucketPolicy</a></span>, <span class='object_link'><a href="Resource/SNSTopic.html" title="Convection::Model::Template::Resource::SNSTopic (class)">SNSTopic</a></span>, <span class='object_link'><a href="Resource/SNSTopicPolicy.html" title="Convection::Model::Template::Resource::SNSTopicPolicy (class)">SNSTopicPolicy</a></span>, <span class='object_link'><a href="Resource/SQSQueue.html" title="Convection::Model::Template::Resource::SQSQueue (class)">SQSQueue</a></span>, <span class='object_link'><a href="Resource/SQSQueuePolicy.html" title="Convection::Model::Template::Resource::SQSQueuePolicy (class)">SQSQueuePolicy</a></span>, <span class='object_link'><a href="Resource/ScalarProperty.html" title="Convection::Model::Template::Resource::ScalarProperty (class)">ScalarProperty</a></span>, <span class='object_link'><a href="Resource/ScalarPropertyInstance.html" title="Convection::Model::Template::Resource::ScalarPropertyInstance (class)">ScalarPropertyInstance</a></span>, <span class='object_link'><a href="Resource/ScalingPolicy.html" title="Convection::Model::Template::Resource::ScalingPolicy (class)">ScalingPolicy</a></span>
+    
+  
+</p>
+
+
+
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#exist-instance_method" title="#exist (instance method)">#<strong>exist</strong>  &#x21d2; Object </a>
+    
+
+    
+      (also: #exist?)
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute exist.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#name-instance_method" title="#name (instance method)">#<strong>name</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute name.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute parent.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#properties-instance_method" title="#properties (instance method)">#<strong>properties</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute properties.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#resource_attributes-instance_method" title="#resource_attributes (instance method)">#<strong>resource_attributes</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute resource_attributes.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#template-instance_method" title="#template (instance method)">#<strong>template</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute template.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#attach_method-class_method" title="attach_method (class method)">.<strong>attach_method</strong>(name, &amp;block)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#properties-class_method" title="properties (class method)">.<strong>properties</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#property-class_method" title="property (class method)">.<strong>property</strong>(accesor, property_name, options = {})  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#type-class_method" title="type (class method)">.<strong>type</strong>(cf_type = nil, dsl_name = nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#as_attribute-instance_method" title="#as_attribute (instance method)">#<strong>as_attribute</strong>(attr_name, attr_type = :string)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#deletion_policy-instance_method" title="#deletion_policy (instance method)">#<strong>deletion_policy</strong>(deletion_policy)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>rubocop:disable Style/TrivialAccessors   We don&#39;t want to use an
+accessor (e.g. deletion_policy=) because   this is a DSL method.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#depends_on-instance_method" title="#depends_on (instance method)">#<strong>depends_on</strong>(resource)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(name, parent)  &#x21d2; Resource </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of Resource.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#property-instance_method" title="#property (instance method)">#<strong>property</strong>(key, *value)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reference-instance_method" title="#reference (instance method)">#<strong>reference</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>rubocop:enable Style/TrivialAccessors.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#render-instance_method" title="#render (instance method)">#<strong>render</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Resource Instance Methods.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#with_output-instance_method" title="#with_output (instance method)">#<strong>with_output</strong>(output_name = name, value = reference, &amp;block)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../Mixin/Conditional.html" title="Convection::Model::Mixin::Conditional (module)">Mixin::Conditional</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../Mixin/Conditional.html#condition-instance_method" title="Convection::Model::Mixin::Conditional#condition (method)">#condition</a></span>, <span class='object_link'><a href="../Mixin/Conditional.html#render_condition-instance_method" title="Convection::Model::Mixin::Conditional#render_condition (method)">#render_condition</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../../DSL/Template/Resource.html" title="Convection::DSL::Template::Resource (module)">DSL::Template::Resource</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../DSL/Template/Resource.html#attach_resource-class_method" title="Convection::DSL::Template::Resource.attach_resource (method)">attach_resource</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../../DSL/Helpers.html" title="Convection::DSL::Helpers (module)">DSL::Helpers</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../DSL/Helpers.html#camel_case-instance_method" title="Convection::DSL::Helpers#camel_case (method)">#camel_case</a></span>, <span class='object_link'><a href="../../DSL/Helpers.html#included-class_method" title="Convection::DSL::Helpers.included (method)">included</a></span>, <span class='object_link'><a href="../../DSL/Helpers.html#method_name-class_method" title="Convection::DSL::Helpers.method_name (method)">method_name</a></span>, <span class='object_link'><a href="../../DSL/Helpers.html#screaming_snake_case-instance_method" title="Convection::DSL::Helpers#screaming_snake_case (method)">#screaming_snake_case</a></span>, <span class='object_link'><a href="../../DSL/Helpers.html#snake_case-instance_method" title="Convection::DSL::Helpers#snake_case (method)">#snake_case</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html" title="Convection::DSL::IntrinsicFunctions (module)">DSL::IntrinsicFunctions</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#base64-instance_method" title="Convection::DSL::IntrinsicFunctions#base64 (method)">#base64</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#find_in_map-instance_method" title="Convection::DSL::IntrinsicFunctions#find_in_map (method)">#find_in_map</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_and-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_and (method)">#fn_and</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_equals-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_equals (method)">#fn_equals</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_if-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_if (method)">#fn_if</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_not-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_not (method)">#fn_not</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_or-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_or (method)">#fn_or</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#fn_ref-instance_method" title="Convection::DSL::IntrinsicFunctions#fn_ref (method)">#fn_ref</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#get_att-instance_method" title="Convection::DSL::IntrinsicFunctions#get_att (method)">#get_att</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#get_azs-instance_method" title="Convection::DSL::IntrinsicFunctions#get_azs (method)">#get_azs</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#join-instance_method" title="Convection::DSL::IntrinsicFunctions#join (method)">#join</a></span>, <span class='object_link'><a href="../../DSL/IntrinsicFunctions.html#select-instance_method" title="Convection::DSL::IntrinsicFunctions#select (method)">#select</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(name, parent)  &#x21d2; <tt><span class='object_link'><a href="" title="Convection::Model::Template::Resource (class)">Resource</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a new instance of Resource</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 295</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_parent'>parent</span><span class='rparen'>)</span>
+  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='ivar'>@parent</span> <span class='op'>=</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='ivar'>@template</span> <span class='op'>=</span> <span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_template'>template</span>
+  <span class='ivar'>@type</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span>
+  <span class='ivar'>@depends_on</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@deletion_policy</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='ivar'>@exist</span> <span class='op'>=</span> <span class='kw'>false</span>
+
+  <span class='ivar'>@resource_attributes</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+
+  <span class='comment'>## Instantiate properties
+</span>  <span class='ivar'>@properties</span> <span class='op'>=</span> <span class='const'>Model</span><span class='op'>::</span><span class='const'>Collection</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_resource'>resource</span> <span class='op'>=</span> <span class='kw'>self</span>
+  <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid__'>_</span><span class='comma'>,</span> <span class='id identifier rubyid_property'>property</span><span class='op'>|</span>
+    <span class='ivar'>@properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_property'>property</span><span class='period'>.</span><span class='id identifier rubyid_property_name'>property_name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_property'>property</span><span class='period'>.</span><span class='id identifier rubyid_instance'>instance</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="exist-instance_method">
+  
+    #<strong>exist</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='exist?-instance_method'>exist?</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute exist</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+292
+293
+294</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 292</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_exist'>exist</span>
+  <span class='ivar'>@exist</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="name-instance_method">
+  
+    #<strong>name</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute name</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+287
+288
+289</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 287</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='ivar'>@name</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="parent-instance_method">
+  
+    #<strong>parent</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute parent</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+288
+289
+290</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 288</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='ivar'>@parent</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="properties-instance_method">
+  
+    #<strong>properties</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute properties</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+290
+291
+292</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 290</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_properties'>properties</span>
+  <span class='ivar'>@properties</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="resource_attributes-instance_method">
+  
+    #<strong>resource_attributes</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute resource_attributes</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+291
+292
+293</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 291</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_resource_attributes'>resource_attributes</span>
+  <span class='ivar'>@resource_attributes</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="template-instance_method">
+  
+    #<strong>template</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute template</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+289
+290
+291</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 289</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_template'>template</span>
+  <span class='ivar'>@template</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="attach_method-class_method">
+  
+    .<strong>attach_method</strong>(name, &amp;block)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 40</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_attach_method'>attach_method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_define_method'>define_method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="properties-class_method">
+  
+    .<strong>properties</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+17
+18
+19</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 17</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_properties'>properties</span>
+  <span class='ivar'>@properties</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="property-class_method">
+  
+    .<strong>property</strong>(accesor, property_name, options = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 30</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_property'>property</span><span class='lparen'>(</span><span class='id identifier rubyid_accesor'>accesor</span><span class='comma'>,</span> <span class='id identifier rubyid_property_name'>property_name</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='comment'>## Handle usage of old property interface
+</span>  <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_tap'>tap</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_o'>o</span><span class='op'>|</span>
+    <span class='id identifier rubyid_o'>o</span><span class='lbracket'>[</span><span class='symbol'>:type</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span>
+  <span class='kw'>end</span> <span class='kw'>if</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Symbol</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_properties'>properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_accesor'>accesor</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Property</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_accesor'>accesor</span><span class='comma'>,</span> <span class='id identifier rubyid_property_name'>property_name</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_properties'>properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_accesor'>accesor</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_attach'>attach</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="type-class_method">
+  
+    .<strong>type</strong>(cf_type = nil, dsl_name = nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_cf_type'>cf_type</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_dsl_name'>dsl_name</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='ivar'>@type</span> <span class='kw'>if</span> <span class='id identifier rubyid_cf_type'>cf_type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@type</span> <span class='op'>=</span> <span class='id identifier rubyid_cf_type'>cf_type</span>
+  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_dsl_name'>dsl_name</span> <span class='op'>||</span> <span class='const'>DSL</span><span class='op'>::</span><span class='const'>Helpers</span><span class='period'>.</span><span class='id identifier rubyid_method_name'>method_name</span><span class='lparen'>(</span><span class='id identifier rubyid_cf_type'>cf_type</span><span class='rparen'>)</span>
+
+  <span class='const'>DSL</span><span class='op'>::</span><span class='const'>Template</span><span class='op'>::</span><span class='const'>Resource</span><span class='period'>.</span><span class='id identifier rubyid_attach_resource'>attach_resource</span><span class='lparen'>(</span><span class='ivar'>@name</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="as_attribute-instance_method">
+  
+    #<strong>as_attribute</strong>(attr_name, attr_type = :string)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+349
+350
+351
+352
+353
+354</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 349</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_as_attribute'>as_attribute</span><span class='lparen'>(</span><span class='id identifier rubyid_attr_name'>attr_name</span><span class='comma'>,</span> <span class='id identifier rubyid_attr_type'>attr_type</span> <span class='op'>=</span> <span class='symbol'>:string</span><span class='rparen'>)</span>
+  <span class='ivar'>@template</span><span class='period'>.</span><span class='id identifier rubyid_attribute_mappings'>attribute_mappings</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_attr_name'>attr_name</span><span class='comma'>,</span>
+    <span class='symbol'>:type</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_attr_type'>attr_type</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="deletion_policy-instance_method">
+  
+    #<strong>deletion_policy</strong>(deletion_policy)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>rubocop:disable Style/TrivialAccessors</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>We</span> <span class='id identifier rubyid_don'>don</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>t want to use an accessor (e.g. deletion_policy=) because
+</span></span></code></pre>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+329
+330
+331</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 329</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_deletion_policy'>deletion_policy</span><span class='lparen'>(</span><span class='id identifier rubyid_deletion_policy'>deletion_policy</span><span class='rparen'>)</span>
+  <span class='ivar'>@deletion_policy</span> <span class='op'>=</span> <span class='id identifier rubyid_deletion_policy'>deletion_policy</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="depends_on-instance_method">
+  
+    #<strong>depends_on</strong>(resource)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+322
+323
+324</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 322</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_depends_on'>depends_on</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='rparen'>)</span>
+  <span class='ivar'>@depends_on</span> <span class='op'>&lt;&lt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Resource</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_resource'>resource</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>:</span> <span class='id identifier rubyid_resource'>resource</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="property-instance_method">
+  
+    #<strong>property</strong>(key, *value)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+314
+315
+316
+317
+318
+319
+320</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 314</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_property'>property</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_properties'>properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='comment'>## Define a property instance on the fly
+</span>  <span class='id identifier rubyid_properties'>properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>ScalarPropertyInstance</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_properties'>properties</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_set'>set</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reference-instance_method">
+  
+    #<strong>reference</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>rubocop:enable Style/TrivialAccessors</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+334
+335
+336
+337
+338</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 334</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reference'>reference</span>
+  <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Ref</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="render-instance_method">
+  
+    #<strong>render</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 356</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_render'>render</span>
+  <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Properties</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_properties'>properties</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='kw'>true</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='symbol'>:render</span><span class='rparen'>)</span>
+  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_tap'>tap</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_resource'>resource</span><span class='op'>|</span>
+    <span class='id identifier rubyid_resource_attributes'>resource_attributes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_render'>render</span> <span class='id identifier rubyid_resource'>resource</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_resource'>resource</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DependsOn</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='ivar'>@depends_on</span> <span class='kw'>unless</span> <span class='ivar'>@depends_on</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_resource'>resource</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DeletionPolicy</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='ivar'>@deletion_policy</span> <span class='kw'>unless</span> <span class='ivar'>@deletion_policy</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_render_condition'>render_condition</span><span class='lparen'>(</span><span class='id identifier rubyid_resource'>resource</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="type-instance_method">
+  
+    #<strong>type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Resource Instance Methods</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+286</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 286</span>
+
+<span class='id identifier rubyid_attribute'>attribute</span> <span class='symbol'>:type</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="with_output-instance_method">
+  
+    #<strong>with_output</strong>(output_name = name, value = reference, &amp;block)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+340
+341
+342
+343
+344
+345
+346
+347</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/convection/model/template/resource.rb', line 340</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_with_output'>with_output</span><span class='lparen'>(</span><span class='id identifier rubyid_output_name'>output_name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='id identifier rubyid_reference'>reference</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_o'>o</span> <span class='op'>=</span> <span class='const'>Model</span><span class='op'>::</span><span class='const'>Template</span><span class='op'>::</span><span class='const'>Output</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_output_name'>output_name</span><span class='comma'>,</span> <span class='ivar'>@template</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_o'>o</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+  <span class='id identifier rubyid_o'>o</span><span class='period'>.</span><span class='id identifier rubyid_description'>description</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Resource </span><span class='embexpr_beg'>#{</span> <span class='id identifier rubyid_type'>type</span> <span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span> <span class='id identifier rubyid_name'>name</span> <span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='id identifier rubyid_o'>o</span><span class='period'>.</span><span class='id identifier rubyid_instance_exec'>instance_exec</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_block'>block</span>
+  <span class='ivar'>@template</span><span class='period'>.</span><span class='id identifier rubyid_outputs'>outputs</span><span class='lbracket'>[</span><span class='id identifier rubyid_output_name'>output_name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_o'>o</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Sat Jul 23 16:22:13 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.2 (ruby-2.2.2).
+</div>
+
+    </div>
+  </body>
+</html>
