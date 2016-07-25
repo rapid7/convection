@@ -21,7 +21,6 @@ module Convection
           @template = parent.template
 
           template.attach_resource(@name, self.class)
-          attach_resource(@name, self.class)
           instance_exec(&block) if block
         end
 
