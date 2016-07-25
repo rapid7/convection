@@ -353,7 +353,7 @@ module Convection
           }
         end
 
-        def render
+        def render(_stack = nil)
           {
             'Type' => type,
             'Properties' => properties.map(true, &:render)

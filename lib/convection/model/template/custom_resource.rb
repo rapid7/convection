@@ -25,18 +25,11 @@ module Convection
         end
 
         def render(stack)
-          resources.map do |resource|
-            if resource.is_a?(Convection::Model::Template::CustomResource)
-              resource.render(stack)
-            else
-              # TODO: Just make Resource#render accept stack as a [today] unused argument?
-              resource.render
-            end
-          end
+          resources.map { |resource| resource.render(stack) }
         end
 
         def resources
-          @resources ||= template.resources.dup
+          @resources ||= Convection::Model::Collection.new
         end
       end
     end

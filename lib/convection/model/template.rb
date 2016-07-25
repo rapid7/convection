@@ -231,14 +231,7 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => resources.map { |resource|
-            if resource.is_a?(Convection::Model::Template::CustomResource)
-              resource.render(stack_)
-            else
-              # TODO: Just make Resource#render accept stack as a [today] unused argument?
-              resource.render
-            end
-          }.flatten,
+          'Resources' => resources.map { |resource| resource.render(stack_) }.flatten,
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
