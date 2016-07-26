@@ -24,9 +24,7 @@ module Convection
         included_stacks = stack_groups[options[:stack_group]]
         included_stacks ||= options.fetch(:stack_list, [])
         return @cloudfile.deck unless included_stacks.any?
-        @cloudfile.stacks.map { |name, stack|
-          stack if included_stacks.include?(name)
-        }.compact
+        @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
       end
 
       def converge(to_stack, options = {}, &block)
