@@ -24,6 +24,41 @@ module Convection
         @cloudfile.stack_groups
       end
 
+      def converge(to_stack, options = {}, &block)
+        if options[:stack_group]
+          list = stack_groups[options[:stack_group]]
+          stack_list = create_structure(list)
+          list_converge(stack_list, options[:stack_group], &block)
+        elsif options[:stack_list]
+          list = options[:stack_list]
+          stack_list = create_structure(list)
+          list_converge(stack_list, list, &block)
+        else
+          unless to_stack.nil? || stacks.include?(to_stack)
+            block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
+            return
+          end
+          simple_converge(to_stack, &block)
+        end
+      end
+
+      def diff(to_stack, options = {}, &block)
+        if options[:stack_group]
+          list = stack_groups[options[:stack_group]]
+          stack_list = create_structure(list)
+          list_diff(stack_list, list, &block)
+        elsif options[:stack_list]
+          list = options[:stack_list]
+          stack_list = create_structure(list)
+          list_diff(stack_list, list, &block)
+        else
+          unless to_stack.nil? || stacks.include?(to_stack)
+            block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
+            return
+          end
+          simple_diff(to_stack, &block)
+        end
+      end
       def create_structure(list)
         hash = {}
         deck.each do |stack|
@@ -82,42 +117,6 @@ module Convection
           difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
         end
         difference.each { |diff| block.call(diff) }
-      end
-
-      def converge(options, &block)
-        if options[:stack_group]
-          list = stack_groups[options[:stack_group]]
-          stack_list = create_structure(list)
-          list_converge(stack_list, options[:stack_group], &block)
-        elsif options[:stack_list]
-          list = options[:stack_list]
-          stack_list = create_structure(list)
-          list_converge(stack_list, list, &block)
-        else
-          unless options[:stack].nil? || stacks.include?(options[:stack])
-            block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
-            return
-          end
-          simple_converge(options[:stack], &block)
-        end
-      end
-
-      def diff(options, &block)
-        if options[:stack_group]
-          list = stack_groups[options[:stack_group]]
-          stack_list = create_structure(list)
-          list_diff(stack_list, list, &block)
-        elsif options[:stack_list]
-          list = options[:stack_list]
-          stack_list = create_structure(list)
-          list_diff(stack_list, list, &block)
-        else
-          unless options[:stack].nil? || stacks.include?(options[:stack])
-            block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
-            return
-          end
-          simple_diff(options[:stack], &block)
-        end
       end
     end
   end

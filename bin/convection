@@ -18,11 +18,8 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stack_list, :type => :string, :desc => 'A ordered comma separated list of stacks to converge'
     def converge(stack = nil)
-      opts = options.dup
-      opts[:stack] = stack
-
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(opts) do |event, errors|
+      @cloud.converge(stack, stack_group: options[:stack_group], stack_list: options[:stack_list]) do |event, errors|
         say_status(*event.to_thor)
         errors.each do |error|
           say "* #{ error.message }"
@@ -37,13 +34,10 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stack_list, :type => :array, :desc => 'A ordered comma separated list of stacks to converge'
     def diff(stack = nil)
-      opts = options.dup
-      opts[:stack] = stack
-
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
 
-      @cloud.diff(opts) do |d|
+      @cloud.diff(stack, stack_group: options[:stack_group], stack_list: options[:stack_list]) do |d|
         if d.is_a? Model::Event
           if options[:'very-verbose']
             say_status(*d.to_thor)
