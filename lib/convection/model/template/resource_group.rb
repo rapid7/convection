@@ -1,28 +1,31 @@
+require 'forwardable'
 require_relative './resource'
+require_relative '../mixin/conditional'
 
 module Convection
   module Model
     class Template
       # A collection of different {Convection::Model::Template::Resource}s.
       class ResourceGroup
+        extend Forwardable
         include DSL::Helpers
-        include DSL::IntrinsicFunctions
         include DSL::Template::Resource
+        include Mixin::Conditional
 
         attr_reader :name
         attr_reader :parent
         attr_reader :template
 
-        def initialize(name, parent, &block)
+        def_delegator :@template, :stack
+        def_delegator :@template, :parameters
+        def_delegator :@template, :mappings
+        def_delegator :@template, :resources
+        def_delegator :@template, :outputs
+
+        def initialize(name, parent)
           @name = name
           @parent = parent
           @template = parent.template
-
-          instance_exec(&block) if block
-        end
-
-        def resources
-          @resources ||= Convection::Model::Collection.new
         end
 
         def resource_group(*)
