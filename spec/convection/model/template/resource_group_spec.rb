@@ -26,7 +26,7 @@ class Convection::Model::Template
     it { is_expected.to have_key('PrimaryDb') }
 
     context 'when attempting to define a nested resource group' do
-      subject do
+      subject(:template) do
         Convection.template do
           description 'ResourceGroup Test Template'
 
@@ -37,7 +37,7 @@ class Convection::Model::Template
       end
 
       it 'raises a NotImplementedError when #execute is called' do
-        expect { template.execute }.to raise_error(NotImplementedError)
+        expect { subject.execute }.to raise_error(NotImplementedError)
       end
     end
 
