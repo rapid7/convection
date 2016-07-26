@@ -235,6 +235,7 @@ module Convection
 
       def execute
         instance_exec(&@definition)
+        resource_groups.each(&:execute)
       end
 
       def render(stack_ = nil)
