@@ -87,14 +87,14 @@ module Convection
       def converge(options, &block)
         if options[:stack_group]
           list = stack_groups[options[:stack_group]]
-          stacks = create_structure(list)
-          list_converge(stacks, options[:stack_group], &block)
+          stack_list = create_structure(list)
+          list_converge(stack_list, options[:stack_group], &block)
         elsif options[:stack_list]
           list = options[:stack_list]
-          stacks = create_structure(list)
-          list_converge(stacks, list, &block)
+          stack_list = create_structure(list)
+          list_converge(stack_list, list, &block)
         else
-          unless options[:stack].nil? || @cloudfile.stacks.include?(options[:stack])
+          unless options[:stack].nil? || stacks.include?(options[:stack])
             block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
             return
           end
@@ -105,14 +105,14 @@ module Convection
       def diff(options, &block)
         if options[:stack_group]
           list = stack_groups[options[:stack_group]]
-          stacks = create_structure(list)
-          list_diff(stacks, list, &block)
+          stack_list = create_structure(list)
+          list_diff(stack_list, list, &block)
         elsif options[:stack_list]
           list = options[:stack_list]
-          stacks = create_structure(list)
-          list_diff(stacks, list, &block)
+          stack_list = create_structure(list)
+          list_diff(stack_list, list, &block)
         else
-          unless options[:stack].nil? || @cloudfile.stacks.include?(options[:stack])
+          unless options[:stack].nil? || stacks.include?(options[:stack])
             block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
             return
           end
