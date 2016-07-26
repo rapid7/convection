@@ -76,6 +76,13 @@ module Convection
         resources[name] = r
       end
 
+      def custom_resource(name, &block)
+        r = Model::Template::CustomResource.new(name, self)
+
+        r.instance_exec(&block) if block
+        custom_resources[name] = r
+      end
+
       def output(name, &block)
         o = Model::Template::Output.new(name, self)
 
@@ -187,6 +194,7 @@ module Convection
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
+      attr_reader :custom_resources
       attr_reader :resources
       attr_reader :outputs
 
@@ -207,6 +215,7 @@ module Convection
         @mappings = Collection.new
         @conditions = Collection.new
         @resources = Collection.new
+        @custom_resources = Collection.new
         @outputs = Collection.new
         @metadata = Collection.new
       end
@@ -231,10 +240,14 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => resources.map { |resource| resource.render(stack_) }.flatten,
+          'Resources' => all_resources.map { |resource| resource.render(stack_) },
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
+      end
+
+      def all_resources
+        resources.merge(custom_resources)
       end
 
       def diff(other, stack_ = nil)
