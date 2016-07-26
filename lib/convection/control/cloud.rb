@@ -1,5 +1,6 @@
 require_relative '../model/cloudfile'
 require_relative '../model/event'
+require 'pp'
 module Convection
   module Control
     ##
@@ -20,26 +21,22 @@ module Convection
       end
 
       def stack_groups
-        @cloudfile.stackgroup
+        @cloudfile.stack_group
       end
 
       def create_structure(list)
-      hash = []
-        deck.each do | stack|
-          if list.include?(stack.name)
-            hash[stack.name] = stack
-          end
+        hash = {}
+        deck.each do |stack|
+          hash[stack.name] = stack if list.include?(stack.name.to_s)
         end
         hash
       end
 
       def simple_converge(to_stack, &block)
         deck.each do |stack|
-
-          break unless apply_converge(stack,&block)
+          break unless apply_converge(stack, &block)
           ## Stop on converge error
           break unless stack.success?
-
           ## Stop here
           break if !to_stack.nil? && stack.name == to_stack
           sleep rand @cloudfile.splay || 2
@@ -48,55 +45,78 @@ module Convection
 
       def list_converge(hash, list, &block)
         list.each do |stack|
-          break unless apply_converge(hash[stack],&block)
-
+          break unless apply_converge(hash[stack], &block)
           sleep rand @cloudfile.splay || 2
         end
-
       end
 
       def apply_converge(stack, &block)
         block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
         stack.apply(&block)
-
         if stack.error?
           block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
-          break
+          return false
         end
         stack.success?
       end
 
-      def converge(options, &block)
+      def simple_diff(to_stack, &block)
+        deck.each do |stack|
+          break unless generate_diff(stack, &block)
+          break if !to_stack.nil? && stack.name == to_stack
+          sleep rand @cloudfile.splay || 2
+        end
+      end
 
+      def list_diff(hash, list, &block)
+        list.each do |stack|
+          break unless generate_diff(hash[stack], &block)
+          sleep rand @cloudfile.splay || 2
+        end
+      end
+
+      def generate_diff(stack, &block)
+        block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
+        difference = stack.diff
+        if difference.empty?
+          difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+        end
+        difference.each { |diff| block.call(diff) }
+      end
+
+      def converge(options, &block)
         if options[:stack_group]
-          stacks_to_converge = create_structure(options[:stack_group])
-          list_converge(stacks_to_converge, options[:stack_group], &block)
-        elsif  options[:stack_list]
-          stacks_to_converge = create_structure(options[:stack_list])
-          list_converge(stacks_to_converge, options[:stack_list], &block)
+          list = @cloudfile.stack_groups[options[:stack_group]]
+          stacks = create_structure(list)
+          list_converge(stacks, options[:stack_group], &block)
+        elsif options[:stack_list]
+          list = options[:stack_list]
+          stacks = create_structure(list)
+          list_converge(stacks, list, &block)
         else
-          unless options[:stack].nil? || stacks.include?(options[:stack])
+          unless options[:stack].nil? || @cloudfile.stacks.include?(options[:stack])
             block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
             return
           end
           simple_converge(options[:stack], &block)
         end
-
       end
 
-      def diff(to_stack, &block)
-        @cloudfile.deck.each do |stack|
-          block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
-
-          difference = stack.diff
-          if difference.empty?
-            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+      def diff(options, &block)
+        if options[:stack_group]
+          list = @cloudfile.stack_groups[options[:stack_group]]
+          stacks = create_structure(list)
+          list_diff(stacks, list, &block)
+        elsif options[:stack_list]
+          list = options[:stack_list]
+          stacks = create_structure(list)
+          list_diff(stacks, list, &block)
+        else
+          unless options[:stack].nil? || @cloudfile.stacks.include?(options[:stack])
+            block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
+            return
           end
-
-          difference.each { |diff| block.call(diff) }
-
-          break if !to_stack.nil? && stack.name == to_stack
-          sleep rand @cloudfile.splay || 2
+          simple_diff(options[:stack], &block)
         end
       end
     end
