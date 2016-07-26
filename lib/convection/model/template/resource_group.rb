@@ -9,7 +9,6 @@ module Convection
         include DSL::IntrinsicFunctions
         include DSL::Template::Resource
 
-        attribute :type
         attr_reader :name
         attr_reader :parent
         attr_reader :template
