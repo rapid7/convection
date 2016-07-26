@@ -76,11 +76,11 @@ module Convection
         resources[name] = r
       end
 
-      def custom_resource(name, &block)
-        r = Model::Template::CustomResource.new(name, self)
+      def resource_group(name, &block)
+        r = Model::Template::ResourceGroup.new(name, self)
 
         r.instance_exec(&block) if block
-        custom_resources[name] = r
+        resource_groups[name] = r
       end
 
       def output(name, &block)
@@ -194,7 +194,7 @@ module Convection
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
-      attr_reader :custom_resources
+      attr_reader :resource_groups
       attr_reader :resources
       attr_reader :outputs
 
@@ -215,7 +215,7 @@ module Convection
         @mappings = Collection.new
         @conditions = Collection.new
         @resources = Collection.new
-        @custom_resources = Collection.new
+        @resource_groups = Collection.new
         @outputs = Collection.new
         @metadata = Collection.new
       end
@@ -240,14 +240,24 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => all_resources.map { |resource| resource.render(stack_) },
+          'Resources' => all_resources.map { |resource|
+            # If the resource is actually a resource group pass in the stack argument.
+            next resource.render(stack_) if resource.is_a?(Model::Template::ResourceGroup)
+
+            resource.render
+          },
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
       end
 
       def all_resources
-        resources.merge(custom_resources)
+        result = Model::Collection.new
+        result.merge!(resources)
+        resource_groups.reduce(result) do |result, (_name, resource_group)|
+          result.merge!(resource_group.resources)
+        end
+        result
       end
 
       def diff(other, stack_ = nil)
@@ -366,5 +376,6 @@ require_relative 'template/condition'
 require_relative 'template/resource'
 require_relative 'template/resource_property'
 require_relative 'template/resource_attribute'
+require_relative 'template/resource_group'
 require_relative 'template/output'
 require_relative 'template/metadata'
