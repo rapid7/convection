@@ -21,7 +21,7 @@ module Convection
       end
 
       def deck(options = {})
-        included_stacks = stack_groups[options[:stack_groups]]
+        included_stacks = stack_groups[options[:stack_group]]
         included_stacks ||= options.fetch(:stack_list, [])
         return @cloudfile.deck unless included_stacks.any?
         @cloudfile.deck.select { |k, _v| included_stacks.include?(k) }.to_h
