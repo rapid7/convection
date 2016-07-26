@@ -21,7 +21,7 @@ module Convection
       end
 
       def stack_groups
-        @cloudfile.stack_group
+        @cloudfile.stack_groups
       end
 
       def create_structure(list)
@@ -86,7 +86,7 @@ module Convection
 
       def converge(options, &block)
         if options[:stack_group]
-          list = @cloudfile.stack_groups[options[:stack_group]]
+          list = stack_groups[options[:stack_group]]
           stacks = create_structure(list)
           list_converge(stacks, options[:stack_group], &block)
         elsif options[:stack_list]
@@ -104,7 +104,7 @@ module Convection
 
       def diff(options, &block)
         if options[:stack_group]
-          list = @cloudfile.stack_groups[options[:stack_group]]
+          list = stack_groups[options[:stack_group]]
           stacks = create_structure(list)
           list_diff(stacks, list, &block)
         elsif options[:stack_list]
