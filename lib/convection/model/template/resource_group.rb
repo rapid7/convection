@@ -22,10 +22,6 @@ module Convection
           instance_exec(&block) if block
         end
 
-        def render
-          resources.map(&:render)
-        end
-
         def resources
           @resources ||= Convection::Model::Collection.new
         end
