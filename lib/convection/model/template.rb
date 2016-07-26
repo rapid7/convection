@@ -240,16 +240,10 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => all_resources.map(&:render),
+          'Resources' => resources.map(&:render),
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
-      end
-
-      def all_resources
-        resource_groups.reduce(resources) do |result, (_name, resource_group)|
-          result.merge(resource_group.resources)
-        end
       end
 
       def diff(other, stack_ = nil)
