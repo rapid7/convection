@@ -21,8 +21,8 @@ module Convection
           instance_exec(&block) if block
         end
 
-        def render(stack)
-          resources.map { |resource| resource.render(stack) }
+        def render
+          resources.map(&:render)
         end
 
         def resources

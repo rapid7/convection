@@ -240,12 +240,7 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => all_resources.map { |resource|
-            # If the resource is actually a resource group pass in the stack argument.
-            next resource.render(stack_) if resource.is_a?(Model::Template::ResourceGroup)
-
-            resource.render
-          },
+          'Resources' => all_resources.map(&:render),
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
