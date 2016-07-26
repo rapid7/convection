@@ -249,8 +249,8 @@ module Convection
       def all_resources
         result = Model::Collection.new
         result.merge!(resources)
-        resource_groups.reduce(result) do |result, (_name, resource_group)|
-          result.merge!(resource_group.resources)
+        resource_groups.reduce(result) do |result_collection, (_name, resource_group)|
+          result_collection.merge!(resource_group.resources)
         end
         result
       end

@@ -3,6 +3,7 @@ require_relative './resource'
 module Convection
   module Model
     class Template
+      # A collection of different {Convection::Model::Template::Resource}s.
       class ResourceGroup
         include DSL::Helpers
         include DSL::IntrinsicFunctions
