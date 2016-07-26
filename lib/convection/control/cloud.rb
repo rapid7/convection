@@ -1,6 +1,6 @@
 require_relative '../model/cloudfile'
 require_relative '../model/event'
-require 'pp'
+
 module Convection
   module Control
     ##
@@ -32,7 +32,7 @@ module Convection
         hash
       end
 
-      def simple_converge(to_stack, &block)
+      def to_stack_converge(to_stack, &block)
         deck.each do |stack|
           break unless apply_converge(stack, &block)
           ## Stop on converge error
@@ -55,12 +55,12 @@ module Convection
         stack.apply(&block)
         if stack.error?
           block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
-          return false
+          return stack.success?
         end
         stack.success?
       end
 
-      def simple_diff(to_stack, &block)
+      def to_stack_diff(to_stack, &block)
         deck.each do |stack|
           break unless generate_diff(stack, &block)
           break if !to_stack.nil? && stack.name == to_stack
@@ -98,7 +98,7 @@ module Convection
             block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
             return
           end
-          simple_converge(options[:stack], &block)
+          to_stack_converge(options[:stack], &block)
         end
       end
 
@@ -116,7 +116,7 @@ module Convection
             block.call(Model::Event.new(:error, "Stack #{ options[:stack] } is not defined", :error)) if block
             return
           end
-          simple_diff(options[:stack], &block)
+          to_stack_diff(options[:stack], &block)
         end
       end
     end
