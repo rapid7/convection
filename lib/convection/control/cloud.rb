@@ -38,6 +38,7 @@ module Convection
         deck(options).each do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
+
           if stack.error?
             block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
             break
