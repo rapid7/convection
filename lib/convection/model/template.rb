@@ -247,8 +247,8 @@ module Convection
       end
 
       def all_resources
-        resource_groups.reduce(resources.dup) do |result, (_name, resource_group)|
-          result.merge!(resource_group.resources)
+        resource_groups.reduce(resources) do |result, (_name, resource_group)|
+          result.merge(resource_group.resources)
         end
       end
 
