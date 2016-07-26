@@ -23,7 +23,7 @@ module Convection
       def deck(options = {})
         included_stacks = stack_groups[options[:stack_group]]
         included_stacks ||= options.fetch(:stack_list, [])
-        return @cloudfile.deck unless !included_stacks.nil?
+        return @cloudfile.deck if included_stacks.nil?
         @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
       end
 
