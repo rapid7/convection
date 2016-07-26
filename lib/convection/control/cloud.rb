@@ -1,6 +1,6 @@
 require_relative '../model/cloudfile'
 require_relative '../model/event'
-require 'pp'
+
 module Convection
   module Control
     ##
@@ -16,8 +16,9 @@ module Convection
         @cloudfile.stacks
       end
 
-      def deck
-        @cloudfile.deck
+      def deck(included_stacks = [])
+        return @cloudfile.deck unless included_stacks.any?
+        @cloudfile.deck.select { |k, _v| included_stacks.include?(stack_name) }.to_h
       end
 
       def stack_groups
@@ -25,49 +26,11 @@ module Convection
       end
 
       def converge(to_stack, options = {}, &block)
-        if options[:stack_group]
-          list = stack_groups[options[:stack_group]]
-          stack_list = create_structure(list)
-          list_converge(stack_list, options[:stack_group], &block)
-        elsif options[:stack_list]
-          list = options[:stack_list]
-          stack_list = create_structure(list)
-          list_converge(stack_list, list, &block)
-        else
-          unless to_stack.nil? || stacks.include?(to_stack)
-            block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
-            return
-          end
-          simple_converge(to_stack, &block)
+        unless to_stack.nil? || stacks.include?(to_stack)
+          block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
+          return
         end
-      end
 
-      def diff(to_stack, options = {}, &block)
-        if options[:stack_group]
-          list = stack_groups[options[:stack_group]]
-          stack_list = create_structure(list)
-          list_diff(stack_list, list, &block)
-        elsif options[:stack_list]
-          list = options[:stack_list]
-          stack_list = create_structure(list)
-          list_diff(stack_list, list, &block)
-        else
-          unless to_stack.nil? || stacks.include?(to_stack)
-            block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
-            return
-          end
-          simple_diff(to_stack, &block)
-        end
-      end
-      def create_structure(list)
-        hash = {}
-        deck.each do |stack|
-          hash[stack.name] = stack if list.include?(stack.name.to_s)
-        end
-        hash
-      end
-
-      def simple_converge(to_stack, &block)
         deck.each do |stack|
           break unless apply_converge(stack, &block)
           ## Stop on converge error
@@ -76,11 +39,13 @@ module Convection
           break if !to_stack.nil? && stack.name == to_stack
           sleep rand @cloudfile.splay || 2
         end
+
       end
 
-      def list_converge(hash, list, &block)
-        list.each do |stack|
-          break unless apply_converge(hash[stack], &block)
+      def diff(to_stack, options = {}, &block)
+        deck.each do |stack|
+          break unless generate_diff(stack, &block)
+          break if !to_stack.nil? && stack.name == to_stack
           sleep rand @cloudfile.splay || 2
         end
       end
@@ -93,21 +58,6 @@ module Convection
           return false
         end
         stack.success?
-      end
-
-      def simple_diff(to_stack, &block)
-        deck.each do |stack|
-          break unless generate_diff(stack, &block)
-          break if !to_stack.nil? && stack.name == to_stack
-          sleep rand @cloudfile.splay || 2
-        end
-      end
-
-      def list_diff(hash, list, &block)
-        list.each do |stack|
-          break unless generate_diff(hash[stack], &block)
-          sleep rand @cloudfile.splay || 2
-        end
       end
 
       def generate_diff(stack, &block)
