@@ -38,7 +38,7 @@ module Convection
           stack.apply(&block)
           if stack.error?
             block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
-            return false
+            break
           end
 
           ## Stop on converge error
