@@ -39,6 +39,8 @@ module Convection
       attr_reader :tags
       attr_accessor :on_failure
 
+      # Undefined stack error
+      UNDEFINED_STACK = 'UNDEFINED_STACK'.freeze
       # Represents a stack that has successfully been converged.
       CREATE_COMPLETE = 'CREATE_COMPLETE'.freeze
       # Represents a stack that has not successfully been converged.

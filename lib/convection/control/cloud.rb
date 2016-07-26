@@ -24,15 +24,22 @@ module Convection
         included_stacks = stack_groups[options[:stack_group]]
         included_stacks ||= options.fetch(:stack_list, [])
         return @cloudfile.deck if included_stacks.nil?
-        @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
+        stack_list = @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
+=begin
+        begin
+          if stack_list.empty?
+            Model::Event.new(:UNDEFINED_STACK,"Undefined stacks: Array of supplied stacks #{ included_stacks }", :error )
+            #TODO figure out how to display this error message.
+          end
+        rescue => e
+          puts e.message
+          exit(1)
+        end
+=end
+        stack_list
       end
 
       def converge(to_stack, options = {}, &block)
-        unless to_stack.nil? || stacks.include?(to_stack)
-          block.call(Model::Event.new(:error, "Stack #{ to_stack } is not defined", :error)) if block
-          return
-        end
-
         deck(options).each do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
