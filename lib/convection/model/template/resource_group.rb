@@ -25,6 +25,10 @@ module Convection
         def resources
           @resources ||= Convection::Model::Collection.new
         end
+
+        def resource_group(*)
+          fail NotImplementedError, "#{self.class}#resource_group is not yet implemented."
+        end
       end
     end
   end

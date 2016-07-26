@@ -4,7 +4,7 @@ class Convection::Model::Template
   describe ResourceGroup do
     let(:template) do
       Convection.template do
-        description 'UpdatePolicies Test Template'
+        description 'ResourceGroup Test Template'
 
         # A lone resource for testing merging of resources.
         ec2_instance 'FrontendServer'
@@ -24,6 +24,22 @@ class Convection::Model::Template
     it { is_expected.to have_key('FrontendServer') }
     it { is_expected.to have_key('BackendServer') }
     it { is_expected.to have_key('PrimaryDb') }
+
+    context 'when attempting to define a nested resource group' do
+      subject do
+        Convection.template do
+          description 'ResourceGroup Test Template'
+
+          resource_group 'MyResourceGroup' do
+            resource_group 'MyNestedGroup'
+          end
+        end
+      end
+
+      it 'raises a NotImplementedError when #execute is called' do
+        expect { template.execute }.to raise_error(NotImplementedError)
+      end
+    end
 
     private
 
