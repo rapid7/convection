@@ -24,6 +24,7 @@ module Convection
               resources[rname] = resource
             end
           end
+          alias attach_resource_group attach_resource
         end
       end
 
