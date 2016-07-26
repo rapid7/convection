@@ -24,7 +24,15 @@ module Convection
               resources[rname] = resource
             end
           end
-          alias attach_resource_group attach_resource
+
+          def attach_resource_group(name, klass)
+            define_method(name) do |rname, &block|
+              resource_group = klass.new(rname, self)
+              resource_group.instance_exec(&block) if block
+
+              resource_groups[rname] = resource_group
+            end
+          end
         end
       end
 
