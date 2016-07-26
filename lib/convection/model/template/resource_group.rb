@@ -3,9 +3,7 @@ require_relative './resource'
 module Convection
   module Model
     class Template
-      # TODO: We've been back on forth on the name for this concept.
-      # Is CustomResource *really* better than ResourceGroup?
-      class CustomResource
+      class ResourceGroup
         include DSL::Helpers
         include DSL::IntrinsicFunctions
         include DSL::Template::Resource
