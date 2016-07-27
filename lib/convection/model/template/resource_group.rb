@@ -12,8 +12,6 @@ module Convection
         include DSL::Template::Resource
         include Mixin::Conditional
 
-        attr_reader :attributes
-
         attr_reader :name
         attr_reader :parent
         attr_reader :template
@@ -21,7 +19,6 @@ module Convection
         def_delegator :@template, :stack
 
         def initialize(name, parent, &definition)
-          @attributes = Model::Attributes.new
           @definition = definition
           @name = name
           @parent = parent
