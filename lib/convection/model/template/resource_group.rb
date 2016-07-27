@@ -19,10 +19,6 @@ module Convection
         attr_reader :template
 
         def_delegator :@template, :stack
-        def_delegator :@template, :parameters
-        def_delegator :@template, :mappings
-        def_delegator :@template, :resources
-        def_delegator :@template, :outputs
 
         def initialize(name, parent, &definition)
           @attributes = Model::Attributes.new
