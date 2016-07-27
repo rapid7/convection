@@ -27,10 +27,7 @@ module Convection
 
           def attach_resource_group(name, klass)
             define_method(name) do |rname, &block|
-              resource_group = klass.new(rname, self)
-              resource_group.instance_exec(&block) if block
-
-              resource_groups[rname] = resource_group
+              resource_groups[rname] = klass.new(rname, self, &block)
             end
           end
         end
@@ -86,10 +83,7 @@ module Convection
       end
 
       def resource_group(name, &block)
-        r = Model::Template::ResourceGroup.new(name, self)
-
-        r.instance_exec(&block) if block
-        resource_groups[name] = r
+        resource_groups[name] = Model::Template::ResourceGroup.new(name, self, &block)
       end
 
       def output(name, &block)
@@ -235,7 +229,7 @@ module Convection
 
       def execute
         instance_exec(&@definition)
-        resource_groups.each(&:execute)
+        resource_groups.each { |_, group| group.execute }
       end
 
       def render(stack_ = nil)
@@ -250,10 +244,16 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => resources.map(&:render),
+          'Resources' => all_resources.map(&:render),
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
+      end
+
+      def all_resources
+        resource_groups.reduce(resources) do |result, (_name, resource_group)|
+          result.merge(resource_group.resources)
+        end
       end
 
       def diff(other, stack_ = nil)
