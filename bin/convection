@@ -31,8 +31,8 @@ module Convection
     desc 'diff STACK', 'Show changes that will be applied by converge'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
-    option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
-    option :stack_list, :type => :array, :desc => 'A ordered comma separated list of stacks to converge'
+    option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
+    option :stack_list, :type => :array, :desc => 'A ordered comma separated list of stacks to diff'
     def diff(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
