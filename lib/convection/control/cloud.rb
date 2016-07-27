@@ -22,7 +22,7 @@ module Convection
 
       def filter_deck(options = {}, &block)
         included_stacks = included_stacks(options)
-        return @cloudfile.deck if included_stacks(options).empty?
+        return @cloudfile.deck if included_stacks.empty?
 
         nonexistent_stacks = nonexistent_stacks(options)
         stack_list = @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
