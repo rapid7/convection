@@ -18,6 +18,12 @@ module Convection
 
         def_delegator :@template, :stack
 
+        class << self
+          def attach_to_dsl(dsl_name)
+            DSL::Template::Resource.attach_resource_group(dsl_name, self)
+          end
+        end
+
         def initialize(name, parent, &definition)
           @definition = definition
           @name = name
