@@ -254,7 +254,7 @@ module Convection
       #   template has any changes compared to the current template (in
       #   CloudFormation).
       def resource_changes?
-        ours = { 'Resources' => @template.resources.map(&:render) }
+        ours = { 'Resources' => @template.all_resources.map(&:render) }
         thiers = { 'Resources' => @current_template['Resources'] }
 
         ours.diff(thiers).any?
