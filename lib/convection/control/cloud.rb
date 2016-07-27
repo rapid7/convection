@@ -22,7 +22,7 @@ module Convection
 
       def filter_deck(options = {}, &block)
         included_stacks = stack_groups[options[:stack_group]]
-        included_stacks ||= options.fetch(:stack_list, [])
+        included_stacks ||= options[:stack_list]
         return @cloudfile.deck if included_stacks.nil?
         stack_list = @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
         block.call(Model::Event.new(:error, "Stack #{included_stacks} not exist", :error))
