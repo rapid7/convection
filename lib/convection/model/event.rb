@@ -19,7 +19,7 @@ module Convection
                :red => [:error, :fail, Control::Stack::CREATE_FAILED, Control::Stack::ROLLBACK_FAILED,
                         Control::Stack::DELETE_FAILED, Control::Stack::UPDATE_FAILED,
                         Control::Stack::UPDATE_ROLLBACK_IN_PROGRESS, Control::Stack::UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS,
-                        Control::Stack::UPDATE_ROLLBACK_FAILED, Control::Stack::TASK_FAILED, Control::Stack::UNDEFINED_STACK],
+                        Control::Stack::UPDATE_ROLLBACK_FAILED, Control::Stack::TASK_FAILED],
                :default => :yellow
 
       class << self
