@@ -83,18 +83,6 @@ module Convection
         end
       end
 
-      private
-
-      def included_stacks(options = {})
-        included_stacks = stack_groups[options[:stack_group]]
-        included_stacks ||= options[:stack_list]
-
-        Array(included_stacks)
-      end
-
-      def nonexistent_stacks(options = {})
-        included_stacks(options).reject { |name| @cloudfile.stacks.key?(name) }
-      end
     end
   end
 end
