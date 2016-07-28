@@ -23,7 +23,7 @@ module Convection
       def filter_deck(options = {}, &block)
         # throw an error if the user specifies both a stack group and list of stacks
         if options[:stack_group] && options[:stacks]
-          block.call(Model::Event.new(:error, "Cannot specify --stack-group and --stack-list at the same time", :error)) if block
+          block.call(Model::Event.new(:error, 'Cannot specify --stack-group and --stack-list at the same time', :error)) if block
           return []
         end
 
@@ -36,7 +36,8 @@ module Convection
         # throw an error if the user specifies nonexistent stacks
         if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
           bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
-          block.call(Model::Event.new(:error, "Stack#{'s' if bad_stack_names.length > 1} #{bad_stack_names.join(', ')} #{bad_stack_names.length > 1 ? 'do' : 'does'} not exist", :error)) if block
+          block.call(Model::Event.new(:error, "Stack#{'s' if bad_stack_names.length > 1}
+                    #{bad_stack_names.join(', ')} #{bad_stack_names.length > 1 ? 'do' : 'does'} not exist", :error)) if block
           return []
         end
 
@@ -44,7 +45,7 @@ module Convection
 
         # if no filter is specified, return the entire deck
         return stacks if filter.empty?
-        @cloudfile.stacks.select { |name, stack| filter.include?(name) }
+        @cloudfile.stacks.select { |name, _stack| filter.include?(name) }
       end
 
       def converge(to_stack, options = {}, &block)
@@ -67,7 +68,6 @@ module Convection
       end
 
       def diff(to_stack, options = {}, &block)
-
         filter_deck(options, &block).each do |stack_name, stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack_name } (#{ stack.cloud_name }) with remote template", :info))
 
@@ -82,7 +82,6 @@ module Convection
           sleep rand @cloudfile.splay || 2
         end
       end
-
     end
   end
 end
