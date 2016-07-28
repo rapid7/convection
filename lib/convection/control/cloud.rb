@@ -26,7 +26,7 @@ module Convection
 
         nonexistent_stacks = nonexistent_stacks(options)
         stack_list = @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
-        block.call(Model::Event.new(:error, "Stack(s) #{nonexistent_stacks.join(',')} did not exist", :error)) if nonexistent_stacks.any?
+        block.call(Model::Event.new(:error, "Stack(s) #{nonexistent_stacks.join(', ')} did not exist", :error)) if nonexistent_stacks.any?
 
         stack_list
       end
