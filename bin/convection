@@ -16,10 +16,10 @@ module Convection
 
     desc 'converge STACK', 'Converge your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
-    option :stack_list, :type => :string, :desc => 'A ordered comma separated list of stacks to converge'
+    option :stacks, :type => :string, :desc => 'A ordered space separated list of stacks to converge'
     def converge(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(stack, stack_group: options[:stack_group], stack_list: options[:stack_list]) do |event, errors|
+      @cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
         say_status(*event.to_thor)
         errors.each do |error|
           say "* #{ error.message }"
@@ -32,12 +32,12 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
-    option :stack_list, :type => :array, :desc => 'A ordered comma separated list of stacks to diff'
+    option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     def diff(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
 
-      @cloud.diff(stack, stack_group: options[:stack_group], stack_list: options[:stack_list]) do |d|
+      @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
         if d.is_a? Model::Event
           if options[:'very-verbose'] || d.name == :error
             say_status(*d.to_thor)

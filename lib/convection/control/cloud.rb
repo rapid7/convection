@@ -21,14 +21,30 @@ module Convection
       end
 
       def filter_deck(options = {}, &block)
-        included_stacks = included_stacks(options)
-        return @cloudfile.deck if included_stacks.empty?
+        # throw an error if the user specifies both a stack group and list of stacks
+        if options[:stack_group] && options[:stacks]
+          block.call(Model::Event.new(:error, "Cannot specify --stack-group and --stack-list at the same time", :error)) if block
+          return []
+        end
 
-        nonexistent_stacks = nonexistent_stacks(options)
-        stack_list = @cloudfile.stacks.map { |name, stack| stack if included_stacks.include?(name) }.compact
-        block.call(Model::Event.new(:error, "Stack(s) #{nonexistent_stacks.join(', ')} did not exist", :error)) if nonexistent_stacks.any?
+        # throw an error if the user specifies a nonexistent stack groups
+        if options[:stack_group] && !stack_groups.key?(options[:stack_group])
+          block.call(Model::Event.new(:error, "Unknown stack group: #{options[:stack_group]}", :error)) if block
+          return []
+        end
 
-        stack_list
+        # throw an error if the user specifies nonexistent stacks
+        if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
+          bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
+          block.call(Model::Event.new(:error, "Stack#{'s' if bad_stack_names.length > 1} #{bad_stack_names.join(', ')} #{bad_stack_names.length > 1 ? 'do' : 'does'} not exist", :error)) if block
+          return []
+        end
+
+        filter = Array(stack_groups[options[:stack_group]] || options[:stacks])
+
+        # if no filter is specified, return the entire deck
+        return stacks if filter.empty?
+        @cloudfile.stacks.select { |name, stack| filter.include?(name) }
       end
 
       def converge(to_stack, options = {}, &block)
@@ -52,11 +68,12 @@ module Convection
 
       def diff(to_stack, options = {}, &block)
         filter_deck(options, &block).each do |stack|
-          block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
+          #pp stack
+          block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack[1].name } (#{ stack[1].cloud_name }) with remote template", :info))
 
-          difference = stack.diff
+          difference = stack[1].diff
           if difference.empty?
-            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+            difference << Model::Event.new(:unchanged, "Stack #{ stack[1].cloud_name } Has no changes", :info)
           end
 
           difference.each { |diff| block.call(diff) }
