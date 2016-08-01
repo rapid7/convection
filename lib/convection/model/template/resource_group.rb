@@ -32,7 +32,7 @@ module Convection
         end
 
         def execute
-          instance_exec(&@definition)
+          instance_exec(&@definition) if @definition
         end
 
         def resource_group(*)
