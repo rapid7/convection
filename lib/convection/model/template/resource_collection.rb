@@ -6,7 +6,7 @@ module Convection
   module Model
     class Template
       # A collection of different {Convection::Model::Template::Resource}s.
-      class ResourceGroup
+      class ResourceCollection
         extend Forwardable
         include DSL::Helpers
         include DSL::Template::Resource
@@ -20,7 +20,7 @@ module Convection
 
         class << self
           def attach_to_dsl(dsl_name)
-            DSL::Template::Resource.attach_resource_group(dsl_name, self)
+            DSL::Template::Resource.attach_resource_collection(dsl_name, self)
           end
         end
 
@@ -39,8 +39,8 @@ module Convection
           instance_exec(&@definition) if @definition
         end
 
-        def resource_group(*)
-          fail NotImplementedError, "#{self.class}#resource_group is not yet implemented."
+        def resource_collection(*)
+          fail NotImplementedError, "#{self.class}#resource_collection is not yet implemented."
         end
 
         def resources
