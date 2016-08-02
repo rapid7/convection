@@ -36,8 +36,7 @@ module Convection
         # throw an error if the user specifies nonexistent stacks
         if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
           bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
-          block.call(Model::Event.new(:error, "Stack#{'s' if bad_stack_names.length > 1}
-                    #{bad_stack_names.join(', ')} #{bad_stack_names.length > 1 ? 'do' : 'does'} not exist", :error)) if block
+          block.call(Model::Event.new(:error, "Non Existent Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
           return []
         end
 
