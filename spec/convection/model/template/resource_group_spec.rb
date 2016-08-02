@@ -36,7 +36,7 @@ class Convection::Model::Template
         end
       end
 
-      it 'raises a NotImplementedError when #execute is called' do
+      it 'raises a NotImplementedError when Template#execute is called' do
         expect { subject.execute }.to raise_error(NotImplementedError)
       end
     end

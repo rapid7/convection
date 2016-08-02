@@ -31,7 +31,11 @@ module Convection
           @template = parent.template
         end
 
+        # @note This method is in place to be overriden by subclasses.
         def execute
+        end
+
+        def run_definition
           instance_exec(&@definition) if @definition
         end
 
