@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 class Convection::Model::Template
-  describe ResourceGroup do
+  describe ResourceCollection do
     let(:template) do
       Convection.template do
-        description 'ResourceGroup Test Template'
+        description 'ResourceCollection Test Template'
 
         # A lone resource for testing merging of resources.
         ec2_instance 'FrontendServer'
 
-        resource_group 'MyResourceGroup' do
+        resource_collection 'MyResourceCollection' do
           ec2_instance 'BackendServer'
           rds_instance 'PrimaryDb'
         end
@@ -28,10 +28,10 @@ class Convection::Model::Template
     context 'when attempting to define a nested resource group' do
       subject(:template) do
         Convection.template do
-          description 'ResourceGroup Test Template'
+          description 'ResourceCollection Test Template'
 
-          resource_group 'MyResourceGroup' do
-            resource_group 'MyNestedGroup'
+          resource_collection 'MyResourceCollection' do
+            resource_collection 'MyNestedGroup'
           end
         end
       end

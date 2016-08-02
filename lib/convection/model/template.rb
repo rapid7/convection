@@ -25,9 +25,9 @@ module Convection
             end
           end
 
-          def attach_resource_group(name, klass)
+          def attach_resource_collection(name, klass)
             define_method(name) do |rname, &block|
-              resource_groups[rname] = klass.new(rname, self, &block)
+              resource_collections[rname] = klass.new(rname, self, &block)
             end
           end
         end
@@ -82,8 +82,8 @@ module Convection
         resources[name] = r
       end
 
-      def resource_group(name, &block)
-        resource_groups[name] = Model::Template::ResourceGroup.new(name, self, &block)
+      def resource_collection(name, &block)
+        resource_collections[name] = Model::Template::ResourceCollection.new(name, self, &block)
       end
 
       def output(name, &block)
@@ -197,7 +197,7 @@ module Convection
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
-      attr_reader :resource_groups
+      attr_reader :resource_collections
       attr_reader :resources
       attr_reader :outputs
 
@@ -218,7 +218,7 @@ module Convection
         @mappings = Collection.new
         @conditions = Collection.new
         @resources = Collection.new
-        @resource_groups = Collection.new
+        @resource_collections = Collection.new
         @outputs = Collection.new
         @metadata = Collection.new
       end
@@ -230,7 +230,7 @@ module Convection
       def execute
         instance_exec(&@definition)
 
-        resource_groups.each do |_, group|
+        resource_collections.each do |_, group|
           group.run_definition
           group.execute
         end
@@ -255,8 +255,8 @@ module Convection
       end
 
       def all_resources
-        resource_groups.reduce(resources) do |result, (_name, resource_group)|
-          result.merge(resource_group.resources)
+        resource_collections.reduce(resources) do |result, (_name, resource_collection)|
+          result.merge(resource_collection.resources)
         end
       end
 
@@ -376,6 +376,6 @@ require_relative 'template/condition'
 require_relative 'template/resource'
 require_relative 'template/resource_property'
 require_relative 'template/resource_attribute'
-require_relative 'template/resource_group'
+require_relative 'template/resource_collection'
 require_relative 'template/output'
 require_relative 'template/metadata'
