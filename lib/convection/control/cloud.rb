@@ -48,7 +48,7 @@ module Convection
       end
 
       def converge(to_stack, options = {}, &block)
-        filter_deck(options, &block).each do |_stack_name, stack|
+        filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
 
@@ -67,7 +67,7 @@ module Convection
       end
 
       def diff(to_stack, options = {}, &block)
-        filter_deck(options, &block).each do |_stack_name, stack|
+        filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
           difference = stack.diff
