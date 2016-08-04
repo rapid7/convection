@@ -83,7 +83,7 @@ module Convection
 
           difference = stack.diff
           if difference.empty?
-            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } has no changes", :info)
           end
 
           difference.each { |diff| block.call(diff) }
