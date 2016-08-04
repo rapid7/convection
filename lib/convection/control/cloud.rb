@@ -44,7 +44,9 @@ module Convection
 
         # if no filter is specified, return the entire deck
         return stacks if filter.empty?
-        @cloudfile.stacks.select { |name, _stack| filter.include?(name) }
+        filter.reduce({}) do |result, stack_name|
+          result.merge(stack_name => @cloudfile.stacks[stack_name])
+        end
       end
 
       def converge(to_stack, options = {}, &block)
