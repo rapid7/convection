@@ -36,7 +36,7 @@ module Convection
         # throw an error if the user specifies nonexistent stacks
         if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
           bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
-          block.call(Model::Event.new(:error, "Non Existent Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
+          block.call(Model::Event.new(:error, "Undefined Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
           return {}
         end
 
@@ -44,10 +44,17 @@ module Convection
 
         # if no filter is specified, return the entire deck
         return stacks if filter.empty?
-        @cloudfile.stacks.select { |name, _stack| filter.include?(name) }
+        filter.reduce({}) do |result, stack_name|
+          result.merge(stack_name => @cloudfile.stacks[stack_name])
+        end
       end
 
       def converge(to_stack, options = {}, &block)
+        if to_stack && !stacks.include?(to_stack)
+          block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
+          return
+        end
+
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
@@ -67,12 +74,17 @@ module Convection
       end
 
       def diff(to_stack, options = {}, &block)
+        if to_stack && !stacks.include?(to_stack)
+          block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
+          return
+        end
+
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
           difference = stack.diff
           if difference.empty?
-            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } Has no changes", :info)
+            difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } has no changes", :info)
           end
 
           difference.each { |diff| block.call(diff) }
