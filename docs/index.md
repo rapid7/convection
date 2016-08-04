@@ -26,10 +26,12 @@ Or install it yourself as:
 - To converge all stacks in your cloudfile run `convection converge`. If you provide the name of your stack as a additional argument such as `convection converge my-stack-name` then all stacks above and including the stack you specified will be converged.
 - To converge a stack group run `convection converge --stack_group YOUR_STACK_GROUP_NAME`
 - To converge a specific stack or a list of stacks run `convection converge --stacks stackA stackB ...`
+
 ###### Diff
 - To display a diff between your local changes and the version of your stack in cloud formation of your changes run `convection diff`.
 - To diff the changes in a stack group run `convection diff --stack_group YOUR_STACK_GROUP_NAME`
 - To diff the changes for a specific stack or a list of stacks run `convection diff --stacks stackA stackB ...`
+
 ###### Help
 - To print out a list of available cli options with their descriptions run `convection help`.
 
