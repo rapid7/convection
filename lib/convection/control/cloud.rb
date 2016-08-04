@@ -24,20 +24,20 @@ module Convection
         # throw an error if the user specifies both a stack group and list of stacks
         if options[:stack_group] && options[:stacks]
           block.call(Model::Event.new(:error, 'Cannot specify --stack-group and --stack-list at the same time', :error)) if block
-          return []
+          return {}
         end
 
         # throw an error if the user specifies a nonexistent stack groups
         if options[:stack_group] && !stack_groups.key?(options[:stack_group])
           block.call(Model::Event.new(:error, "Unknown stack group: #{options[:stack_group]}", :error)) if block
-          return []
+          return {}
         end
 
         # throw an error if the user specifies nonexistent stacks
         if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
           bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
           block.call(Model::Event.new(:error, "Non Existent Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
-          return []
+          return {}
         end
 
         filter = Array(stack_groups[options[:stack_group]] || options[:stacks])

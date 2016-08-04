@@ -7,6 +7,43 @@ end
 require 'convection'
 
 region 'us-east-1'
-name 'convection-demo'
+prefix = ENV['USER'] || 'anon-'
+name "#{prefix}-convection-demo"
 
-stack 'vpc', Templates::VPC
+module Templates
+  INSTANCE1 = Convection.template {
+    ec2_instance('FooInstance') {
+      image_id 'ami-c02b04a8'
+    }
+  }
+  INSTANCE2 = Convection.template {
+    ec2_instance('BarInstance') {
+      image_id 'ami-c02b04a8'
+    }
+  }
+  INSTANCE3 = Convection.template {
+    ec2_instance('BazInstance') {
+      image_id 'ami-c02b04a8'
+    }
+  }
+  VPC1 = Convection.template {
+    ec2_vpc('FooVpc') {
+      network '10.1.1.0/24'
+    }
+  }
+  VPC2 = Convection.template {
+    ec2_vpc('BarVpc') {
+      network '10.1.2.0/24'
+    }
+  }
+end
+
+stack 'vpc1', Templates::VPC1
+stack 'vpc2', Templates::VPC2
+stack_group 'vpcs', %w(vpc1 vpc2)
+
+stack 'instance1', Templates::INSTANCE1
+stack 'instance2', Templates::INSTANCE2
+stack_group 'primary-instances', %w(instance1 instance2)
+
+stack 'instance3', Templates::INSTANCE3
