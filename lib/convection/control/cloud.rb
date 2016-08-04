@@ -77,7 +77,6 @@ module Convection
           return
         end
 
-
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
