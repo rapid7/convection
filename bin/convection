@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
-
+require 'benchmark'
 module Convection
   ##
   # Convection CLI
@@ -36,7 +36,7 @@ module Convection
     def diff(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
-
+      time = Benchmark.realtime do
       @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
         if d.is_a? Model::Event
           if options[:'very-verbose'] || d.name == :error
@@ -55,6 +55,8 @@ module Convection
           say_status(*d.to_thor)
         end
       end
+      end
+      puts "Time elapsed #{time*1000} milliseconds"
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
