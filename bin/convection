@@ -34,9 +34,10 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     def diff(stack = nil)
+      time = Benchmark.realtime do
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
-      time = Benchmark.realtime do
+
       @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
         if d.is_a? Model::Event
           if options[:'very-verbose'] || d.name == :error
@@ -56,7 +57,7 @@ module Convection
         end
       end
       end
-      puts "Time elapsed #{time*1000} milliseconds"
+      puts "Time total diff #{time*1000} milliseconds"
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
