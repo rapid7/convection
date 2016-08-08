@@ -55,12 +55,16 @@ module Convection
       attr_reader :stack_groups
 
       def initialize(cloudfile)
+        time = Benchmark.realtime do
         @attributes = Model::Attributes.new
         @stacks = {}
         @deck = []
         @stack_groups = {}
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
+
+        end
+        puts "Time elapsed in initialize of cloudfile #{time*1000} milliseconds"
       end
     end
   end
