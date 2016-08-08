@@ -2,16 +2,33 @@ require 'spec_helper'
 
 class Convection::Model::Template
   describe ResourceCollection do
+    class WebService < Convection::Model::Template::ResourceCollection
+      attach_to_dsl(:web_service)
+
+      attribute :use_elastic_load_balancing
+
+      def execute
+        web_service = self # Expose this instance to nested template methods.
+
+        ec2_instance "#{name}WebService"
+
+        elb "#{name}LoadBalancer" do
+          tag 'Description', "Load balancer for the #{web_service.name} web service."
+        end if use_elastic_load_balancing
+      end
+    end
+
+    let(:use_elb_value) { nil }
     let(:template) do
+      outer_scope = self
       Convection.template do
         description 'ResourceCollection Test Template'
 
-        # A lone resource for testing merging of resources.
-        ec2_instance 'FrontendServer'
+        # A lone resource for testing merging of resources and nested resources.
+        ec2_instance 'LoneResource1'
 
-        resource_collection 'MyResourceCollection' do
-          ec2_instance 'BackendServer'
-          rds_instance 'PrimaryDb'
+        web_service 'ExampleDotOrg' do
+          use_elastic_load_balancing outer_scope.use_elb_value
         end
       end
     end
@@ -21,24 +38,20 @@ class Convection::Model::Template
         .fetch('Resources')
     end
 
-    it { is_expected.to have_key('FrontendServer') }
-    it { is_expected.to have_key('BackendServer') }
-    it { is_expected.to have_key('PrimaryDb') }
+    context 'when the use_elastic_load_balancing attribute is set' do
+      let(:use_elb_value) { true }
 
-    context 'when attempting to define a nested resource group' do
-      subject(:template) do
-        Convection.template do
-          description 'ResourceCollection Test Template'
+      it { is_expected.to have_key('LoneResource1') }
+      it { is_expected.to have_key('ExampleDotOrgWebService') }
+      it { is_expected.to have_key('ExampleDotOrgLoadBalancer') }
+    end
 
-          resource_collection 'MyResourceCollection' do
-            resource_collection 'MyNestedGroup'
-          end
-        end
-      end
+    context 'when the use_elastic_load_balancing attribute is not set' do
+      let(:use_elb_value) { false }
 
-      it 'raises a NotImplementedError when Template#execute is called' do
-        expect { subject.execute }.to raise_error(NotImplementedError)
-      end
+      it { is_expected.to have_key('LoneResource1') }
+      it { is_expected.to have_key('ExampleDotOrgWebService') }
+      it { is_expected.to_not have_key('ExampleDotOrgLoadBalancer') }
     end
 
     private
