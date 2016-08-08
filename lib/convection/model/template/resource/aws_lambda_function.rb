@@ -10,6 +10,7 @@ module Convection
         class Lambda < Resource
           type 'AWS::Lambda::Function'
           property :function_code, 'Code'
+          property :function_name, 'FunctionName'
           property :description, 'Description'
           property :handler, 'Handler'
           property :memory_size, 'MemorySize'
