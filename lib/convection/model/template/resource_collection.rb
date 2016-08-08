@@ -39,10 +39,6 @@ module Convection
           instance_exec(&@definition) if @definition
         end
 
-        def resource_collection(*)
-          fail NotImplementedError, "#{self.class}#resource_collection is not yet implemented."
-        end
-
         def resources
           @resources ||= Convection::Model::Collection.new
         end
