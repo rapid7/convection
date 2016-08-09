@@ -165,6 +165,8 @@ module Convection
           sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
+        else
+          raise
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -364,6 +366,8 @@ module Convection
           sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
+        else
+          raise
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -398,6 +402,8 @@ module Convection
           sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
+        else
+          raise
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -426,6 +432,8 @@ module Convection
           sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
+        else
+          raise
         end
       rescue Aws::Errors::ServiceError => e
         @errors << e
