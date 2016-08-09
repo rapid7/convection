@@ -30,6 +30,11 @@ module Convection
       attr_reader :outputs
       attr_reader :tasks
 
+      # @!group Credential error handling attributes
+      attr_accessor :credential_error_max_retries
+      attr_accessor :credential_error_wait_time_seconds
+      # @!endgroup
+
       ## AWS-SDK
       attr_accessor :region
       attr_accessor :cloud
