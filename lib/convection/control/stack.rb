@@ -134,7 +134,8 @@ module Convection
         @current_template = {}
         @last_event_seen = nil
         @credential_error_count = 0
-        @credential_error_max_retries = 10
+        @credential_error_max_retries = Convection.default_credential_error_max_retries
+        @credential_error_wait_time_seconds = Convection.default_credential_error_wait_time_seconds
 
         # First pass evaluation of stack
         # This is important because it:
@@ -156,7 +157,7 @@ module Convection
       rescue Aws::EC2::Errors::RequestExpired => e
         if @credential_error_count <= @credential_error_max_retries
           puts 'AWS Credentials have expired, please re-authenticate...'
-          sleep 5
+          sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
         end
@@ -355,7 +356,7 @@ module Convection
       rescue Aws::EC2::Errors::RequestExpired => e
         if @credential_error_count <= @credential_error_max_retries
           puts 'AWS Credentials have expired, please re-authenticate...'
-          sleep 5
+          sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
         end
@@ -389,7 +390,7 @@ module Convection
       rescue Aws::EC2::Errors::RequestExpired => e
         if @credential_error_count <= @credential_error_max_retries
           puts 'AWS Credentials have expired, please re-authenticate...'
-          sleep 5
+          sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
         end
@@ -417,7 +418,7 @@ module Convection
       rescue Aws::EC2::Errors::RequestExpired => e
         if @credential_error_count <= @credential_error_max_retries
           puts 'AWS Credentials have expired, please re-authenticate...'
-          sleep 5
+          sleep @credential_error_wait_time_seconds
           @credential_error_count += 1
           retry
         end
