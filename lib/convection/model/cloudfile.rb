@@ -24,6 +24,9 @@ module Convection
         @attributes.set(stack, key, value)
       end
 
+      # Adds a stack with the provided options to the list of stacks.
+      #
+      # @see Convection::Control::Stack#initialize
       def stack(stack_name, template, options = {}, &block)
         options[:region] ||= region
         options[:cloud] = name
@@ -31,6 +34,10 @@ module Convection
 
         @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
         @deck << @stacks[stack_name]
+      end
+
+      def stack_group(group_name, group_list)
+        @stack_groups[group_name] = group_list
       end
     end
   end
@@ -45,11 +52,13 @@ module Convection
       attr_reader :attributes
       attr_reader :stacks
       attr_reader :deck
+      attr_reader :stack_groups
 
       def initialize(cloudfile)
         @attributes = Model::Attributes.new
         @stacks = {}
         @deck = []
+        @stack_groups = {}
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
       end

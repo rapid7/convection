@@ -1,0 +1,12 @@
+# Cloudfile
+require_relative './tasks/lookup_vpc_task.rb'
+require_relative './templates/vpc.rb'
+
+user = ENV['USER'] || 'anon'
+name "#{user}-demo-cloud"
+region 'us-east-1'
+
+stack 'vpc', Templates::VPC do
+  after_create_task Tasks::LookupVpcTask.new
+  after_update_task Tasks::LookupVpcTask.new
+end

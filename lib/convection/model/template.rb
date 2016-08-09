@@ -24,6 +24,12 @@ module Convection
               resources[rname] = resource
             end
           end
+
+          def attach_resource_collection(name, klass)
+            define_method(name) do |rname, &block|
+              resource_collections[rname] = klass.new(rname, self, &block)
+            end
+          end
         end
       end
 
@@ -81,6 +87,15 @@ module Convection
 
         o.instance_exec(&block) if block
         outputs[name] = o
+      end
+
+      # @param name [String] the name of the new metadata configuration to set
+      # @param value [Hash] an arbritrary JSON object to set as the
+      #   value of the new metadata configuration
+      def metadata(name = nil, value = nil)
+        return @metadata unless name
+
+        @metadata[name] = Model::Template::Metadata.new(name, value)
       end
     end
   end
@@ -178,6 +193,7 @@ module Convection
       attr_reader :parameters
       attr_reader :mappings
       attr_reader :conditions
+      attr_reader :resource_collections
       attr_reader :resources
       attr_reader :outputs
 
@@ -198,7 +214,9 @@ module Convection
         @mappings = Collection.new
         @conditions = Collection.new
         @resources = Collection.new
+        @resource_collections = Collection.new
         @outputs = Collection.new
+        @metadata = Collection.new
       end
 
       def clone(stack_)
@@ -207,6 +225,11 @@ module Convection
 
       def execute
         instance_exec(&@definition)
+
+        resource_collections.each do |_, group|
+          group.run_definition
+          group.execute
+        end
       end
 
       def render(stack_ = nil)
@@ -221,9 +244,16 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => resources.map(&:render),
-          'Outputs' => outputs.map(&:render)
+          'Resources' => all_resources.map(&:render),
+          'Outputs' => outputs.map(&:render),
+          'Metadata' => metadata.map(&:render)
         }
+      end
+
+      def all_resources
+        resource_collections.reduce(resources) do |result, (_name, resource_collection)|
+          result.merge(resource_collection.resources)
+        end
       end
 
       def diff(other, stack_ = nil)
@@ -342,4 +372,6 @@ require_relative 'template/condition'
 require_relative 'template/resource'
 require_relative 'template/resource_property'
 require_relative 'template/resource_attribute'
+require_relative 'template/resource_collection'
 require_relative 'template/output'
+require_relative 'template/metadata'

@@ -3,12 +3,18 @@
 ##
 module Convection
   class << self
+    # Syntactic sugar for calling {Convection::Model::Template#initialize}.
+    #
+    # @see Convection::Model::Template#initialize
     def template(*args, &block)
       Model::Template.new(*args, &block)
     end
 
-    def stack(*args)
-      Control::Stack.new(*args)
+    # Syntactic sugar for calling {Convection::Control::Stack#initialize}.
+    #
+    # @see Convection::Control::Stack#initialize
+    def stack(*args, &block)
+      Control::Stack.new(*args, &block)
     end
   end
 end
