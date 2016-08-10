@@ -3,7 +3,7 @@ require_relative '../resources/web_service.rb'
 
 module Templates
   EXAMPLE_DOT_ORG = Convection.template do
-    description 'An example website to demonstrate basic capabilities of resource collections.'
+    description 'An example website to demonstrate using custom resource collections.'
 
     web_service 'ExampleDotOrg' do
       ec2_instance_image_id 'ami-45026036'

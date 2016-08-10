@@ -28,6 +28,14 @@ class WebService < Convection::Model::Template::ResourceCollection
       security_group fn_ref("#{web_service.name}SecurityGroup")
 
       user_data base64(web_service.user_data)
+
+      with_output 'Hostname', get_att(name, 'PublicDnsName') do
+        description 'The public hostname of this web service.'
+      end
+
+      with_output 'HttpEndpoint', join('', 'http://', get_att(name, 'PublicDnsName')) do
+        description 'The URL to visit this web service at.'
+      end
     end
   end
 
