@@ -27,6 +27,8 @@ class WebService < Convection::Model::Template::ResourceCollection
       image_id web_service.ec2_instance_image_id
       security_group fn_ref("#{web_service.name}SecurityGroup")
 
+      tag 'Name', "#{web_service.name}Frontend"
+
       user_data base64(web_service.user_data)
 
       with_output 'Hostname', get_att(name, 'PublicDnsName') do
