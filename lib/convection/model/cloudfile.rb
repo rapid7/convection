@@ -2,6 +2,9 @@ require_relative '../control/stack'
 require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
+require 'pp'
+require 'thread'
+
 
 module Convection
   module DSL
@@ -32,9 +35,13 @@ module Convection
         options[:cloud] = name
         options[:attributes] = attributes
 
+        time = Benchmark.realtime do
         @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
+        end
+        puts "Stack initialization #{stack_name} #{time*1000} milliseconds"
         @deck << @stacks[stack_name]
       end
+
 
       def stack_group(group_name, group_list)
         @stack_groups[group_name] = group_list
@@ -61,10 +68,45 @@ module Convection
         @deck = []
         @stack_groups = {}
 
+        time = Benchmark.realtime do
+        puts "Before instance eval"
         instance_eval(IO.read(cloudfile), cloudfile, 1)
+        end
+        puts "Time elapsed in instance eval of cloudfile #{time*1000} milliseconds"
 
+        work_q = Queue.new
+        @deck.each{|stack| work_q.push stack }
+        workers = (0...2).map do
+          Thread.new do
+            begin
+              while stack = work_q.pop(true)
+                puts "resolving #{stack.name}"
+                stack.resolve_status
+                stack.resolver_two if stack.exist?
+
+                puts "resolve finished #{stack.name}"
+              end
+            rescue ThreadError
+            end
+          end
+        end;
+        workers.map(&:join);
+
+=begin
+        pp @deck
+        pool = ThreadPool.new(5)
+          @deck.each do |stack|
+            puts stack.name
+            pool.process {
+              puts "resolving #{stack.name}"
+              stack.resolver
+            }
+          end
+        pool.shutdown
+=end
         end
         puts "Time elapsed in initialize of cloudfile #{time*1000} milliseconds"
+
       end
     end
   end

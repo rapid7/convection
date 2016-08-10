@@ -1,6 +1,7 @@
 require 'aws-sdk'
 require 'json'
-
+require 'benchmark'
+require 'pp'
 module Convection
   module Control
     ##
@@ -143,24 +144,62 @@ module Convection
         #     in the dependency tree to avoid the chicken-and-egg problem.
         @template.execute
 
+        #time = Benchmark.realtime do
         ## Get initial state
-        get_status(cloud_name)
-        return unless exist?
+        #get_status(cloud_name)
+        #end
+        #puts "Stack status #{@name} #{time*1000} milliseconds"
+        #return unless the stack already exits
+        #return unless exist?
 
-        get_resources
-        get_template
-        resource_attributes
-        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
+
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
       # rubocop:enable Metrics/LineLength
+
 
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
         return name if cloud.nil?
         "#{ cloud }-#{ name }"
       end
+
+      def resolve_status
+        get_status(cloud_name)
+      end
+
+      def resolver
+        time = Benchmark.realtime do
+        get_resources
+        end
+        puts "Time elapsed Stack#get_resources #{time*1000} milliseconds"
+        time = Benchmark.realtime do
+        get_template
+        end
+        puts "Time elapsed Stack#get_template #{time*1000} milliseconds"
+        time = Benchmark.realtime do
+        resource_attributes
+        end
+        puts "Time elapsed Stack#resource_attributes #{time*1000} milliseconds"
+        time = Benchmark.realtime do
+        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
+        end
+        puts "Time elapsed Stack#get_events #{time*1000} milliseconds"
+      end
+
+      def resolver_two
+        hash = {:get_resources => nil, :get_template => nil, :resource_attributes => nil,  :get_events => 1}
+        threads = []
+        hash.each do |call_me, value |
+          threads << Thread.new {
+            value.nil? ? (send call_me) : (send call_me, value)
+          }
+        end
+        threads.each { |thr| thr.join }
+
+      end
+
 
       # @!group Attribute accessors
 
@@ -454,7 +493,7 @@ module Convection
 
       def get_status(stack_name = id)
         cf_stack = @cf_client.describe_stacks(:stack_name => stack_name).stacks.first
-
+  #pp cf_stack
         @id = cf_stack.stack_id
         @status = cf_stack.stack_status
         @exist = true
@@ -478,6 +517,7 @@ module Convection
       ## Fetch current resources
       def get_resources
         @resources = {}.tap do |collection|
+          #puts "Id is #{@id}"
           @cf_client.list_stack_resources(:stack_name => @id).each do |page|
             page.stack_resource_summaries.each do |resource|
               collection[resource[:logical_resource_id]] = resource
