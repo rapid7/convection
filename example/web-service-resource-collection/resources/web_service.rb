@@ -14,10 +14,7 @@ class WebService < Convection::Model::Template::ResourceCollection
   end
 
   def cidr_ranges
-    return @cidr_ranges if @cidr_ranges
-
-    csv_ranges = ENV['ALLOWED_CIDR_RANGES'].to_s
-    @cidr_ranges = csv_ranges.split(/[, ]+/)
+    @cidr_ranges ||= allowed_csv_ranges.split(/[, ]+/)
   end
 
   # Resource generator methods
@@ -28,6 +25,7 @@ class WebService < Convection::Model::Template::ResourceCollection
       security_group fn_ref("#{web_service.name}SecurityGroup")
 
       tag 'Name', "#{web_service.name}Frontend"
+      tag 'Stack', stack.cloud
 
       user_data base64(web_service.user_data)
 
@@ -55,5 +53,11 @@ class WebService < Convection::Model::Template::ResourceCollection
 
       with_output
     end
+  end
+
+  def allowed_csv_ranges
+    return ENV['ALLOWED_CIDR_RANGES'] if ENV.key?('ALLOWED_CIDR_RANGES')
+
+    raise ArgumentError, "You must export $ALLOWED_CIDR_RANGES to diff/converge #{stack.cloud_name}."
   end
 end
