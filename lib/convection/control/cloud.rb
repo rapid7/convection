@@ -74,6 +74,7 @@ module Convection
       end
 
       def diff(to_stack, options = {}, &block)
+
         if to_stack && !stacks.include?(to_stack)
           block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
           return
