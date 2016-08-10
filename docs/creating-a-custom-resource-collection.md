@@ -1,5 +1,5 @@
 # Creating a custom resource collection
-**NOTE**: Examples in this file can be found in `example/stacks`.
+**NOTE**: Examples in this file can be found in `example/web-service-resource-collection`.
 
 This guide will walk you through creating a custom resource collection.
 
@@ -70,7 +70,7 @@ end
 
 ### Generating a web server running on port 80
 #### Create an EC2 instance
-##### Support defining the image ID and instance user data via the template DSL:
+##### Support defining the image ID and instance user data via the template DSL
 ```ruby
 class WebService < Convection::Model::Template::ResourceCollection
   # ...
