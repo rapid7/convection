@@ -81,7 +81,7 @@ end
 ```
 
 ##### Generate the EC2 instance resource
-```
+```ruby
 def generate_ec2_instance(web_service)
   ec2_instance "#{name}Frontend" do
     image_id web_service.ec2_instance_image_id
