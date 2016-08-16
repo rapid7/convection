@@ -49,11 +49,12 @@ module Convection
         end
       end
 
-      def stacks_until(last_stack, options = {}, &block)
-        stacks = filter_deck(options, &block).values.map(&:name)
-        return stacks if last_stack.nil?
+      def stacks_until(last_stack_name, options = {}, &block)
+        stacks = filter_deck(options, &block).values
+        return stacks if last_stack_name.nil?
 
-        unless stacks.include?(last_stack)
+        last_stack = stacks.find { |stack| stack.name == last_stack_name }
+        unless last_stack
           block.call(Model::Event.new(:error, "Stacks filter did not include last stack #{ last_stack }", :error)) if block
           return []
         end
@@ -86,28 +87,22 @@ module Convection
         end
       end
 
-      def delete(to_stack, options = {}, &block)
-        if to_stack && !stacks.include?(to_stack)
-          block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
-          return
-        end
-
-        filter_deck(options, &block).each_value do |stack|
-          if stack.exist?
-            block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info)) if block
-            stack.delete(&block)
-
-            if stack.error?
-              block.call(Model::Event.new(:error, "Error deleting stack #{ stack.name }", :error), stack.errors) if block
-              break
-            end
-
-            break unless stack.delete_success?
-          else
+      def delete(stacks, &block)
+        stacks.each do |stack|
+          unless stack.exist?
             block.call(Model::Event.new(:delete_skipped, "Stack #{ stack.cloud_name } does not exist remotely", :warn))
           end
 
-          break if !to_stack.nil? && stack.name == to_stack
+          block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info)) if block
+          stack.delete(&block)
+
+          if stack.error?
+            block.call(Model::Event.new(:error, "Error deleting stack #{ stack.name }", :error), stack.errors) if block
+            break
+          end
+
+          break unless stack.delete_success?
+
           sleep rand @cloudfile.splay || 2
         end
       end

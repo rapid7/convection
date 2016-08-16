@@ -50,7 +50,7 @@ module Convection
 
       confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
       if confirmation.eql?('yes')
-        @cloud.delete(stack, stack_group: options[:stack_group], stacks: options[:stacks], &print_status)
+        @cloud.delete(stacks, &print_status)
       else
         say_status(:delete_aborted, 'Aborted deletion of the above stack(s).', :green)
       end
