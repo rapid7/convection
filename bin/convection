@@ -46,7 +46,7 @@ module Convection
         say_status(:delete_failed, 'No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).', :red)
         return
       end
-      say_status(:delete, "Deleting the following stack(s): #{stacks.inspect}", :red)
+      say_status(:delete, "Deleting the following stack(s): #{stacks.map(&:name).join(', ')}", :red)
 
       confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
       if confirmation.eql?('yes')
