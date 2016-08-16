@@ -43,7 +43,7 @@ module Convection
 
       stacks = @cloud.stacks_until(stack, options, &print_status)
       if stacks.empty?
-        say_status(:delete_failed, "No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).", :red)
+        say_status(:delete_failed, 'No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).', :red)
         return
       end
       say_status(:delete, "Deleting the following stack(s): #{stacks.inspect}", :red)
