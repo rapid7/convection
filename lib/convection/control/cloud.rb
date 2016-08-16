@@ -91,6 +91,7 @@ module Convection
         stacks.each do |stack|
           unless stack.exist?
             block.call(Model::Event.new(:delete_skipped, "Stack #{ stack.cloud_name } does not exist remotely", :warn))
+            next
           end
 
           block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info)) if block
