@@ -42,11 +42,11 @@ module Convection
       end
 
       stacks = @cloud.stacks_until(stack, options, &print_status)
-      # TODO: Does convection throw an error if no stacks are given in the cloudfile? If so this never would be hit...
       if stacks.empty?
         say_status(:delete_failed, "No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).", :red)
+        return
       end
-      say_status(:delete, "deleting the following stack(s): #{stacks.inspect}", :red)
+      say_status(:delete, "Deleting the following stack(s): #{stacks.inspect}", :red)
 
       confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
       if confirmation.eql?('yes')
