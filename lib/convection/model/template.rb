@@ -82,6 +82,10 @@ module Convection
         resources[name] = r
       end
 
+      def resource_collection(name, &block)
+        resource_collections[name] = Model::Template::ResourceCollection.new(name, self, &block)
+      end
+
       def output(name, &block)
         o = Model::Template::Output.new(name, self)
 

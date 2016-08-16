@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
-
+require 'benchmark'
 module Convection
   ##
   # Convection CLI
@@ -34,6 +34,7 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     def diff(stack = nil)
+      time = Benchmark.realtime do
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       last_event = nil
 
@@ -55,6 +56,8 @@ module Convection
           say_status(*d.to_thor)
         end
       end
+      end
+      puts "Time total diff #{time*1000} milliseconds"
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'

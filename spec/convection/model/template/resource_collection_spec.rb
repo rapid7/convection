@@ -2,6 +2,7 @@ require 'spec_helper'
 
 class Convection::Model::Template
   describe ResourceCollection do
+
     class WebService < Convection::Model::Template::ResourceCollection
       attach_to_dsl(:web_service)
 
