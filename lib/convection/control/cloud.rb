@@ -49,6 +49,19 @@ module Convection
         end
       end
 
+      def stacks_until(last_stack, options = {}, &block)
+        stacks = filter_deck(options, &block).values.map(&:name)
+        return stacks if last_stack.nil?
+
+        unless stacks.include?(last_stack)
+          block.call(Model::Event.new(:error, "Stacks filter did not include last stack #{ last_stack }", :error)) if block
+          return []
+        end
+
+        last_stack_index = stacks.index(last_stack)
+        stacks[0..last_stack_index]
+      end
+
       def converge(to_stack, options = {}, &block)
         if to_stack && !stacks.include?(to_stack)
           block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
@@ -68,6 +81,32 @@ module Convection
           break unless stack.success?
 
           ## Stop here
+          break if !to_stack.nil? && stack.name == to_stack
+          sleep rand @cloudfile.splay || 2
+        end
+      end
+
+      def delete(to_stack, options = {}, &block)
+        if to_stack && !stacks.include?(to_stack)
+          block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
+          return
+        end
+
+        filter_deck(options, &block).each_value do |stack|
+          if stack.exist?
+            block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info))
+            stack.delete(&block)
+
+            if stack.error?
+              block.call(Model::Event.new(:error, "Error deleting stack #{ stack.name }", :error), stack.errors) if block
+              break
+            end
+
+            break unless stack.delete_success?
+          else
+            block.call(Model::Event.new(:delete_skipped, "Stack #{ stack.cloud_name } does not exist remotely", :warn))
+          end
+
           break if !to_stack.nil? && stack.name == to_stack
           sleep rand @cloudfile.splay || 2
         end

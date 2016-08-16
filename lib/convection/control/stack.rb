@@ -210,6 +210,17 @@ module Convection
       end
 
       # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_COMPLETE states.
+      def delete_complete?
+        DELETE_COMPLETE == status
+      end
+
+      # @return [Boolean] whether the Stack state is now {#delete_complete?} (with no errors present).
+      def delete_success?
+        !error? && delete_complete?
+      end
+
+      # @return [Boolean] whether the CloudFormation Stack is in one of
       #   the several *_FAILED states.
       def fail?
         [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)
@@ -352,6 +363,11 @@ module Convection
       # @param block [Proc] a configuration block to pass any
       #   {Convection::Model::Event}s to.
       def delete(&block)
+        unless exist?
+          block.call(Model::Event.new(:complete, "Stack #{ name } does not exist", :info)) if block
+          return
+        end
+
         ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
           run_task(:before_delete, task, &block)
