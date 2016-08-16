@@ -363,11 +363,6 @@ module Convection
       # @param block [Proc] a configuration block to pass any
       #   {Convection::Model::Event}s to.
       def delete(&block)
-        unless exist?
-          block.call(Model::Event.new(:complete, "Stack #{ name } does not exist", :info)) if block
-          return
-        end
-
         ## Execute before delete tasks
         @tasks[:before_delete].delete_if do |task|
           run_task(:before_delete, task, &block)
