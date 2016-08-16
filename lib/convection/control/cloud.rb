@@ -94,7 +94,7 @@ module Convection
 
         filter_deck(options, &block).each_value do |stack|
           if stack.exist?
-            block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info))
+            block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info)) if block
             stack.delete(&block)
 
             if stack.error?
