@@ -159,14 +159,14 @@ module Convection
       end
 
       def resolver
-        hash = {:get_resources => nil, :get_template => nil, :resource_attributes => nil,  :get_events => 1}
+        hash = { :get_resources => nil, :get_template => nil, :resource_attributes => nil, :get_events => 1 }
         threads = []
-        hash.each do |call_me, value |
-          threads << Thread.new {
+        hash.each do |call_me, value|
+          threads << Thread.new do
             value.nil? ? (send call_me) : (send call_me, value)
-          }
+          end
         end
-        threads.each { |thr| thr.join }
+        threads.each(&:join)
       end
 
       # @!group Attribute accessors

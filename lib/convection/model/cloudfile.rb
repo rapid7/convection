@@ -64,19 +64,18 @@ module Convection
         instance_eval(IO.read(cloudfile), cloudfile, 1)
 
         work_q = Queue.new
-        @deck.each{|stack| work_q.push stack }
+        @deck.each { |stack| work_q.push stack }
         workers = (0...2).map do
           Thread.new do
-            begin
-              while stack = work_q.pop(true)
-                stack.resolve_status
-                stack.resolver if stack.exist?
-              end
-            rescue ThreadError
+            stack = work_q.pop(true)
+            while stack
+              stack.resolve_status
+              stack.resolver if stack.exist?
+              stack = work_q.pop(true)
             end
           end
-        end;
-        workers.map(&:join);
+        end
+        workers.map(&:join)
       end
     end
   end
