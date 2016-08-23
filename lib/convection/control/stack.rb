@@ -1,7 +1,6 @@
 require 'aws-sdk'
 require 'json'
 
-
 module Convection
   module Control
     ##
@@ -149,7 +148,6 @@ module Convection
       end
       # rubocop:enable Metrics/LineLength
 
-
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
         return name if cloud.nil?
@@ -169,9 +167,7 @@ module Convection
           }
         end
         threads.each { |thr| thr.join }
-
       end
-
 
       # @!group Attribute accessors
 

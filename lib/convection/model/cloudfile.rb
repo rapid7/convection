@@ -4,7 +4,6 @@ require_relative '../model/attributes'
 require_relative '../model/template'
 require 'thread'
 
-
 module Convection
   module DSL
     ##
@@ -38,7 +37,6 @@ module Convection
         @deck << @stacks[stack_name]
       end
 
-
       def stack_group(group_name, group_list)
         @stack_groups[group_name] = group_list
       end
@@ -58,7 +56,6 @@ module Convection
       attr_reader :stack_groups
 
       def initialize(cloudfile)
-        time = Benchmark.realtime do
         @attributes = Model::Attributes.new
         @stacks = {}
         @deck = []
@@ -80,10 +77,6 @@ module Convection
           end
         end;
         workers.map(&:join);
-
-        end
-        puts "Time elapsed in initialize of cloudfile #{time*1000} milliseconds"
-
       end
     end
   end
