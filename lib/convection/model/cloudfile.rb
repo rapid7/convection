@@ -3,7 +3,6 @@ require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
 require 'thread'
-require 'pp'
 
 module Convection
   module DSL
@@ -69,7 +68,6 @@ module Convection
           Thread.new do
             while work_q.size > 0
               stack = work_q.pop(true)
-              pp work_q
               stack.resolve_status
               stack.resolver if stack.exist?
             end
