@@ -210,6 +210,17 @@ module Convection
       end
 
       # @return [Boolean] whether the CloudFormation Stack is in one of
+      #   the several *_COMPLETE states.
+      def delete_complete?
+        DELETE_COMPLETE == status
+      end
+
+      # @return [Boolean] whether the Stack state is now {#delete_complete?} (with no errors present).
+      def delete_success?
+        !error? && delete_complete?
+      end
+
+      # @return [Boolean] whether the CloudFormation Stack is in one of
       #   the several *_FAILED states.
       def fail?
         [CREATE_FAILED, ROLLBACK_FAILED, DELETE_FAILED, UPDATE_ROLLBACK_FAILED].include?(status)

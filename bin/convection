@@ -28,6 +28,34 @@ module Convection
       end
     end
 
+    desc 'delete STACK', 'Delete stack(s) from your cloud'
+    option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to delete'
+    option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to delete'
+    def delete(stack = nil)
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      print_status = lambda do |event, *errors|
+        say_status(*event.to_thor)
+        errors.flatten.each do |error|
+          say "* #{ error.message }"
+          error.backtrace.each { |b| say "    #{ b }" }
+        end unless errors.nil?
+      end
+
+      stacks = @cloud.stacks_until(stack, options, &print_status)
+      if stacks.empty?
+        say_status(:delete_failed, 'No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).', :red)
+        return
+      end
+      say_status(:delete, "Deleting the following stack(s): #{stacks.map(&:name).join(', ')}", :red)
+
+      confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
+      if confirmation.eql?('yes')
+        @cloud.delete(stacks, &print_status)
+      else
+        say_status(:delete_aborted, 'Aborted deletion of the above stack(s).', :green)
+      end
+    end
+
     desc 'diff STACK', 'Show changes that will be applied by converge'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
