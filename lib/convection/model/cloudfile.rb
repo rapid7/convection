@@ -66,7 +66,7 @@ module Convection
         @deck.each { |stack| work_q.push stack }
         workers = (0...2).map do
           Thread.new do
-            while work_q.size > 0
+            until work_q.empty?
               stack = work_q.pop(true)
               stack.resolve_status
               stack.resolver if stack.exist?
