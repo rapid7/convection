@@ -1,0 +1,10 @@
+# Cloudfile
+require_relative './templates/example_dot_org.rb'
+
+user = ENV['USER'] || 'anon'
+aws_region = ENV['AWS_REGION'] || 'us-east-1'
+
+name "#{user}-web-service-example"
+region aws_region
+
+stack 'example-org', Templates::EXAMPLE_DOT_ORG
