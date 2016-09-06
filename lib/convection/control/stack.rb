@@ -30,6 +30,11 @@ module Convection
       attr_reader :outputs
       attr_reader :tasks
 
+      # @!group Credential error handling attributes
+      attr_accessor :credential_error_max_retries
+      attr_accessor :credential_error_wait_time_seconds
+      # @!endgroup
+
       ## AWS-SDK
       attr_accessor :region
       attr_accessor :cloud
@@ -133,6 +138,9 @@ module Convection
         instance_exec(&block) if block
         @current_template = {}
         @last_event_seen = nil
+        @credential_error_count = 0
+        @credential_error_max_retries = Convection.default_credential_error_max_retries
+        @credential_error_wait_time_seconds = Convection.default_credential_error_wait_time_seconds
 
         # First pass evaluation of stack
         # This is important because it:
@@ -361,6 +369,13 @@ module Convection
         @tasks[after_task_type].delete_if do |task|
           run_task(after_task_type, task, &block)
         end
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -388,6 +403,13 @@ module Convection
         @tasks[:after_delete].delete_if do |task|
           run_task(:after_delete, task, &block)
         end
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -423,6 +445,13 @@ module Convection
 
         @availability_zones.each_with_index(&block) if block
         @availability_zones
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       # Validates a rendered template against the CloudFormation API.
@@ -432,6 +461,13 @@ module Convection
         result = @cf_client.validate_template(:template_body => template.to_json)
         fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       # @!group Task methods
@@ -490,6 +526,13 @@ module Convection
         @status = NOT_CREATED
         @id = nil
         @outputs = {}
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       ## Fetch current resources
@@ -503,12 +546,26 @@ module Convection
         end
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
         @resources = {}
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       def get_template
         @current_template = JSON.parse(@cf_client.get_template(:stack_name => id).template_body)
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
         @current_template = {}
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       ## Fetch new stack events
@@ -534,6 +591,13 @@ module Convection
           @last_event_seen = collection.first.event_id unless collection.empty?
         end
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
+      rescue Aws::EC2::Errors::RequestExpired
+        raise unless @credential_error_count <= @credential_error_max_retries
+
+        warn 'AWS Credentials have expired, please re-authenticate...'
+        sleep @credential_error_wait_time_seconds
+        @credential_error_count += 1
+        retry
       end
 
       ## TODO No. This will become unnecessary as current_state is fleshed out
