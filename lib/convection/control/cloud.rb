@@ -117,7 +117,7 @@ module Convection
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
-          difference = stack.diff
+          difference = stack.diff_caller
           if difference.empty?
             difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } has no changes", :info)
           end
