@@ -68,8 +68,8 @@ module Convection
           Thread.new do
             until work_q.empty?
               stack = work_q.pop(true)
-              stack.resolve_status
-              stack.resolver if stack.exist?
+              stack.status_caller
+              stack.resolver_caller if stack.exist?
             end
           end
         end
