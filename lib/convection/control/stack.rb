@@ -368,6 +368,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -402,6 +403,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -444,6 +446,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
@@ -460,6 +463,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
@@ -526,6 +530,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
@@ -546,6 +551,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
@@ -559,6 +565,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
@@ -591,6 +598,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
+        Aws.shared_config.fresh
         retry
       end
 
