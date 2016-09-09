@@ -534,6 +534,7 @@ module Convection
 
       def get_status(stack_name = id)
         cf_stack = @cf_client.describe_stacks(:stack_name => stack_name).stacks.first
+
         @id = cf_stack.stack_id
         @status = cf_stack.stack_status
         @exist = true
