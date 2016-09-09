@@ -125,7 +125,6 @@ module Convection
           difference.each { |diff| block.call(diff) }
 
           break if !to_stack.nil? && stack.name == to_stack
-          sleep rand @cloudfile.splay || 2
         end
       end
     end

@@ -162,24 +162,20 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
-      def resolver_caller(count = 0.5)
-        begin
-          resolver
-        rescue Aws::CloudFormation::Errors::Throttling
-          sleep count
-          count += 0.5
-          resolver_caller(count)
-        end
+      def resolver_caller(count = 0.25)
+        resolver
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.25
+        resolver_caller(count)
       end
 
-      def status_caller(count = 0.5)
-        begin
-          get_status(cloud_name)
-        rescue Aws::CloudFormation::Errors::Throttling
-          sleep count
-          count += 0.5
-          status_caller(count)
-        end
+      def status_caller(count = 0.25)
+        get_status(cloud_name)
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.25
+        status_caller(count)
       end
 
       def resolver
@@ -289,13 +285,11 @@ module Convection
       #   template (what *would* be converged).
       # @see Convection::Model::Template#diff
       def diff_caller(count = 0.5)
-        begin
-          diff
-        rescue Aws::CloudFormation::Errors::Throttling
-          sleep count
-          count += 0.5
-          diff_caller(count)
-        end
+        diff
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.5
+        diff_caller(count)
       end
 
       def diff
