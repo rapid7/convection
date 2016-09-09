@@ -33,6 +33,7 @@ module Convection
         options[:cloud] = name
         options[:attributes] = attributes
         options[:retry_limit] = retry_limit
+
         @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
         @deck << @stacks[stack_name]
       end
