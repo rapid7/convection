@@ -151,14 +151,6 @@ module Convection
         #     in the dependency tree to avoid the chicken-and-egg problem.
         @template.execute
 
-        ## Get initial state
-        get_status(cloud_name)
-        return unless exist?
-
-        get_resources
-        get_template
-        resource_attributes
-        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -168,6 +160,42 @@ module Convection
         return @cloud_name unless @cloud_name.nil?
         return name if cloud.nil?
         "#{ cloud }-#{ name }"
+      end
+
+      # Calls the Convection::Model::Stack#resolver method
+      # if there is a rate limiting exception it sleeps and trys again.
+      def resolver_caller(count = 0.25)
+        resolver
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.25
+        resolver_caller(count)
+      end
+
+      # Calls the the Convection::Model::Stack#get_status method
+      # if there is a rate limiting exception it sleeps and trys again.
+      def status_caller(count = 0.25)
+        get_status(cloud_name)
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.25
+        status_caller(count)
+      end
+
+      # Calls The below methods in parallel
+      #   Convection::Model::Stack#get_resources
+      #   Convection::Model::Stack#get_template
+      #   Convection::Model::Stack#resource_attributes
+      #   Convection::Model::Stack#get_events
+      def resolver
+        hash = { :get_resources => nil, :get_template => nil, :resource_attributes => nil, :get_events => 1 }
+        threads = []
+        hash.each do |call_me, value|
+          threads << Thread.new do
+            value.nil? ? (send call_me) : (send call_me, value)
+          end
+        end
+        threads.each(&:join)
       end
 
       # @!group Attribute accessors
@@ -259,6 +287,16 @@ module Convection
       # @see Convection::Model::Template#to_json
       def to_json(pretty = false)
         @template.to_json(nil, pretty)
+      end
+
+      # Calls the Convection::Model::Stack#diff
+      # if there is a rate limiting exception it sleeps and trys again.
+      def diff_caller(count = 0.25)
+        diff
+      rescue Aws::CloudFormation::Errors::Throttling
+        sleep count
+        count += 0.25
+        diff_caller(count)
       end
 
       # @return [Hash] a set of differences between the current

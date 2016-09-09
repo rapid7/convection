@@ -2,6 +2,7 @@ require_relative '../control/stack'
 require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
+require 'thread'
 
 module Convection
   module DSL
@@ -61,6 +62,18 @@ module Convection
         @stack_groups = {}
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
+        work_q = Queue.new
+        @deck.each { |stack| work_q.push stack }
+        workers = (0...4).map do
+          Thread.new do
+            until work_q.empty?
+              stack = work_q.pop(true)
+              stack.status_caller
+              stack.resolver_caller if stack.exist?
+            end
+          end
+        end
+        workers.map(&:join)
       end
     end
   end
