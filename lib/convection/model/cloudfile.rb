@@ -14,6 +14,7 @@ module Convection
       attribute :name
       attribute :region
       attribute :splay
+      attribute :retry_limit
 
       ## Helper to define a template in-line
       def template(*args, &block)
@@ -31,7 +32,7 @@ module Convection
         options[:region] ||= region
         options[:cloud] = name
         options[:attributes] = attributes
-
+        options[:retry_limit] = retry_limit
         @stacks[stack_name] = Control::Stack.new(stack_name, template, options, &block)
         @deck << @stacks[stack_name]
       end
