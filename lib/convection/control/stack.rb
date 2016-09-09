@@ -284,11 +284,11 @@ module Convection
       #   template (in CloudFormation) and the state of the rendered
       #   template (what *would* be converged).
       # @see Convection::Model::Template#diff
-      def diff_caller(count = 0.5)
+      def diff_caller(count = 0.25)
         diff
       rescue Aws::CloudFormation::Errors::Throttling
         sleep count
-        count += 0.5
+        count += 0.25
         diff_caller(count)
       end
 
