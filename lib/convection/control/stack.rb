@@ -162,6 +162,7 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
+      # Calls the Convection::Model::Stack#resolver method and if there is a rate limiting exception it sleeps and trys again.
       def resolver_caller(count = 0.25)
         resolver
       rescue Aws::CloudFormation::Errors::Throttling
@@ -170,6 +171,7 @@ module Convection
         resolver_caller(count)
       end
 
+      # Calls the the Convection::Model::Stack#get_status method and if there is a rate limiting exception it sleeps and trys again.
       def status_caller(count = 0.25)
         get_status(cloud_name)
       rescue Aws::CloudFormation::Errors::Throttling
@@ -178,6 +180,11 @@ module Convection
         status_caller(count)
       end
 
+      # Calls The below methods in parallel
+      #   Convection::Model::Stack#get_resource
+      #   Convection::Model::Stack#get_template
+      #   Convection::Model::Stack#resource_attributes
+      #   Convection::Model::Stack#get_events
       def resolver
         hash = { :get_resources => nil, :get_template => nil, :resource_attributes => nil, :get_events => 1 }
         threads = []
@@ -280,10 +287,7 @@ module Convection
         @template.to_json(nil, pretty)
       end
 
-      # @return [Hash] a set of differences between the current
-      #   template (in CloudFormation) and the state of the rendered
-      #   template (what *would* be converged).
-      # @see Convection::Model::Template#diff
+      # Calls the Convection::Model::Stack#diff and if there is a rate limiting exception it sleeps and trys again.
       def diff_caller(count = 0.25)
         diff
       rescue Aws::CloudFormation::Errors::Throttling
@@ -292,6 +296,10 @@ module Convection
         diff_caller(count)
       end
 
+      # @return [Hash] a set of differences between the current
+      #   template (in CloudFormation) and the state of the rendered
+      #   template (what *would* be converged).
+      # @see Convection::Model::Template#diff
       def diff
         @template.diff(@current_template)
       end
