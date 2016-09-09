@@ -183,7 +183,7 @@ module Convection
       end
 
       # Calls The below methods in parallel
-      #   Convection::Model::Stack#get_resource
+      #   Convection::Model::Stack#get_resources
       #   Convection::Model::Stack#get_template
       #   Convection::Model::Stack#resource_attributes
       #   Convection::Model::Stack#get_events
