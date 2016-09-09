@@ -167,7 +167,7 @@ module Convection
           resolver
         rescue Aws::CloudFormation::Errors::Throttling
           sleep count
-          count =  count + 0.5
+          count += 0.5
           resolver_caller(count)
         end
       end
@@ -293,7 +293,7 @@ module Convection
           diff
         rescue Aws::CloudFormation::Errors::Throttling
           sleep count
-          count = count + 0.5
+          count += 0.5
           diff_caller(count)
         end
       end
