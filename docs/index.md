@@ -1,4 +1,4 @@
-# Convection [![Build Status](https://travis-ci.org/rapid7/convection.svg)](https://travis-ci.org/rapid7/convection)
+# Convection [![Build Status](https://api.travis-ci.org/rapid7/convection.svg?branch=master)](https://travis-ci.org/rapid7/convection)
 _A fully generic, modular DSL for AWS CloudFormation_
 
 This gem aims to provide a reusable model for AWS CloudFormation in Ruby. It exposes a DSL for template definition, and a simple, decoupled abstraction of a CloudFormation Stack to compile and apply templates.
