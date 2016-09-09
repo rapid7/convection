@@ -121,12 +121,8 @@ module Convection
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
 
-        client_options = {}.tap do |opt|
-          opt[:region] = @region
-          opt[:credentials] = @credentials unless @credentials.nil?
-        end
-        @ec2_client = Aws::EC2::Client.new(client_options)
-        @cf_client = Aws::CloudFormation::Client.new(client_options)
+        reload_cf_client
+        reload_ec2_client
 
         ## Remote state
         @exist = false
@@ -368,7 +364,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -403,7 +399,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -446,7 +442,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_ec2_client
         retry
       end
 
@@ -463,7 +459,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       end
 
@@ -530,7 +526,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       end
 
@@ -551,7 +547,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       end
 
@@ -565,7 +561,7 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
       end
 
@@ -598,8 +594,25 @@ module Convection
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        Aws.shared_config.fresh
+        reload_cf_client
         retry
+      end
+
+      def client_options
+        client_options = { region: @region }
+        client_options[:credentials] = @credentials unless @credentials.nil?
+
+        client_options
+      end
+
+      def reload_cf_client
+        Aws.shared_config.fresh if @credentials.nil?
+        @cf_client = Aws::CloudFormation::Client.new(client_options)
+      end
+
+      def reload_ec2_client
+        Aws.shared_config.fresh if @credentials.nil?
+        @ec2_client = Aws::EC2::Client.new(client_options)
       end
 
       ## TODO No. This will become unnecessary as current_state is fleshed out
