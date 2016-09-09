@@ -162,7 +162,8 @@ module Convection
         "#{ cloud }-#{ name }"
       end
 
-      # Calls the Convection::Model::Stack#resolver method and if there is a rate limiting exception it sleeps and trys again.
+      # Calls the Convection::Model::Stack#resolver method
+      # if there is a rate limiting exception it sleeps and trys again.
       def resolver_caller(count = 0.25)
         resolver
       rescue Aws::CloudFormation::Errors::Throttling
@@ -171,7 +172,8 @@ module Convection
         resolver_caller(count)
       end
 
-      # Calls the the Convection::Model::Stack#get_status method and if there is a rate limiting exception it sleeps and trys again.
+      # Calls the the Convection::Model::Stack#get_status method
+      # if there is a rate limiting exception it sleeps and trys again.
       def status_caller(count = 0.25)
         get_status(cloud_name)
       rescue Aws::CloudFormation::Errors::Throttling
@@ -287,7 +289,8 @@ module Convection
         @template.to_json(nil, pretty)
       end
 
-      # Calls the Convection::Model::Stack#diff and if there is a rate limiting exception it sleeps and trys again.
+      # Calls the Convection::Model::Stack#diff
+      # if there is a rate limiting exception it sleeps and trys again.
       def diff_caller(count = 0.25)
         diff
       rescue Aws::CloudFormation::Errors::Throttling
