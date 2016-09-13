@@ -153,18 +153,29 @@ module Convection
         #     in the dependency tree to avoid the chicken-and-egg problem.
         @template.execute
 
-        ## Get initial state
-        get_status(cloud_name)
-        return unless exist?
-
-        get_resources
-        get_template
-        resource_attributes
-        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
       # rubocop:enable Metrics/LineLength
+
+      def status
+        begin
+          get_status(cloud_name)
+        rescue Aws::Errors::ServiceError => e
+          @errors << e
+        end
+      end
+
+      def template_info
+        begin
+          get_resources
+          get_template
+          resource_attributes
+          get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
+        rescue Aws::Errors::ServiceError => e
+          @errors << e
+        end
+      end
 
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
