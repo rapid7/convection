@@ -2,7 +2,6 @@ require_relative '../control/stack'
 require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
-require 'Benchmark'
 require 'thread'
 
 module Convection
