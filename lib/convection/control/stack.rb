@@ -120,7 +120,7 @@ module Convection
 
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
-        @retry_limit = options[:retry_limit] || 6
+        @retry_limit = options[:retry_limit] || 7
 
         client_options = {}.tap do |opt|
           opt[:region] = @region

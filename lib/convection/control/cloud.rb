@@ -114,22 +114,20 @@ module Convection
           return
         end
 
-        errors = []
-        stacks.each_value do |stack|
-          if stack.error?
-            errors << stack.errors.collect { |x| x.exception.message }
-          end
-        end
-        unless errors.empty?
-          errors = errors.uniq.flatten!
-          block.call(Model::Event.new(:error, "Error(s) during stack diff #{errors.join(', ')}", :error), errors) if block
-          return
-        end
+        exit 1 if stack_initialization_errors?(&block)
 
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
           difference = stack.diff
+          # Find errors during diff
+          if stack.error?
+            errors = stack.errors.collect { |x| x.exception.message }
+            errors.uniq!.flatten!
+            block.call(Model::Event.new(:error, "Error diffing stack #{ stack.name} Error(s): #{errors.join(', ')}", :error), stack.errors) if block
+            break
+          end
+
           if difference.empty?
             difference << Model::Event.new(:unchanged, "Stack #{ stack.cloud_name } has no changes", :info)
           end
@@ -138,6 +136,23 @@ module Convection
 
           break if !to_stack.nil? && stack.name == to_stack
         end
+      end
+
+      def stack_initialization_errors?(&block)
+        errors = []
+        # Find errors during stack init
+        stacks.each_value do |stack|
+          if stack.error?
+            errors << stack.errors.collect { |x| x.exception.message }
+          end
+        end
+
+        unless errors.empty?
+          errors.uniq!.flatten!
+          block.call(Model::Event.new(:error, "Error(s) during stack initialization #{errors.join(', ')}", :error), errors) if block
+          return true
+        end
+        false
       end
     end
   end
