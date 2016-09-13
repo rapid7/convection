@@ -121,12 +121,8 @@ module Convection
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
 
-        client_options = {}.tap do |opt|
-          opt[:region] = @region
-          opt[:credentials] = @credentials unless @credentials.nil?
-        end
-        @ec2_client = Aws::EC2::Client.new(client_options)
-        @cf_client = Aws::CloudFormation::Client.new(client_options)
+        reload_cf_client
+        reload_ec2_client
 
         ## Remote state
         @exist = false
@@ -363,11 +359,11 @@ module Convection
           run_task(after_task_type, task, &block)
         end
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -397,11 +393,11 @@ module Convection
           run_task(:after_delete, task, &block)
         end
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       rescue Aws::Errors::ServiceError => e
         @errors << e
@@ -439,11 +435,11 @@ module Convection
         @availability_zones.each_with_index(&block) if block
         @availability_zones
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_ec2_client
         retry
       end
 
@@ -455,11 +451,11 @@ module Convection
         fail result.context.http_response.inspect unless result.successful?
         puts "\nTemplate validated successfully"
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       end
 
@@ -521,11 +517,11 @@ module Convection
         @id = nil
         @outputs = {}
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       end
 
@@ -541,11 +537,11 @@ module Convection
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
         @resources = {}
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       end
 
@@ -554,11 +550,11 @@ module Convection
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
         @current_template = {}
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
-        warn 'AWS Credentials have expired, please re-authenticate...'
-        sleep @credential_error_wait_time_seconds
-        @credential_error_count += 1
+        wait_for_credential_refresh
+
+        reload_cf_client
         retry
       end
 
@@ -586,12 +582,39 @@ module Convection
         end
       rescue Aws::CloudFormation::Errors::ValidationError # Stack does not exist
       rescue Aws::EC2::Errors::RequestExpired
-        raise unless @credential_error_count <= @credential_error_max_retries
+        raise if reached_max_credential_retries?
 
+        wait_for_credential_refresh
+
+        reload_cf_client
+        retry
+      end
+
+      def client_options
+        client_options = { region: @region }
+        client_options[:credentials] = @credentials unless @credentials.nil?
+
+        client_options
+      end
+
+      def reload_cf_client
+        Aws.shared_config.fresh if @credentials.nil?
+        @cf_client = Aws::CloudFormation::Client.new(client_options)
+      end
+
+      def reload_ec2_client
+        Aws.shared_config.fresh if @credentials.nil?
+        @ec2_client = Aws::EC2::Client.new(client_options)
+      end
+
+      def reached_max_credential_retries?
+        @credential_error_count > @credential_error_max_retries
+      end
+
+      def wait_for_credential_refresh
         warn 'AWS Credentials have expired, please re-authenticate...'
         sleep @credential_error_wait_time_seconds
         @credential_error_count += 1
-        retry
       end
 
       ## TODO No. This will become unnecessary as current_state is fleshed out
