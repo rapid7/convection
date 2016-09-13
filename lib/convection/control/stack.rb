@@ -120,10 +120,12 @@ module Convection
 
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
+        @retry_limit = options[:retry_limit] || 7
 
         client_options = {}.tap do |opt|
           opt[:region] = @region
           opt[:credentials] = @credentials unless @credentials.nil?
+          opt[:retry_limit] = @retry_limit
         end
         @ec2_client = Aws::EC2::Client.new(client_options)
         @cf_client = Aws::CloudFormation::Client.new(client_options)
