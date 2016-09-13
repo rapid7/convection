@@ -159,22 +159,18 @@ module Convection
       # rubocop:enable Metrics/LineLength
 
       def status
-        begin
-          get_status(cloud_name)
-        rescue Aws::Errors::ServiceError => e
-          @errors << e
-        end
+        get_status(cloud_name)
+      rescue Aws::Errors::ServiceError => e
+        @errors << e
       end
 
       def template_info
-        begin
-          get_resources
-          get_template
-          resource_attributes
-          get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
-        rescue Aws::Errors::ServiceError => e
-          @errors << e
-        end
+        get_resources
+        get_template
+        resource_attributes
+        get_events(1) # Get the latest page of events (Set @last_event_seen before starting)
+      rescue Aws::Errors::ServiceError => e
+        @errors << e
       end
 
       def cloud_name

@@ -3,7 +3,7 @@ require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
 require 'Benchmark'
-require 'Thread'
+require 'thread'
 
 module Convection
   module DSL
@@ -18,7 +18,6 @@ module Convection
       attribute :splay
       attribute :retry_limit
       attribute :thread_count
-
 
       ## Helper to define a template in-line
       def template(*args, &block)
@@ -69,7 +68,7 @@ module Convection
         @stacks = {}
         @deck = []
         @stack_groups = {}
-        @thread_count ||=2
+        @thread_count ||= 2
         instance_eval(IO.read(cloudfile), cloudfile, 1)
         work_q = Queue.new
         @deck.each { |stack| work_q.push stack }
