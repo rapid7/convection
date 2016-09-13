@@ -114,6 +114,18 @@ module Convection
           return
         end
 
+        errors = []
+        stacks.each_value do |stack|
+          if stack.error?
+            errors << stack.errors.collect { |x| x.exception.message }
+          end
+        end
+        unless errors.empty?
+          errors = errors.uniq.flatten!
+          block.call(Model::Event.new(:error, "Error(s) during stack diff #{errors.join(', ')}", :error), errors) if block
+          return
+        end
+
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
