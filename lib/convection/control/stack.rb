@@ -156,7 +156,6 @@ module Convection
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
-      # rubocop:enable Metrics/LineLength
 
       def status
         get_status(cloud_name)
@@ -172,6 +171,7 @@ module Convection
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
+      # rubocop:enable Metrics/LineLength
 
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
