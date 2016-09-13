@@ -69,6 +69,7 @@ module Convection
         @deck = []
         @stack_groups = {}
         @thread_count ||= 2
+
         instance_eval(IO.read(cloudfile), cloudfile, 1)
         work_q = Queue.new
         @deck.each { |stack| work_q.push stack }
