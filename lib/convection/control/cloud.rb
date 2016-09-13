@@ -123,7 +123,7 @@ module Convection
           # Find errors during diff
           if stack.error?
             errors = stack.errors.collect { |x| x.exception.message }
-            errors.uniq!.flatten!
+            errors = errors.uniq.flatten
             block.call(Model::Event.new(:error, "Error diffing stack #{ stack.name} Error(s): #{errors.join(', ')}", :error), stack.errors) if block
             break
           end
@@ -148,7 +148,7 @@ module Convection
         end
 
         unless errors.empty?
-          errors.uniq!.flatten!
+          errors = errors.uniq.flatten
           block.call(Model::Event.new(:error, "Error(s) during stack initialization #{errors.join(', ')}", :error), errors) if block
           return true
         end
