@@ -43,7 +43,6 @@ module Convection
       def stack_group(group_name, group_list)
         @stack_groups[group_name] = group_list
       end
-
     end
   end
 
