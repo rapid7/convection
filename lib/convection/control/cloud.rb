@@ -69,6 +69,8 @@ module Convection
           return
         end
 
+        exit 1 if stack_initialization_errors?(&block)
+
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
@@ -88,6 +90,8 @@ module Convection
       end
 
       def delete(stacks, &block)
+        exit 1 if stack_initialization_errors?(&block)
+
         stacks.each do |stack|
           unless stack.exist?
             block.call(Model::Event.new(:delete_skipped, "Stack #{ stack.cloud_name } does not exist remotely", :warn))
