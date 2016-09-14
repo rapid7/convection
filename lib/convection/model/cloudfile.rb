@@ -44,9 +44,6 @@ module Convection
         @stack_groups[group_name] = group_list
       end
 
-      def init_threads(count)
-        @thread_count = count
-      end
     end
   end
 
@@ -67,9 +64,10 @@ module Convection
         @stacks = {}
         @deck = []
         @stack_groups = {}
-        @thread_count ||= 2
+        @thread_count = thread_count || 2
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
+
         work_q = Queue.new
         @deck.each { |stack| work_q.push stack }
         workers = (0...@thread_count).map do
