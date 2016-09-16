@@ -9,6 +9,8 @@ module Convection
         class CloudFrontDefaultCacheBehavior < ResourceProperty
           property :allowed_methods, 'AllowedMethods', :type => :list, :default => %w(HEAD GET)
           property :cached_methods, 'CachedMethods', :type => :list
+          property :compress, 'Compress'
+          property :default_ttl, 'DefaultTTL'
           property :forwarded_values, 'ForwardedValues'
           property :min_ttl, 'MinTTL'
           property :smooth_streaming, 'SmoothStreaming'
