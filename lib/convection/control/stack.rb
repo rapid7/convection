@@ -153,10 +153,17 @@ module Convection
         #     in the dependency tree to avoid the chicken-and-egg problem.
         @template.execute
 
-        ## Get initial state
-        get_status(cloud_name)
-        return unless exist?
+      rescue Aws::Errors::ServiceError => e
+        @errors << e
+      end
 
+      def status
+        get_status(cloud_name)
+      rescue Aws::Errors::ServiceError => e
+        @errors << e
+      end
+
+      def load_template_info
         get_resources
         get_template
         resource_attributes

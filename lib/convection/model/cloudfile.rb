@@ -2,6 +2,7 @@ require_relative '../control/stack'
 require_relative '../dsl/helpers'
 require_relative '../model/attributes'
 require_relative '../model/template'
+require 'thread'
 
 module Convection
   module DSL
@@ -15,6 +16,7 @@ module Convection
       attribute :region
       attribute :splay
       attribute :retry_limit
+      attribute :thread_count
 
       ## Helper to define a template in-line
       def template(*args, &block)
@@ -61,8 +63,22 @@ module Convection
         @stacks = {}
         @deck = []
         @stack_groups = {}
+        @thread_count ||= 2
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
+
+        work_q = Queue.new
+        @deck.each { |stack| work_q.push(stack) }
+        workers = (0...@thread_count).map do
+          Thread.new do
+            until work_q.empty?
+              stack = work_q.pop(true)
+              stack.status
+              stack.load_template_info if stack.exist?
+            end
+          end
+        end
+        workers.each(&:join)
       end
     end
   end
