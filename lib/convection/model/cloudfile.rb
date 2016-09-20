@@ -63,7 +63,7 @@ module Convection
         @stacks = {}
         @deck = []
         @stack_groups = {}
-        @thread_count = thread_count || 2
+        @thread_count ||= 2
 
         instance_eval(IO.read(cloudfile), cloudfile, 1)
 
