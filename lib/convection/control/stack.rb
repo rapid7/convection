@@ -163,7 +163,7 @@ module Convection
         @errors << e
       end
 
-      def template_info
+      def load_template_info
         get_resources
         get_template
         resource_attributes
