@@ -4,7 +4,7 @@ _A fully generic, modular DSL for AWS CloudFormation_
 This gem aims to provide a reusable model for AWS CloudFormation in Ruby. It exposes a DSL for template definition, and a simple, decoupled abstraction of a CloudFormation Stack to compile and apply templates.
 
 ## Contributing
-Please read our [Contributing guidelines](CONTRIBUTING.md) for more information on contributing to Convection.
+Please read our [Contributing guidelines](.github/CONTRIBUTING.md) for more information on contributing to Convection.
 
 ## Installation
 Add this line to your application's Gemfile:
