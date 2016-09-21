@@ -4,8 +4,8 @@ module Convection
   module Model
     class Template
       class ResourceProperty
-        #Represents an {https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-replicationconfiguration-rules.html}
-        #Amazon S3 Replication Configuration Rules
+        # Represents an {https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-replicationconfiguration-rules.html}
+        # Amazon S3 Replication Configuration Rules
         class S3ReplicationConfigurationRule < ResourceProperty
           property :destination, 'Destination'
           property :id, 'Id'
