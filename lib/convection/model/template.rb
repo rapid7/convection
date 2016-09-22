@@ -21,13 +21,21 @@ module Convection
               resource = klass.new(rname, self)
               resource.instance_exec(&block) if block
 
+              raise ArgumentError, "A resource with the specified name already exists: #{rname} " \
+                "(class: #{resources[rname].class})" if resources.key?(rname)
+
               resources[rname] = resource
             end
           end
 
           def attach_resource_collection(name, klass)
             define_method(name) do |rname, &block|
-              resource_collections[rname] = klass.new(rname, self, &block)
+              resource_collection = klass.new(rname, self, &block)
+
+              raise ArgumentError, "A resource collection with the specified name already exists: #{rname} " \
+                "(class: #{resource_collections[rname].class})" if resource_collections.key?(rname)
+
+              resource_collections[rname] = resource_collection
             end
           end
         end
