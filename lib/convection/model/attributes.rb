@@ -40,6 +40,13 @@ module Convection
         @stacks.include?(stack) && @stacks[stack].include?(key)
       end
 
+      def fetch(stack, key)
+        value = get(stack, key)
+        return value unless value.nil?
+
+        raise KeyError, "key '#{key}' not found for stack '#{stack}'"
+      end
+
       def get(stack, key, default = nil)
         include?(stack, key) ? @stacks[stack.to_s][key.to_s] : default
       end
