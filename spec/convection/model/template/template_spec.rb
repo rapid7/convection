@@ -51,6 +51,40 @@ class Convection::Model::Template
 
     it { is_expected.to have_key('Resources') }
 
+    context 'with duplicate resource definitions' do
+      it 'raises an argument error when a second resource is defined' do
+        template = Convection.template do
+          description 'Test Template'
+
+          ec2_instance 'TestInstance1' do
+            availability_zone 'us-east-1'
+            image_id 'ami-asdf83'
+          end
+
+          ec2_instance 'TestInstance1'
+        end
+
+        expect { template.to_json }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'with duplicate resource_collection definitions' do
+      class InstanceGroup < Convection::Model::Template::ResourceCollection
+        attach_to_dsl(:instance_group)
+      end
+
+      it 'raises an argument error when a second resource collection is defined' do
+        template = Convection.template do
+          description 'Test Template'
+
+          instance_group 'TestInstanceGroup1'
+          instance_group 'TestInstanceGroup1'
+        end
+
+        expect { template.to_json }.to raise_error(ArgumentError)
+      end
+    end
+
     private
 
     def template_json
