@@ -19,6 +19,14 @@ module Convection
           @parameters.include?(key) || @outputs.include?(key) || @resources.include?(key)
         end
 
+        def fetch(key)
+          @parameters.fetch(key.to_s) do
+            @outputs.fetch(key.to_s) do
+              @resources.fetch(key.to_s)
+            end
+          end
+        end
+
         def [](key)
           @parameters[key.to_s] || @outputs[key.to_s] || @resources[key.to_s]
         end
@@ -41,10 +49,9 @@ module Convection
       end
 
       def fetch(stack, key)
-        value = get(stack, key)
-        return value unless value.nil?
+        raise KeyError, "key '#{key}' not found for stack '#{stack}'" unless include?(stack, key)
 
-        raise KeyError, "key '#{key}' not found for stack '#{stack}'"
+        @stacks[stack.to_s].fetch(key.to_s)
       end
 
       def get(stack, key, default = nil)
