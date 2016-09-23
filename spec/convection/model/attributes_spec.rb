@@ -2,31 +2,38 @@ require 'spec_helper'
 
 module Convection::Model
   describe Attributes do
-    subject do
-      Attributes.new
-    end
+    subject { Attributes.new }
 
     describe '#fetch' do
-      it 'returns a value that has been set' do
-        subject.set('web-service', 'private', true)
-
-        expect { subject.fetch('web-service', 'private') }.to_not raise_error
+      it 'raises a key error if the key was not defined' do
+        expect { subject.fetch('<stack-name>', '<attribute-key>') }.to raise_error(KeyError)
       end
 
-      it 'returns false if a value of false has been set' do
-        subject.set('web-service', 'private', false)
+      ['<truthy object>', true, false].each do |default|
+        it "supports #{default.inspect} as the default value when no value was set" do
+          expect { subject.fetch('<stack-name>', '<attribute-key>', default) }.to_not raise_error
+        end
 
-        expect { subject.fetch('web-service', 'private') }.to_not raise_error
+
+        it "supports #{default.inspect} as a default value" do
+          observed = subject.fetch('<stack-name>', '<attribute-key>', default)
+          expect(observed).to eq(default)
+        end
       end
 
-      it 'returns nil if a value of nil has been set' do
-        subject.set('web-service', 'private', nil)
+      ['truthy object', true, false, nil].each do |value|
+        it "does not raise a key error when #{value.inspect} was previously set" do
+          subject.set('<stack-name>', '<attribute-key>', value)
 
-        expect { subject.fetch('web-service', 'private') }.to_not raise_error
-      end
+          expect { subject.fetch('<stack-name>', '<attribute-key>') }.to_not raise_error
+        end
 
-      it 'raises an exception if no value has been set' do
-        expect { subject.fetch('web-service', 'private') }.to raise_error(KeyError)
+        it "supports #{value.inspect} as a return value" do
+          subject.set('<stack-name>', '<attribute-key>', value)
+
+          observed = subject.fetch('<stack-name>', '<attribute-key>')
+          expect(observed).to eq(value)
+        end
       end
     end
   end
