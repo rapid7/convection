@@ -24,7 +24,7 @@ module Convection
           property :min_size, 'MinSize'
           property :notification_configuration, 'NotificationConfiguration'
           property :placement_group, 'PlacementGroup'
-          property :termination_policie, 'TerminationPolicies', :array
+          property :termination_policy, 'TerminationPolicies', :array
           property :vpc_zone_identifier, 'VPCZoneIdentifier', :array
 
           def render(*args)
