@@ -14,7 +14,6 @@ module Convection::Model
           expect { subject.fetch('<stack-name>', '<attribute-key>', default) }.to_not raise_error
         end
 
-
         it "supports #{default.inspect} as a default value" do
           observed = subject.fetch('<stack-name>', '<attribute-key>', default)
           expect(observed).to eq(default)
