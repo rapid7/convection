@@ -1,3 +1,4 @@
+Copyright (c) 2016 Bryan Call and Erran Carey, Rapid7 LLC.
 Copyright (c) 2015 John Manero, Rapid7 LLC.
 
 MIT License
