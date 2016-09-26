@@ -45,4 +45,4 @@ Or install it yourself as:
 We highly recommend consulting the [getting started guide](./docs/getting-started.md) for a in depth walk through on how to to set up your project and create and deploy a stack. Example stacks and resources are available in the [convection/example](https://github.com/rapid7/convection/tree/master/example) folder
 
 ## License
-Convection is distributed under the MIT license - please refer to the [LICENSE](./LICENSE) for more information.
+Convection is distributed under the MIT license - please refer to the [LICENSE](LICENSE.md) for more information.
