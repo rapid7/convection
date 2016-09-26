@@ -6,8 +6,8 @@ require 'convection/version'
 Gem::Specification.new do |spec|
   spec.name          = 'convection'
   spec.version       = Convection::VERSION
-  spec.authors       = ['John Manero']
-  spec.email         = ['jmanero@rapid7.com']
+  spec.authors       = ['John Manero', 'Bryan Call', 'Erran Carey']
+  spec.email         = ['jmanero@rapid7.com', 'bcall@rapid7.com', 'ecarey@rapid7.com']
   spec.summary       = %q{A fully generic, modular DSL for AWS CloudFormation}
   spec.description   = %q{This gem aims to provide a reusable model for AWS CloudFormation in Ruby. It exposes a DSL for template definition, and a simple, decoupled abstraction of a CloudFormation Stack to compile and apply templates.}
   spec.homepage      = 'https://github.com/rapid7/convection'
