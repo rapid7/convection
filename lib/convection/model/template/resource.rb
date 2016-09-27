@@ -337,10 +337,11 @@ module Convection
           }
         end
 
-        def with_output(output_name = name, value = reference, &block)
+        def with_output(output_name = name, value = reference, export_as: nil, &block)
           o = Model::Template::Output.new(output_name, @template)
           o.value = value
           o.description = "Resource #{ type }/#{ name }"
+          o.export_as = export_as if export_as
 
           o.instance_exec(&block) if block
           @template.outputs[output_name] = o
