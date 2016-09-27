@@ -1,16 +1,19 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
-
+require 'thread'
+require 'pp'
+require 'benchmark'
 module Convection
   ##
   # Convection CLI
   ##
   class CLI < Thor
     class_option :cloudfile, :type => :string, :default => 'Cloudfile'
+    class_option :cloudfiles, :type => :array
     def initialize(*args)
       super
-      @cloud = Control::Cloud.new
+      #@cloud = Control::Cloud.new
       @cwd = Dir.getwd
     end
 
@@ -62,27 +65,43 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     def diff(stack = nil)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      last_event = nil
-
-      @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
-        if d.is_a? Model::Event
-          if options[:'very-verbose'] || d.name == :error
-            say_status(*d.to_thor)
-          elsif options[:verbose]
-            say_status(*d.to_thor) if d.name == :compare
-          end
-          last_event = d
-        elsif d.is_a? Model::Diff
-          if !options[:'very-verbose'] && !options[:verbose]
-            say_status(*last_event.to_thor) unless last_event.nil?
+      time = Benchmark.realtime do
+      semaphore = Mutex.new
+      work_q = Queue.new
+      options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
+      workers = (0...options[:cloudfiles].length).map do
+        Thread.new do
+          until work_q.empty?
+            cloud_array = work_q.pop(true)
+            cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             last_event = nil
+            cloud = cloud_array[:cloud]
+            cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
+              semaphore.synchronize {
+              if d.is_a? Model::Event
+                if options[:'very-verbose'] || d.name == :error
+                  say_status(*d.to_thor)
+                elsif options[:verbose]
+                  say_status(*d.to_thor) if d.name == :compare
+                end
+                last_event = d
+              elsif d.is_a? Model::Diff
+                if !options[:'very-verbose'] && !options[:verbose]
+                  say_status(*last_event.to_thor) unless last_event.nil?
+                  last_event = nil
+                end
+                say_status(*d.to_thor)
+              else
+                say_status(*d.to_thor)
+              end
+              }
+            end
           end
-          say_status(*d.to_thor)
-        else
-          say_status(*d.to_thor)
         end
       end
+      workers.each(&:join)
+      end
+      puts "Diff time = #{time*1000} ms"
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
