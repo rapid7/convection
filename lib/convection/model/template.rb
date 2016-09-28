@@ -17,6 +17,7 @@ module Convection
         class << self
           ## Wrap private define_method
           def attach_resource(name, klass)
+            resource_dsl_methods[name.to_s] = klass
             define_method(name) do |rname, &block|
               resource = klass.new(rname, self)
               resource.instance_exec(&block) if block
@@ -26,9 +27,18 @@ module Convection
           end
 
           def attach_resource_collection(name, klass)
+            resource_collection_dsl_methods[name.to_s] = klass
             define_method(name) do |rname, &block|
               resource_collections[rname] = klass.new(rname, self, &block)
             end
+          end
+
+          def resource_dsl_methods
+            @resource_dsl_methods ||= {}
+          end
+
+          def resource_collection_dsl_methods
+            @resource_collection_dsl_methods ||= {}
           end
         end
       end
@@ -79,6 +89,12 @@ module Convection
         r = Model::Template::Resource.new(name, self)
 
         r.instance_exec(&block) if block
+        predefined_resources = DSL::Template::Resource.resource_dsl_methods.select { |_, resource_class| resource_class.type == r.type }.keys
+        if predefined_resources.any?
+          dsl_methods = predefined_resources.map { |resource| "##{resource}" }.join(', ')
+          warn "WARNING: The resource type #{r.type} is already defined. " \
+            "You can use any of the following resource methods instead of manually constructing a resource: #{dsl_methods}"
+        end
         resources[name] = r
       end
 
