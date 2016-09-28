@@ -21,14 +21,28 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
     def converge(stack = nil)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-        say_status(*event.to_thor)
-        errors.each do |error|
-          say "* #{ error.message }"
-          error.backtrace.each { |b| say "    #{ b }" }
-        end unless errors.nil?
+      semaphore = Mutex.new
+      work_q = Queue.new
+      options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
+      workers = (0...options[:cloudfiles].length).map do
+        Thread.new do
+          until work_q.empty?
+            cloud_array = work_q.pop(true)
+            cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
+            cloud = cloud_array[:cloud]
+            cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
+              semaphore.synchronize {
+                say_status(*event.to_thor)
+                errors.each do |error|
+                  say "* #{ error.message }"
+                  error.backtrace.each { |b| say "    #{ b }" }
+                end unless errors.nil?
+              }
+            end
+          end
+        end
       end
+      workers.each(&:join)
     end
 
     desc 'delete STACK', 'Delete stack(s) from your cloud'
