@@ -65,43 +65,49 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     def diff(stack = nil)
-      time = Benchmark.realtime do
+      outputs = []
       semaphore = Mutex.new
       work_q = Queue.new
       options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
       workers = (0...options[:cloudfiles].length).map do
         Thread.new do
           until work_q.empty?
+            output = []
             cloud_array = work_q.pop(true)
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             last_event = nil
             cloud = cloud_array[:cloud]
             cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
-              semaphore.synchronize {
               if d.is_a? Model::Event
                 if options[:'very-verbose'] || d.name == :error
-                  say_status(*d.to_thor)
+                  output << d
                 elsif options[:verbose]
-                  say_status(*d.to_thor) if d.name == :compare
+                  output << d if d.name == :compare
                 end
                 last_event = d
               elsif d.is_a? Model::Diff
                 if !options[:'very-verbose'] && !options[:verbose]
-                  say_status(*last_event.to_thor) unless last_event.nil?
+                  output << last_event unless last_event.nil?
                   last_event = nil
                 end
-                say_status(*d.to_thor)
+                output << d
               else
-                say_status(*d.to_thor)
+                output << d
               end
-              }
             end
+            semaphore.synchronize {
+              outputs << {region: cloud.cloudfile.region, logging: output}
+            }
           end
         end
       end
       workers.each(&:join)
+      outputs.each do |output|
+        puts output[:region]
+        output[:logging].each do |status|
+          say_status(*status.to_thor)
+        end
       end
-      puts "Diff time = #{time*1000} ms"
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'

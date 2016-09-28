@@ -7,6 +7,7 @@ module Convection
     # Control tour Clouds
     ##
     class Cloud
+      attr_accessor :cloudfile
       def configure(cloudfile)
         @cloudfile = Model::Cloudfile.new(cloudfile)
       end
