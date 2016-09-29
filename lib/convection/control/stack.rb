@@ -218,6 +218,12 @@ module Convection
         [CREATE_COMPLETE, ROLLBACK_COMPLETE, UPDATE_COMPLETE, UPDATE_ROLLBACK_COMPLETE].include?(status)
       end
 
+      # @return [Boolean] whether a credential error occurred is the reason
+      #   accessing the CloudFormation stack failed.
+      def credential_error?
+        error? && errors.all? { |e| e.class == Aws::EC2::Errors::RequestExpired }
+      end
+
       # @return [Boolean] whether the CloudFormation Stack is in one of
       #   the several *_COMPLETE states.
       def delete_complete?
