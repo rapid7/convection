@@ -8,8 +8,6 @@ module Convection
         # AWS::AutoScaling::AutoScalingGroup
         ##
         class AutoScalingGroup < Resource
-          include Model::Mixin::Taggable
-
           type 'AWS::AutoScaling::AutoScalingGroup'
           property :availability_zone, 'AvailabilityZones', :array
           property :cooldown, 'Cooldown'
@@ -33,9 +31,33 @@ module Convection
             end
           end
 
+          def tag(key, value, propagate_at_launch: nil)
+            tags[key] = { value: value }
+            tags[key][:propagate_at_launch] = propagate_at_launch unless propagate_at_launch.nil?
+
+            tags[key]
+          end
+
+          def tags
+            @tags ||= {}
+          end
+
           def update_policy(&block)
             policy = ResourceAttribute::UpdatePolicy.new(self)
             policy.instance_exec(&block) if block
+          end
+
+          private
+
+          def render_tags(resource)
+            rendered_tags = tags.map do |key, tag|
+              rendered = { 'Key' => key, 'Value' => tag[:value] }
+              rendered['PropagateAtLaunch'] = tag[:propagate_at_launch] if tag.key?(:propagate_at_launch)
+
+              rendered
+            end
+
+            resource['Properties']['Tags'] = rendered_tags unless rendered_tags.empty?
           end
         end
       end

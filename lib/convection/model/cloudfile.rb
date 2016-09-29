@@ -73,7 +73,7 @@ module Convection
           Thread.new do
             until work_q.empty?
               stack = work_q.pop(true)
-              stack.status
+              stack.template_status
               stack.load_template_info if stack.exist?
             end
           end
