@@ -9,17 +9,15 @@ module Convection
   # Convection CLI
   ##
   class CLI < Thor
-    class_option :cloudfile, :type => :string, :default => 'Cloudfile'
-    class_option :cloudfiles, :type => :array
     def initialize(*args)
       super
-      #@cloud = Control::Cloud.new
       @cwd = Dir.getwd
     end
 
     desc 'converge STACK', 'Converge your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
+    option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     def converge(stack = nil)
       semaphore = Mutex.new
       work_q = Queue.new
@@ -48,7 +46,9 @@ module Convection
     desc 'delete STACK', 'Delete stack(s) from your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to delete'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to delete'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     def delete(stack = nil)
+      init_cloud
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       print_status = lambda do |event, *errors|
         say_status(*event.to_thor)
@@ -78,6 +78,7 @@ module Convection
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
+    option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     def diff(stack = nil)
       outputs = []
       semaphore = Mutex.new
@@ -126,14 +127,22 @@ module Convection
 
     desc 'print STACK', 'Print the rendered template for STACK'
     def print(stack)
+      init_cloud
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       puts @cloud.stacks[stack].to_json(true)
     end
 
     desc 'validate STACK', 'Validate the rendered template for STACK'
     def validate(stack)
+      init_cloud
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       @cloud.stacks[stack].validate
+    end
+
+    no_commands do
+      def init_cloud
+        @cloud = Control::Cloud.new
+      end
     end
   end
 end
