@@ -149,7 +149,7 @@ module Convection
         @errors << e
       end
 
-      def status
+      def template_status
         get_status(cloud_name)
       rescue Aws::Errors::ServiceError => e
         @errors << e
