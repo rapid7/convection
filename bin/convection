@@ -19,28 +19,45 @@ module Convection
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     def converge(stack = nil)
+      outputs = []
       semaphore = Mutex.new
       work_q = Queue.new
       options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
       workers = (0...options[:cloudfiles].length).map do
         Thread.new do
+          output = []
           until work_q.empty?
             cloud_array = work_q.pop(true)
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             cloud = cloud_array[:cloud]
             cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              semaphore.synchronize {
-                say_status(*event.to_thor)
-                errors.each do |error|
-                  say "* #{ error.message }"
-                  error.backtrace.each { |b| say "    #{ b }" }
-                end unless errors.nil?
-              }
+              output <<  {event: event, errors: errors}
             end
+            semaphore.synchronize {
+              outputs << {region: cloud.cloudfile.region, logging: output}
+            }
           end
         end
+
       end
       workers.each(&:join)
+      error_count = 0
+      outputs.each do |output|
+        puts "********"
+        puts output[:region]
+        puts "********"
+        output[:logging].each do |hash|
+          say_status(*hash[:event].to_thor)
+          hash[:errors].each do |error|
+            error_count +=1
+          say "* #{ error.message }"
+          error.backtrace.each { |b| say "    #{ b }" }
+          end unless hash[:errors].nil?
+        end
+      end
+      if error_count > 0
+        exit 1
+      end
     end
 
     desc 'delete STACK', 'Delete stack(s) from your cloud'
@@ -118,7 +135,9 @@ module Convection
       end
       workers.each(&:join)
       outputs.each do |output|
+        puts "********"
         puts output[:region]
+        puts "********"
         output[:logging].each do |status|
           say_status(*status.to_thor)
         end
