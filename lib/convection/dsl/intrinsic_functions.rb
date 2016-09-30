@@ -27,6 +27,12 @@ module Convection
         }
       end
 
+      def fn_import_value(value)
+        {
+          'Fn::ImportValue' => value
+        }
+      end
+
       def fn_not(condition)
         {
           'Fn::Not' => [condition]
