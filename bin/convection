@@ -72,6 +72,8 @@ module Convection
     no_commands do
       attr_accessor :last_event
 
+      private
+
       def emit_events(event, *errors)
         if event.is_a? Model::Event
           if options[:'very-verbose'] || event.name == :error
