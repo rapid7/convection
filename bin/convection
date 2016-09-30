@@ -12,6 +12,7 @@ module Convection
     def initialize(*args)
       super
       @cwd = Dir.getwd
+      @errors = false
     end
 
     desc 'converge STACK', 'Converge your cloud'
@@ -20,8 +21,8 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion. Makes output easier to read if operating on multiple cloudfiles', :default => true
     def converge(stack = nil)
-      error_count = 0
       outputs = []
       semaphore = Mutex.new
       work_q = Queue.new
@@ -34,29 +35,25 @@ module Convection
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             cloud = cloud_array[:cloud]
             cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              if options[:cloudfiles].length > 1
+              if options[:cloudfiles].length > 1 && options[:delayed_output]
                 output <<  {event: event, errors: errors}
               else
-                emit_events(event, *errors)
+                emit_events(event, *errors, cloud.cloudfile.region)
               end
-
+              semaphore.synchronize {
+                if @errors == false && errors
+                  @errors = true
+                end
+              }
             end
-
-            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1
+            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1 && options[:delayed_output]
           end
         end
 
       end
       workers.each(&:join)
-
-      outputs.each do |output|
-        puts "********"
-        puts output[:region]
-        puts "********"
-        output[:logging].each do |hash|
-         emit_events(hash[:event], *hash[:errors])
-        end
-      end
+      print_outputs(outputs) if outputs.length > 0
+      exit 1 if @errors
     end
 
     desc 'delete STACK', 'Delete stack(s) from your cloud'
@@ -90,6 +87,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion. Makes output easier to read if operating on multiple cloudfiles', :default => true
     def diff(stack = nil)
       outputs = []
       semaphore = Mutex.new
@@ -103,26 +101,24 @@ module Convection
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             cloud = cloud_array[:cloud]
             cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              if options[:cloudfiles].length > 1 &&
+              if options[:cloudfiles].length > 1 && options[:delayed_output]
                 output <<  {event: event, errors: errors}
               else
                 emit_events(event, *errors, cloud.cloudfile.region)
               end
+              semaphore.synchronize {
+                if @errors == false && errors
+                  @errors = true
+                end
+              }
             end
-            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1
+            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1 && options[:delayed_output]
           end
         end
       end
-
       workers.each(&:join)
-      outputs.each do |output|
-        puts "********"
-        puts output[:region]
-        puts "********"
-        output[:logging].each do |hash|
-          emit_events(hash[:event], *hash[:errors])
-        end
-      end
+      print_outputs(outputs) if outputs.length > 0
+      exit 1 if @errors
     end
 
     desc 'print_template STACK', 'Print the rendered template for STACK'
@@ -153,19 +149,19 @@ module Convection
         #event.region = region
         if event.is_a? Model::Event
           if options[:'very-verbose'] || event.name == :error
-            print_output(event, region)
+            print_info(event, region)
           elsif options[:verbose]
-            print_output(event, region) if event.name == :compare
+            print_info(event, region) if event.name == :compare
           end
           @last_event = event
         elsif event.is_a? Model::Diff
           if !options[:'very-verbose'] && !options[:verbose]
-            print_output(last_event, region) unless last_event.nil?
+            print_info(last_event, region) unless last_event.nil?
             @last_event = nil
           end
-          print_output(event, region)
+          print_info(event, region)
         else
-          print_output(event, region)
+          print_info(event, region)
         end
 
         errors.each do |error|
@@ -174,9 +170,20 @@ module Convection
         end
       end
 
-      def print_output(say, region = nil)
-        print region
+      def print_info(say, region = nil)
+        print "#{region} "
         say_status(*say.to_thor)
+      end
+
+      def print_outputs(outputs)
+        outputs.each do |output|
+          puts "********"
+          puts output[:region]
+          puts "********"
+          output[:logging].each do |hash|
+            emit_events(hash[:event], *hash[:errors], nil)
+          end
+        end
       end
     end
   end
