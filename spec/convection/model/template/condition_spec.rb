@@ -10,8 +10,7 @@ class Convection::Model::Template
           fn_equals 'prod', 'prod'
         end
 
-        resource 'SecurityGroup' do
-          type 'AWS::EC2::SecurityGroup'
+        ec2_security_group 'SecurityGroup' do
           condition 'InProd'
         end
       end
