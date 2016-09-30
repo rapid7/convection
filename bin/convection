@@ -21,16 +21,18 @@ module Convection
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     def converge(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks], &emit_events)
+      @cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks], &method(:emit_events))
     end
 
     desc 'delete STACK', 'Delete stack(s) from your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to delete'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to delete'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     def delete(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
 
-      stacks = @cloud.stacks_until(stack, options, &emit_events)
+      stacks = @cloud.stacks_until(stack, options, &method(:emit_events))
       if stacks.empty?
         say_status(:delete_failed, 'No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).', :red)
         return
@@ -39,20 +41,20 @@ module Convection
 
       confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
       if confirmation.eql?('yes')
-        @cloud.delete(stacks, &emit_events)
+        @cloud.delete(stacks, &method(:emit_events))
       else
         say_status(:delete_aborted, 'Aborted deletion of the above stack(s).', :green)
       end
     end
 
     desc 'diff STACK', 'Show changes that will be applied by converge'
-    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
-    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     def diff(stack = nil)
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks], &emit_events)
+      @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks], &method(:emit_events))
     end
 
     desc 'print STACK', 'Print the rendered template for STACK'
