@@ -17,6 +17,8 @@ module Convection
     desc 'converge STACK', 'Converge your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     def converge(stack = nil)
       error_count = 0
@@ -35,25 +37,25 @@ module Convection
               if options[:cloudfiles].length > 1
                 output <<  {event: event, errors: errors}
               else
-                error_count += converge_output(event,errors)
+                emit_events(event, *errors)
               end
+
             end
+
             semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1
           end
         end
 
       end
       workers.each(&:join)
+
       outputs.each do |output|
         puts "********"
         puts output[:region]
         puts "********"
         output[:logging].each do |hash|
-          error_count += converge_output(hash[:event], hash[:errors])
+         emit_events(hash[:event], *hash[:errors])
         end
-      end
-      if error_count > 0
-        exit 1
       end
     end
 
@@ -61,18 +63,13 @@ module Convection
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to delete'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to delete'
     option :cloudfile, :type => :string, :default => 'Cloudfile'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     def delete(stack = nil)
       init_cloud
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      print_status = lambda do |event, *errors|
-        say_status(*event.to_thor)
-        errors.flatten.each do |error|
-          say "* #{ error.message }"
-          error.backtrace.each { |b| say "    #{ b }" }
-        end unless errors.nil?
-      end
 
-      stacks = @cloud.stacks_until(stack, options, &print_status)
+      stacks = @cloud.stacks_until(stack, options, &method(:emit_events))
       if stacks.empty?
         say_status(:delete_failed, 'No stacks found matching the provided input (STACK, --stack-group, and/or --stacks).', :red)
         return
@@ -81,17 +78,17 @@ module Convection
 
       confirmation = ask('Are you sure you want to delete the above stack(s)?', limited_to: %w(yes no))
       if confirmation.eql?('yes')
-        @cloud.delete(stacks, &print_status)
+        @cloud.delete(stacks, &method(:emit_events))
       else
         say_status(:delete_aborted, 'Aborted deletion of the above stack(s).', :green)
       end
     end
 
     desc 'diff STACK', 'Show changes that will be applied by converge'
-    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
-    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
+    option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
+    option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     def diff(stack = nil)
       outputs = []
@@ -104,39 +101,26 @@ module Convection
             output = []
             cloud_array = work_q.pop(true)
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
-            last_event = nil
             cloud = cloud_array[:cloud]
-            cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |d|
-              if d.is_a? Model::Event
-                if options[:'very-verbose'] || d.name == :error
-                  output << d
-                elsif options[:verbose]
-                  output << d if d.name == :compare
-                end
-                last_event = d
-              elsif d.is_a? Model::Diff
-                if !options[:'very-verbose'] && !options[:verbose]
-                  output << last_event unless last_event.nil?
-                  last_event = nil
-                end
-                output << d
+            cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
+              if options[:cloudfiles].length > 1
+                output <<  {event: event, errors: errors}
               else
-                output << d
+                emit_events(event, *errors)
               end
             end
-            semaphore.synchronize {
-              outputs << {region: cloud.cloudfile.region, logging: output}
-            }
+            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1
           end
         end
       end
+
       workers.each(&:join)
       outputs.each do |output|
         puts "********"
         puts output[:region]
         puts "********"
-        output[:logging].each do |status|
-          say_status(*status.to_thor)
+        output[:logging].each do |hash|
+          emit_events(hash[:event], *hash[:errors])
         end
       end
     end
@@ -156,18 +140,38 @@ module Convection
     end
 
     no_commands do
+
+      attr_accessor :last_event
+
+      private
       def init_cloud
         @cloud = Control::Cloud.new
       end
 
-      def converge_output(event, errors)
-        say_status(*event.to_thor)
+
+      def emit_events(event, *errors)
+        #event.region = region
+        if event.is_a? Model::Event
+          if options[:'very-verbose'] || event.name == :error
+            say_status(*event.to_thor)
+          elsif options[:verbose]
+            say_status(*event.to_thor) if event.name == :compare
+          end
+          @last_event = event
+        elsif event.is_a? Model::Diff
+          if !options[:'very-verbose'] && !options[:verbose]
+            say_status(*last_event.to_thor) unless last_event.nil?
+            @last_event = nil
+          end
+          say_status(*event.to_thor)
+        else
+          say_status(*event.to_thor)
+        end
+
         errors.each do |error|
           say "* #{ error.message }"
-          error.backtrace.each { |b| say "    #{ b }" }
-        end unless errors.nil?
-        return errors.length unless errors.nil?
-        return 0
+          error.backtrace.each { |trace| say "    #{ trace }" }
+        end
       end
     end
   end
