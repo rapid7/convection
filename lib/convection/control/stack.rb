@@ -194,6 +194,11 @@ module Convection
         @attributes.set(name, key, value)
       end
 
+      # @see Convection::Model::Attributes#fetch
+      def fetch(*args)
+        @attributes.fetch(*args)
+      end
+
       # @see Convection::Model::Attributes#get
       def get(*args)
         @attributes.get(*args)
