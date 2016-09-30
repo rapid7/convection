@@ -21,13 +21,13 @@ class Convection::Model::Template
           description 'Validations Test Template - Excessive Bytesize'
 
           200.times do |count|
-            resource "EC2_INSTANCE_#{count}" do
-              type 'AWS::EC2::Instance'
-              property 'AvailabilityZone', 'us-east-1a'
+            ec2_instance "EC2_INSTANCE_#{count}" do
+              availability_zone 'us-east-1a'
               property 'ImageId', 'ami-76e27e1e'
               property 'KeyName', 'test'
-              property 'SecurityGroupIds', ['sg-dd733c41', 'sg-dd738df3']
-              property 'Tags', [{ 'Key' => 'Name', 'Value' => 'test-1' }]
+              security_group 'sg-dd733c41'
+              security_group 'sg-dd738df3'
+              tag 'Name', 'test-1'
             end
           end
 
