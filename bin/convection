@@ -103,10 +103,10 @@ module Convection
             cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
             cloud = cloud_array[:cloud]
             cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              if options[:cloudfiles].length > 1
+              if options[:cloudfiles].length > 1 &&
                 output <<  {event: event, errors: errors}
               else
-                emit_events(event, *errors)
+                emit_events(event, *errors, cloud.cloudfile.region)
               end
             end
             semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1
@@ -125,8 +125,8 @@ module Convection
       end
     end
 
-    desc 'print STACK', 'Print the rendered template for STACK'
-    def print(stack)
+    desc 'print_template STACK', 'Print the rendered template for STACK'
+    def print_template(stack)
       init_cloud
       @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       puts @cloud.stacks[stack].to_json(true)
@@ -149,29 +149,34 @@ module Convection
       end
 
 
-      def emit_events(event, *errors)
+      def emit_events(event, *errors, region)
         #event.region = region
         if event.is_a? Model::Event
           if options[:'very-verbose'] || event.name == :error
-            say_status(*event.to_thor)
+            print_output(event, region)
           elsif options[:verbose]
-            say_status(*event.to_thor) if event.name == :compare
+            print_output(event, region) if event.name == :compare
           end
           @last_event = event
         elsif event.is_a? Model::Diff
           if !options[:'very-verbose'] && !options[:verbose]
-            say_status(*last_event.to_thor) unless last_event.nil?
+            print_output(last_event, region) unless last_event.nil?
             @last_event = nil
           end
-          say_status(*event.to_thor)
+          print_output(event, region)
         else
-          say_status(*event.to_thor)
+          print_output(event, region)
         end
 
         errors.each do |error|
           say "* #{ error.message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
         end
+      end
+
+      def print_output(say, region = nil)
+        print region
+        say_status(*say.to_thor)
       end
     end
   end
