@@ -38,7 +38,7 @@ module Convection
               if options[:cloudfiles].length > 1 && options[:delayed_output]
                 output <<  {event: event, errors: errors}
               else
-                emit_events(event, *errors, cloud.cloudfile.region)
+                emit_events(event, *errors, region: cloud.cloudfile.region)
               end
               semaphore.synchronize {
                 if @errors == false && errors
@@ -104,7 +104,7 @@ module Convection
               if options[:cloudfiles].length > 1 && options[:delayed_output]
                 output <<  {event: event, errors: errors}
               else
-                emit_events(event, *errors, cloud.cloudfile.region)
+                emit_events(event, *errors, region: cloud.cloudfile.region)
               end
               semaphore.synchronize {
                 if @errors == false && errors
@@ -145,23 +145,22 @@ module Convection
       end
 
 
-      def emit_events(event, *errors, region)
-        #event.region = region
+      def emit_events(event, *errors, region: nil)
         if event.is_a? Model::Event
           if options[:'very-verbose'] || event.name == :error
-            print_info(event, region)
+            print_info(event, region: region)
           elsif options[:verbose]
-            print_info(event, region) if event.name == :compare
+            print_info(event, region: region) if event.name == :compare
           end
           @last_event = event
         elsif event.is_a? Model::Diff
           if !options[:'very-verbose'] && !options[:verbose]
-            print_info(last_event, region) unless last_event.nil?
+            print_info(last_event, region: region) unless last_event.nil?
             @last_event = nil
           end
-          print_info(event, region)
+          print_info(event, region: region)
         else
-          print_info(event, region)
+          print_info(event, region: region)
         end
 
         errors.each do |error|
@@ -170,8 +169,8 @@ module Convection
         end
       end
 
-      def print_info(say, region = nil)
-        print "#{region} "
+      def print_info(say, region: nil)
+        print "#{region} " if region
         say_status(*say.to_thor)
       end
 
@@ -181,7 +180,7 @@ module Convection
           puts output[:region]
           puts "********"
           output[:logging].each do |hash|
-            emit_events(hash[:event], *hash[:errors], nil)
+            emit_events(hash[:event], *hash[:errors])
           end
         end
       end
