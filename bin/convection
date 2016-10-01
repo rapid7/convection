@@ -2,8 +2,6 @@
 require 'thor'
 require_relative '../lib/convection/control/cloud'
 require 'thread'
-require 'pp'
-require 'benchmark'
 module Convection
   ##
   # Convection CLI
