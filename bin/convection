@@ -21,12 +21,12 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion. Makes output easier to read if operating on multiple cloudfiles', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def converge(stack = nil)
       outputs = []
       semaphore = Mutex.new
       work_q = Queue.new
-      options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
+      options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
       workers = (0...options[:cloudfiles].length).map do
         Thread.new do
           output = []
@@ -36,23 +36,20 @@ module Convection
             cloud = cloud_array[:cloud]
             cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
               if options[:cloudfiles].length > 1 && options[:delayed_output]
-                output <<  {event: event, errors: errors}
+                output << { event: event, errors: errors }
               else
                 emit_events(event, *errors, region: cloud.cloudfile.region)
               end
-              semaphore.synchronize {
-                if @errors == false && errors
-                  @errors = true
-                end
-              }
+              semaphore.synchronize { @errors = true if @errors == false && errors }
             end
-            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1 && options[:delayed_output]
+            if options[:cloudfiles].length > 1 && options[:delayed_output]
+              semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
+            end
           end
         end
-
       end
       workers.each(&:join)
-      print_outputs(outputs) if outputs.length > 0
+      print_outputs(outputs) unless outputs.empty?
       exit 1 if @errors
     end
 
@@ -87,12 +84,12 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion. Makes output easier to read if operating on multiple cloudfiles', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def diff(stack = nil)
       outputs = []
       semaphore = Mutex.new
       work_q = Queue.new
-      options[:cloudfiles].each {|cloudfile| work_q.push({cloud: Control::Cloud.new, cloudfile_path: cloudfile}) }
+      options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
       workers = (0...options[:cloudfiles].length).map do
         Thread.new do
           until work_q.empty?
@@ -102,22 +99,20 @@ module Convection
             cloud = cloud_array[:cloud]
             cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
               if options[:cloudfiles].length > 1 && options[:delayed_output]
-                output <<  {event: event, errors: errors}
+                output << { event: event, errors: errors }
               else
                 emit_events(event, *errors, region: cloud.cloudfile.region)
               end
-              semaphore.synchronize {
-                if @errors == false && errors
-                  @errors = true
-                end
-              }
+              semaphore.synchronize { @errors = true if @errors == false && errors }
             end
-            semaphore.synchronize { outputs << {region: cloud.cloudfile.region, logging: output} } if options[:cloudfiles].length > 1 && options[:delayed_output]
+            if options[:cloudfiles].length > 1 && options[:delayed_output]
+              semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
+            end
           end
         end
       end
       workers.each(&:join)
-      print_outputs(outputs) if outputs.length > 0
+      print_outputs(outputs) unless outputs.empty?
       exit 1 if @errors
     end
 
@@ -136,14 +131,13 @@ module Convection
     end
 
     no_commands do
-
       attr_accessor :last_event
 
       private
+
       def init_cloud
         @cloud = Control::Cloud.new
       end
-
 
       def emit_events(event, *errors, region: nil)
         if event.is_a? Model::Event
@@ -176,9 +170,9 @@ module Convection
 
       def print_outputs(outputs)
         outputs.each do |output|
-          puts "********"
+          puts '********'
           puts output[:region]
-          puts "********"
+          puts '********'
           output[:logging].each do |hash|
             emit_events(hash[:event], *hash[:errors])
           end
