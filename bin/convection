@@ -22,7 +22,9 @@ module Convection
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def converge(stack = nil)
-      task('converge', stack)
+      @outputs = []
+      operation('converge', stack)
+      print_outputs(@outputs) if @outputs && @outputs.any?
       exit 1 if @errors
     end
 
@@ -58,7 +60,9 @@ module Convection
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def diff(stack = nil)
-      task('diff', stack)
+      @outputs = []
+      operation('diff', stack)
+      print_outputs(@outputs) if @outputs && @outputs.any?
       exit 1 if @errors
     end
 
@@ -81,12 +85,12 @@ module Convection
 
       private
 
-      def task(task_name, stack)
-        outputs = []
+      def operation(task_name, stack)
         work_q = Queue.new
         semaphore = Mutex.new
         if options[:delayed_output]
-          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion. If you would like immediate output please use the "--delayed_output false" option.'.red
+          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'.red
+          puts 'If you would like immediate output please use the "--delayed_output false" option.'.red
         end
         options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
         workers = (0...options[:cloudfiles].length).map do
@@ -105,13 +109,12 @@ module Convection
                 semaphore.synchronize { @errors = errors.any? if errors }
               end
               if options[:cloudfiles].length > 1 && options[:delayed_output]
-                semaphore.synchronize { outputs << { cloud_name: cloud.cloudfile.name, region: cloud.cloudfile.region, logging: output } }
+                semaphore.synchronize { @outputs << { cloud_name: cloud.cloudfile.name, region: cloud.cloudfile.region, logging: output } }
               end
             end
           end
         end
         workers.each(&:join)
-        print_outputs(outputs) if outputs && outputs.any?
       end
 
       def emit_events(event, *errors, region: nil)

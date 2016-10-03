@@ -37,7 +37,7 @@ Or install it yourself as:
 - To print out a list of available cli options with their descriptions run `convection help`.
 
 ###### Print
-- To print out the cloud formation template for a specific stack run `convection print_template my-stack-name`.
+- To print out the cloud formation template for a specific stack run `convection print-template my-stack-name`.
 
 ###### Validate
 - To validate your stack is not missing a required resource run `convection validate my-stack-name`.

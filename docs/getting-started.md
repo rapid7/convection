@@ -206,7 +206,7 @@ To see what the cloud formation template for your vpc template would look like y
 This can help you verify that values referenced under the `stack` namespace are set correctly.
 
 ```json
-$> convection print_template vpc
+$> convection print-template vpc
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "VPC with Public and Private Subnets (NAT)",
