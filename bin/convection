@@ -95,11 +95,11 @@ module Convection
       def describe_stack_tasks(stacks_to_include)
         @cloud.stacks.map do |stack_name, stack|
           next if stacks_to_include.any? && stacks_to_include.include?(stack_name)
-          flattened_tasks = stack.tasks.values.flatten
-          next if flattened_tasks.empty?
+          tasks = stack.tasks.values.flatten
+          next if tasks.empty?
 
           puts "Stack #{stack_name} (#{stack.cloud_name}) includes the following tasks:"
-          flattened_tasks.each_with_index do |task, index|
+          tasks.each_with_index do |task, index|
             puts " #{index}. #{task}"
           end
         end
