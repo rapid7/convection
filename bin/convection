@@ -99,7 +99,7 @@ module Convection
           next if flattened_tasks.empty?
 
           puts "Stack #{stack_name} (#{stack.cloud_name}) includes the following tasks:"
-          tasks.each_with_index do |task, index|
+          flattened_tasks.each_with_index do |task, index|
             puts " #{index}. #{task}"
           end
         end
