@@ -95,7 +95,7 @@ module Convection
       def describe_stack_tasks(stacks_to_include)
         @cloud.stacks.map do |stack_name, stack|
           next if stacks_to_include.any? && !stacks_to_include.include?(stack_name)
-          tasks = stack.tasks.values.flatten
+          tasks = stack.tasks.values.flatten.uniq
           next if tasks.empty?
 
           puts "Stack #{stack_name} (#{stack.cloud_name}) includes the following tasks:"
@@ -107,21 +107,22 @@ module Convection
 
       def run_stack_tasks(stack_name)
         stack = @cloud.stacks[stack_name]
+        tasks = stack.tasks.values.flatten.uniq
         if !stack
           say_status(:task_execution_failed, 'No stacks found matching the provided input (--stack).', :red)
           exit 1
-        elsif stack.tasks.empty?
+        elsif tasks.empty?
           say_status(:task_execution_failed, "No tasks defined for the stack #{stack_name}. Define them in your Cloudfile.", :red)
           exit 1
         end
 
         puts "The following tasks are available to execute for the stack #{stack_name} (#{stack.cloud_name}):"
-        stack.tasks.each_with_index do |task, index|
+        tasks.each_with_index do |task, index|
           puts " #{index}. #{task}"
         end
-        choices = 0.upto(stack.tasks.length - 1, &:to_s)
+        choices = 0.upto(tasks.length - 1, &:to_s)
         choice = ask('Which stack task (by number) would you like to execute?', limited_to: choices)
-        task = stack.tasks[choice.to_i]
+        task = tasks[choice.to_i]
 
         say_status(:task_in_progress, "Task (#{phase}) #{task} in progress for stack #{stack_name}.", :yellow)
         task.call(stack)
