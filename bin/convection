@@ -73,6 +73,24 @@ module Convection
       puts @cloud.stacks[stack].to_json(true)
     end
 
+    desc 'describe-tasks [--stacks STACKS]', 'Describe tasks for a given stack'
+    option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff', default: []
+    def describe_tasks
+      @cloud = Control::Cloud.new
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+
+      describe_stack_tasks(options[:stacks])
+    end
+
+    desc 'run-tasks [--stack STACK]', 'Run tasks for a given stack'
+    option :stack, :desc => 'The stack to run tasks for', :required => true
+    def run_tasks
+      @cloud = Control::Cloud.new
+      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+
+      run_stack_tasks(options[:stack])
+    end
+
     desc 'validate STACK', 'Validate the rendered template for STACK'
     option :cloudfile, :type => :string, :default => 'Cloudfile'
     def validate(stack)
@@ -115,6 +133,49 @@ module Convection
           end
         end
         workers.each(&:join)
+      end
+
+      def describe_stack_tasks(stacks_to_include)
+        @cloud.stacks.map do |stack_name, stack|
+          next if stacks_to_include.any? && !stacks_to_include.include?(stack_name)
+          tasks = stack.tasks.values.flatten.uniq
+          next if tasks.empty?
+
+          puts "Stack #{stack_name} (#{stack.cloud_name}) includes the following tasks:"
+          tasks.each_with_index do |task, index|
+            puts " #{index}. #{task}"
+          end
+        end
+      end
+
+      def run_stack_tasks(stack_name)
+        stack = @cloud.stacks[stack_name]
+        tasks = stack.tasks.values.flatten.uniq
+        if !stack
+          say_status(:task_failed, 'No stacks found matching the provided input (--stack).', :red)
+          exit 1
+        elsif tasks.empty?
+          say_status(:task_failed, "No tasks defined for the stack #{stack_name}. Define them in your Cloudfile.", :red)
+          exit 1
+        end
+
+        puts "The following tasks are available to execute for the stack #{stack_name} (#{stack.cloud_name}):"
+        tasks.each_with_index do |task, index|
+          puts " #{index}. #{task}"
+        end
+        choices = 0.upto(tasks.length - 1).map(&:to_s)
+        choice = ask('Which stack task would you like to execute? (ctrl-c to exit)', limited_to: choices)
+        task = tasks[choice.to_i]
+
+        say_status(:task_in_progress, "Task #{task} in progress for stack #{stack_name}.", :yellow)
+        task.call(stack)
+
+        if task.success?
+          say_status(:task_complete, "Task #{task} successfully completed for stack #{stack_name}.", :green)
+        else
+          say_status(:task_failed, "Task #{task} failed to complete for stack #{stack_name}.", :red)
+          exit 1
+        end
       end
 
       def emit_events(event, *errors, region: nil)
