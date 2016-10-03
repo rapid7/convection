@@ -116,12 +116,12 @@ module Convection
         end
 
         puts "The following tasks are available to execute for the stack #{stack_name} (#{stack.cloud_name}):"
-        tasks.each_with_index do |task, index|
+        stack.tasks.each_with_index do |task, index|
           puts " #{index}. #{task}"
         end
-        choices = 0.upto(tasks.length - 1, &:to_s)
+        choices = 0.upto(stack.tasks.length - 1, &:to_s)
         choice = ask('Which stack task (by number) would you like to execute?', limited_to: choices)
-        task = tasks[choice.to_i]
+        task = stack.tasks[choice.to_i]
 
         say_status(:task_in_progress, "Task (#{phase}) #{task} in progress for stack #{stack_name}.", :yellow)
         task.call(stack)
