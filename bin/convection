@@ -38,7 +38,7 @@ module Convection
               else
                 emit_events(event, *errors, region: cloud.cloudfile.region)
               end
-              semaphore.synchronize { @errors = true if @errors == false && errors }
+              semaphore.synchronize { @errors = errors.any? }
             end
             if options[:cloudfiles].length > 1 && options[:delayed_output]
               semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
@@ -47,7 +47,7 @@ module Convection
         end
       end
       workers.each(&:join)
-      print_outputs(outputs) unless outputs.empty?
+      print_outputs(outputs) if outputs.any?
       exit 1 if @errors
     end
 
@@ -59,7 +59,6 @@ module Convection
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     def delete(stack = nil)
       init_cloud
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
 
       stacks = @cloud.stacks_until(stack, options, &method(:emit_events))
       if stacks.empty?
@@ -101,7 +100,7 @@ module Convection
               else
                 emit_events(event, *errors, region: cloud.cloudfile.region)
               end
-              semaphore.synchronize { @errors = true if @errors == false && errors }
+              semaphore.synchronize { @errors = errors.any? }
             end
             if options[:cloudfiles].length > 1 && options[:delayed_output]
               semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
@@ -110,21 +109,21 @@ module Convection
         end
       end
       workers.each(&:join)
-      print_outputs(outputs) unless outputs.empty?
+      print_outputs(outputs) if outputs.any?
       exit 1 if @errors
     end
 
     desc 'print_template STACK', 'Print the rendered template for STACK'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     def print_template(stack)
       init_cloud
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       puts @cloud.stacks[stack].to_json(true)
     end
 
     desc 'validate STACK', 'Validate the rendered template for STACK'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     def validate(stack)
       init_cloud
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       @cloud.stacks[stack].validate
     end
 
@@ -135,6 +134,7 @@ module Convection
 
       def init_cloud
         @cloud = Control::Cloud.new
+        @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       end
 
       def emit_events(event, *errors, region: nil)
