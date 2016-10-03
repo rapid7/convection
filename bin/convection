@@ -109,10 +109,10 @@ module Convection
         stack = @cloud.stacks[stack_name]
         tasks = stack.tasks.values.flatten.uniq
         if !stack
-          say_status(:task_execution_failed, 'No stacks found matching the provided input (--stack).', :red)
+          say_status(:task_failed, 'No stacks found matching the provided input (--stack).', :red)
           exit 1
         elsif tasks.empty?
-          say_status(:task_execution_failed, "No tasks defined for the stack #{stack_name}. Define them in your Cloudfile.", :red)
+          say_status(:task_failed, "No tasks defined for the stack #{stack_name}. Define them in your Cloudfile.", :red)
           exit 1
         end
 
@@ -121,7 +121,7 @@ module Convection
           puts " #{index}. #{task}"
         end
         choices = 0.upto(tasks.length - 1).map(&:to_s)
-        choice = ask('Which stack task (by number) would you like to execute?', limited_to: choices)
+        choice = ask('Which stack task would you like to execute? (ctrl-c to exit)', limited_to: choices)
         task = tasks[choice.to_i]
 
         say_status(:task_in_progress, "Task #{task} in progress for stack #{stack_name}.", :yellow)
