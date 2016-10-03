@@ -2,6 +2,7 @@
 require 'thor'
 require_relative '../lib/convection/control/cloud'
 require 'thread'
+require 'colorize'
 module Convection
   ##
   # Convection CLI
@@ -21,33 +22,7 @@ module Convection
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def converge(stack = nil)
-      outputs = []
-      semaphore = Mutex.new
-      work_q = Queue.new
-      options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
-      workers = (0...options[:cloudfiles].length).map do
-        Thread.new do
-          output = []
-          until work_q.empty?
-            cloud_array = work_q.pop(true)
-            cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
-            cloud = cloud_array[:cloud]
-            cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              if options[:cloudfiles].length > 1 && options[:delayed_output]
-                output << { event: event, errors: errors }
-              else
-                emit_events(event, *errors, region: cloud.cloudfile.region)
-              end
-              semaphore.synchronize { @errors = errors.any? }
-            end
-            if options[:cloudfiles].length > 1 && options[:delayed_output]
-              semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
-            end
-          end
-        end
-      end
-      workers.each(&:join)
-      print_outputs(outputs) if outputs.any?
+      task('converge', stack)
       exit 1 if @errors
     end
 
@@ -83,33 +58,7 @@ module Convection
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def diff(stack = nil)
-      outputs = []
-      semaphore = Mutex.new
-      work_q = Queue.new
-      options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
-      workers = (0...options[:cloudfiles].length).map do
-        Thread.new do
-          until work_q.empty?
-            output = []
-            cloud_array = work_q.pop(true)
-            cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
-            cloud = cloud_array[:cloud]
-            cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
-              if options[:cloudfiles].length > 1 && options[:delayed_output]
-                output << { event: event, errors: errors }
-              else
-                emit_events(event, *errors, region: cloud.cloudfile.region)
-              end
-              semaphore.synchronize { @errors = errors.any? }
-            end
-            if options[:cloudfiles].length > 1 && options[:delayed_output]
-              semaphore.synchronize { outputs << { region: cloud.cloudfile.region, logging: output } }
-            end
-          end
-        end
-      end
-      workers.each(&:join)
-      print_outputs(outputs) if outputs.any?
+      task('diff', stack)
       exit 1 if @errors
     end
 
@@ -132,9 +81,37 @@ module Convection
 
       private
 
-      def init_cloud
-        @cloud = Control::Cloud.new
-        @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      def task(task_name, stack)
+        outputs = []
+        work_q = Queue.new
+        semaphore = Mutex.new
+        if options[:delayed_output]
+          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion. If you would like immediate output please use the "--delayed_output false" option.'.red
+        end
+        options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
+        workers = (0...options[:cloudfiles].length).map do
+          Thread.new do
+            until work_q.empty?
+              output = []
+              cloud_array = work_q.pop(true)
+              cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
+              cloud = cloud_array[:cloud]
+              cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
+                if options[:cloudfiles].length > 1 && options[:delayed_output]
+                  output << { event: event, errors: errors }
+                else
+                  emit_events(event, *errors, region: cloud.cloudfile.region)
+                end
+                semaphore.synchronize { @errors = errors.any? if errors }
+              end
+              if options[:cloudfiles].length > 1 && options[:delayed_output]
+                semaphore.synchronize { outputs << { cloud_name: cloud.cloudfile.name, region: cloud.cloudfile.region, logging: output } }
+              end
+            end
+          end
+        end
+        workers.each(&:join)
+        print_outputs(outputs) if outputs && outputs.any?
       end
 
       def emit_events(event, *errors, region: nil)
@@ -169,12 +146,17 @@ module Convection
       def print_outputs(outputs)
         outputs.each do |output|
           puts '********'
-          puts output[:region]
+          puts "Cloud name: #{output[:cloud_name]}. Region: #{output[:region]}."
           puts '********'
           output[:logging].each do |hash|
             emit_events(hash[:event], *hash[:errors])
           end
         end
+      end
+
+      def init_cloud
+        @cloud = Control::Cloud.new
+        @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       end
     end
   end
