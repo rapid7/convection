@@ -120,17 +120,17 @@ module Convection
         tasks.each_with_index do |task, index|
           puts " #{index}. #{task}"
         end
-        choices = 0.upto(tasks.length - 1, &:to_s)
+        choices = 0.upto(tasks.length - 1).map(&:to_s)
         choice = ask('Which stack task (by number) would you like to execute?', limited_to: choices)
         task = tasks[choice.to_i]
 
-        say_status(:task_in_progress, "Task (#{phase}) #{task} in progress for stack #{stack_name}.", :yellow)
+        say_status(:task_in_progress, "Task #{task} in progress for stack #{stack_name}.", :yellow)
         task.call(stack)
 
         if task.success?
-          say_status(:task_complete, "Task (#{phase}) #{task} successfully completed for stack #{stack_name}.", :green)
+          say_status(:task_complete, "Task #{task} successfully completed for stack #{stack_name}.", :green)
         else
-          say_status(:task_failed, "Task (#{phase}) #{task} failed to complete for stack #{stack_name}.", :red)
+          say_status(:task_failed, "Task #{task} failed to complete for stack #{stack_name}.", :red)
           exit 1
         end
       end
