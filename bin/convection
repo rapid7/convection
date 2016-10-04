@@ -2,7 +2,6 @@
 require 'thor'
 require_relative '../lib/convection/control/cloud'
 require 'thread'
-require 'colorize'
 module Convection
   ##
   # Convection CLI
@@ -122,7 +121,7 @@ module Convection
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else
-                  emit_events(event, *errors)
+                  emit_events(event, *errors, region: cloud.cloudfile.region)
                 end
                 semaphore.synchronize { @errors = errors.any? if errors }
               end
