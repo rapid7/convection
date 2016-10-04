@@ -106,9 +106,9 @@ module Convection
       def operation(task_name, stack)
         work_q = Queue.new
         semaphore = Mutex.new
-        if options[:delayed_output]
-          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'.red
-          puts 'If you would like immediate output please use the "--delayed_output false" option.'.red
+        if options[:cloudfiles].length > 1 && options[:delayed_output]
+          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'
+          puts 'If you would like immediate output please use the "--delayed_output false" option.'
         end
         options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
         workers = (0...options[:cloudfiles].length).map do
@@ -122,7 +122,7 @@ module Convection
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else
-                  emit_events(event, *errors, region: cloud.cloudfile.region)
+                  emit_events(event, *errors)
                 end
                 semaphore.synchronize { @errors = errors.any? if errors }
               end
