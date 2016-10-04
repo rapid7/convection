@@ -1,17 +1,16 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
-
+require 'thread'
 module Convection
   ##
   # Convection CLI
   ##
   class CLI < Thor
-    class_option :cloudfile, :type => :string, :default => 'Cloudfile'
     def initialize(*args)
       super
-      @cloud = Control::Cloud.new
       @cwd = Dir.getwd
+      @errors = false
     end
 
     desc 'converge STACK', 'Converge your cloud'
@@ -19,18 +18,23 @@ module Convection
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
+    option :cloudfiles, :type => :array, :default => %w(Cloudfile)
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def converge(stack = nil)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.converge(stack, stack_group: options[:stack_group], stacks: options[:stacks], &method(:emit_events))
+      @outputs = []
+      operation('converge', stack)
+      print_outputs(@outputs) if @outputs && @outputs.any?
+      exit 1 if @errors
     end
 
     desc 'delete STACK', 'Delete stack(s) from your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to delete'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to delete'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     def delete(stack = nil)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      init_cloud
 
       stacks = @cloud.stacks_until(stack, options, &method(:emit_events))
       if stacks.empty?
@@ -52,14 +56,19 @@ module Convection
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
+    option :cloudfiles, :type => :array, :default => %w(Cloudfile)
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
     def diff(stack = nil)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
-      @cloud.diff(stack, stack_group: options[:stack_group], stacks: options[:stacks], &method(:emit_events))
+      @outputs = []
+      operation('diff', stack)
+      print_outputs(@outputs) if @outputs && @outputs.any?
+      exit 1 if @errors
     end
 
-    desc 'print STACK', 'Print the rendered template for STACK'
-    def print(stack)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+    desc 'print_template STACK', 'Print the rendered template for STACK'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
+    def print_template(stack)
+      init_cloud
       puts @cloud.stacks[stack].to_json(true)
     end
 
@@ -82,8 +91,9 @@ module Convection
     end
 
     desc 'validate STACK', 'Validate the rendered template for STACK'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     def validate(stack)
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      init_cloud
       @cloud.stacks[stack].validate
     end
 
@@ -91,6 +101,39 @@ module Convection
       attr_accessor :last_event
 
       private
+
+      def operation(task_name, stack)
+        work_q = Queue.new
+        semaphore = Mutex.new
+        if options[:cloudfiles].length > 1 && options[:delayed_output]
+          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'
+          puts 'If you would like immediate output please use the "--delayed_output false" option.'
+        end
+        options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
+        workers = (0...options[:cloudfiles].length).map do
+          Thread.new do
+            until work_q.empty?
+              output = []
+              cloud_array = work_q.pop(true)
+              cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
+              cloud = cloud_array[:cloud]
+              region = cloud.cloudfile.region
+              cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
+                if options[:cloudfiles].length > 1 && options[:delayed_output]
+                  output << { event: event, errors: errors }
+                else
+                  emit_events(event, *errors, region: region)
+                end
+                semaphore.synchronize { @errors = errors.any? if errors }
+              end
+              if options[:cloudfiles].length > 1 && options[:delayed_output]
+                semaphore.synchronize { @outputs << { cloud_name: cloud.cloudfile.name, region: region, logging: output } }
+              end
+            end
+          end
+        end
+        workers.each(&:join)
+      end
 
       def describe_stack_tasks(stacks_to_include)
         @cloud.stacks.map do |stack_name, stack|
@@ -135,28 +178,49 @@ module Convection
         end
       end
 
-      def emit_events(event, *errors)
+      def emit_events(event, *errors, region: nil)
         if event.is_a? Model::Event
           if options[:'very-verbose'] || event.name == :error
-            say_status(*event.to_thor)
+            print_info(event, region: region)
           elsif options[:verbose]
-            say_status(*event.to_thor) if event.name == :compare
+            print_info(event, region: region) if event.name == :compare
           end
           @last_event = event
         elsif event.is_a? Model::Diff
           if !options[:'very-verbose'] && !options[:verbose]
-            say_status(*last_event.to_thor) unless last_event.nil?
+            print_info(last_event, region: region) unless last_event.nil?
             @last_event = nil
           end
-          say_status(*event.to_thor)
+          print_info(event, region: region)
         else
-          say_status(*event.to_thor)
+          print_info(event, region: region)
         end
 
         errors.each do |error|
           say "* #{ error.message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
         end
+      end
+
+      def print_info(say, region: nil)
+        print "#{region} " if region
+        say_status(*say.to_thor)
+      end
+
+      def print_outputs(outputs)
+        outputs.each do |output|
+          puts '********'
+          puts "Cloud name: #{output[:cloud_name]}. Region: #{output[:region]}."
+          puts '********'
+          output[:logging].each do |hash|
+            emit_events(hash[:event], *hash[:errors])
+          end
+        end
+      end
+
+      def init_cloud
+        @cloud = Control::Cloud.new
+        @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       end
     end
   end

@@ -23,9 +23,10 @@ Or install it yourself as:
 
 ##CLI Commands
 ###### Converging
-- To converge all stacks in your cloudfile run `convection converge`. If you provide the name of your stack as a additional argument such as `convection converge my-stack-name` then all stacks above and including the stack you specified will be converged.
+- To converge all stacks in your cloudfile run `convection converge` in the same directory as your cloudfile or use `--cloudfiles` and specify the path to the cloudfile. If you provide the name of your stack as a additional argument such as `convection converge my-stack-name` then all stacks above and including the stack you specified will be converged.
 - To converge a stack group run `convection converge --stack_group YOUR_STACK_GROUP_NAME`
 - To converge a specific stack or a list of stacks run `convection converge --stacks stackA stackB ...`
+- To converge multiple cloudfiles at the same time run use the `--cloudfiles`  option providing the path to the cloudfiles. Example `bundle exec convection converge --cloudfiles us-east-1/Cloudfile eu-central-1/Cloudfile`
 
 ###### Diff
 - To display a diff between your local changes and the version of your stack in cloud formation of your changes run `convection diff`.
@@ -36,7 +37,7 @@ Or install it yourself as:
 - To print out a list of available cli options with their descriptions run `convection help`.
 
 ###### Print
-- To print out the cloud formation template for a specific stack run `convection print my-stack-name`.
+- To print out the cloud formation template for a specific stack run `convection print-template my-stack-name`.
 
 ###### Validate
 - To validate your stack is not missing a required resource run `convection validate my-stack-name`.
