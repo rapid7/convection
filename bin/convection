@@ -117,16 +117,17 @@ module Convection
               cloud_array = work_q.pop(true)
               cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
               cloud = cloud_array[:cloud]
+              region = cloud.cloudfile.region
               cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else
-                  emit_events(event, *errors, region: cloud.cloudfile.region)
+                  emit_events(event, *errors, region: region)
                 end
                 semaphore.synchronize { @errors = errors.any? if errors }
               end
               if options[:cloudfiles].length > 1 && options[:delayed_output]
-                semaphore.synchronize { @outputs << { cloud_name: cloud.cloudfile.name, region: cloud.cloudfile.region, logging: output } }
+                semaphore.synchronize { @outputs << { cloud_name: cloud.cloudfile.name, region: region, logging: output } }
               end
             end
           end
