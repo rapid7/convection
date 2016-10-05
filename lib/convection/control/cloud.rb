@@ -76,6 +76,7 @@ module Convection
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
           stack.apply(&block)
 
+          emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
             block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
             break
@@ -126,6 +127,7 @@ module Convection
 
           difference = stack.diff
           # Find errors during diff
+          emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
             errors = stack.errors.collect { |x| x.exception.message }
             errors = errors.uniq.flatten
@@ -158,6 +160,13 @@ module Convection
           return true
         end
         false
+      end
+
+      def emit_credential_error_and_exit!(stack, &block)
+        event = Model::Event.new(:error, "Credentials expired while converging #{ stack.name }. " \
+                                 'Visit the AWS console to track progress of the stack being created/updated.', :error)
+        block.call(event, stack.errors) if block
+        exit 1
       end
     end
   end
