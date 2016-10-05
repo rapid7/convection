@@ -19,6 +19,36 @@ class Convection::Model::Template
       end
     end
 
+    describe '#resource' do
+      context 'when defining a predefined resource' do
+        subject do
+          Convection.template do
+            resource 'FooInstance' do
+              type 'AWS::EC2::Instance'
+            end
+          end
+        end
+
+        it 'warns the user when they are using a predefined resource.' do
+          expect { subject.render }.to output(/.*already defined.*/).to_stderr
+        end
+      end
+
+      context 'when defining a undefined resource' do
+        subject do
+          Convection.template do
+            resource 'FooInstance' do
+              type 'FakeResource'
+            end
+          end
+        end
+
+        it 'warns the user when they are using a undefined resource.' do
+          expect { subject.render }.to_not output.to_stderr
+        end
+      end
+    end
+
     subject do
       template_json
     end

@@ -202,11 +202,11 @@ compare  Compare local state of stack vpc (convection-demo-vpc) with remote temp
  create  .Resources.DemoVPC.Properties.Tags.0.Key: Name
  create  .Resources.DemoVPC.Properties.Tags.0.Value: convection-demo-vpc
 ```
-To see what the cloud formation template for your vpc template would look like you can run `convection print vpc`.
+To see what the cloud formation template for your vpc template would look like you can run `convection print_template vpc`.
 This can help you verify that values referenced under the `stack` namespace are set correctly.
 
 ```json
-$> convection print vpc
+$> convection print-template vpc
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "VPC with Public and Private Subnets (NAT)",
