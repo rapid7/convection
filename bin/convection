@@ -19,7 +19,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
     def converge(stack = nil)
       @outputs = []
       operation('converge', stack)
@@ -57,7 +57,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
     def diff(stack = nil)
       @outputs = []
       operation('diff', stack)
@@ -105,9 +105,9 @@ module Convection
       def operation(task_name, stack)
         work_q = Queue.new
         semaphore = Mutex.new
-        if options[:cloudfiles].length > 1 && options[:delayed_output]
-          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'
-          puts 'If you would like immediate output please use the "--delayed_output false" option.'
+        unless options[:delayed_output]
+          puts 'For easier reading when using multiple cloudfiles output can be delayed until task completion.'
+          puts 'If you would like delayed output please use the "--delayed_output true" option.'
         end
         options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
         workers = (0...options[:cloudfiles].length).map do
