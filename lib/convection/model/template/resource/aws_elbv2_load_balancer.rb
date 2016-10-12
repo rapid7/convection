@@ -16,6 +16,14 @@ module Convection
           property :scheme, 'Scheme'
           property :security_group, 'SecurityGroups', :type => :list
           property :subnet, 'Subnets', :type => :list
+
+          # Append a load_balancer_attribute to load_balancer_attributes
+          def load_balancer_attribute(&block)
+            attribute = ResourceProperty::ELBV2LoadBalancerAttribute.new(self)
+            attribute.instance_exec(&block) if block
+            load_balancer_attributes << attribute
+          end
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)

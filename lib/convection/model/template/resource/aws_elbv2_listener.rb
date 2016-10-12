@@ -15,6 +15,14 @@ module Convection
           property :port, 'Port'
           property :protocol, 'Protocol'
           property :ssl_policy, 'SslPolicy'
+
+          # FIXME: handle certificates
+
+          # Append an action to default_actions
+          def default_action(&block)
+            action = ResourceProperty::ELBV2ListenerDefaultAction.new(self)
+            action.instance_exec(&block) if block
+            default_actions << action
         end
       end
     end

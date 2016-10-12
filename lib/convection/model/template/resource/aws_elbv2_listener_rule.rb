@@ -13,6 +13,21 @@ module Convection
           property :conditions, 'Conditions', :type => :list
           property :listener_arn, 'ListenerArn'
           property :priority, 'Priority'
+
+          # Append an action
+          def action(&block)
+            action = ResourceProperty::ELBV2ListenerRuleAction.new(self)
+            action.instance_exec(&block) if block
+            actions << action
+          end
+
+          # Append a condition
+          def condition(&block)
+            condition = ResourceProperty::ELBV2ListenerRuleCondition.new(self)
+            condition.instance_exec(&block) if block
+            conditions << condition
+          end
+
         end
       end
     end

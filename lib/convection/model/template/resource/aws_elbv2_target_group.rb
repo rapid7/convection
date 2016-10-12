@@ -23,8 +23,25 @@ module Convection
           property :protocol, 'Protocol'
           property :target_group_attributes, 'TargetGroupAttributes', :type => :list
           property :targets, 'Targets', :type => :list
+          alias_method :target_descriptions, :targets
           property :unhealthy_threshold_count, 'UnhealthyThresholdCount', :type => :list
           property :vpc_id, 'VpcId'
+
+          # Append an attribute to target_group_attributes
+          def target_group_attribute(&block)
+            attribute = ResourceProperty::ELBV2TargetGroupAttribute.new(self)
+            attribute.instance_exec(&block) if block
+            target_group_attributes << attribute
+          end
+
+          # Append a target_description to targets
+          def target(&block)
+            target = ResourceProperty::ELBV2TargetGroupTargetDescription.new(self)
+            target.instance_exec(&block) if block
+            targets << target
+          end
+          alias_method :target_description, :target
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
