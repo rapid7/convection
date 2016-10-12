@@ -591,8 +591,11 @@ update_complete  convection-demo-vpc: (AWS::CloudFormation::Stack)
 Now that we've got our security group, we need to set up an EC2 instance that
 will function as a NAT router. We'll be using one of [Amazon's pre-built NAT
 images][nat-instance] since we don't need anything custom. Open up the Amazon
-web console and search for AMIs with the string "amzn-ami-vpc-nat-pv" in their
-name. The most recent one, from March 2015, has ID ami-c02b04a8.
+web console and search for AMIs with the string "amzn-ami-vpc-nat-hvm" in their
+name. The most recent one, from September 2016, has ID ami-d2ee95c5.
+Note that the default instance type is m1.small, which doesn't work with
+hvm AMIs, so you'll need to choose a different instance type, such as
+t2.small.
 
 The [AWS::EC2::Instance][cf-ec2] resource handles creating our
 router instance from the given AMI. Since our router provides internet access,
@@ -648,6 +651,7 @@ module Templates
     ec2_instance 'NATInstance' do
       tag 'Name', "#{stack.cloud}-#{stack.name}-nat"
       image_id 'ami-c02b04a8'
+      instance_type 't2.small'
       subnet fn_ref('PublicSubnet')
       security_group fn_ref('NATSecurityGroup')
       src_dst_checks false
