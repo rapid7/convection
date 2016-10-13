@@ -23,6 +23,7 @@ module Convection
             action = ResourceProperty::ELBV2ListenerDefaultAction.new(self)
             action.instance_exec(&block) if block
             default_actions << action
+          end
         end
       end
     end
