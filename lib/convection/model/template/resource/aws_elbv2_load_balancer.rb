@@ -15,7 +15,9 @@ module Convection
           property :name, 'Name'
           property :scheme, 'Scheme'
           property :security_group, 'SecurityGroups', :type => :list
+          alias_method :security_groups, :security_group
           property :subnet, 'Subnets', :type => :list
+          alias_method :subnets, :subnet
 
           # Append a load_balancer_attribute to load_balancer_attributes
           def load_balancer_attribute(&block)
