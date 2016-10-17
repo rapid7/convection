@@ -8,7 +8,7 @@ module Convection
         # ELBV2 ListenerRule Condition Type
         class ELBV2ListenerRuleCondition < ResourceProperty
           # http://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_RuleCondition.html
-          property :field, 'Field'
+          property :field_name, 'Field'
           property :values, 'Values', :type => :list
         end
       end
