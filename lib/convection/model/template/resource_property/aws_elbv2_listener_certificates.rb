@@ -6,7 +6,7 @@ module Convection
       class ResourceProperty
         # Represents a {http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-certificates.html
         # Elastic Load Balancing Listener Certificates}
-        class LoadbalancerV2ListenerCertificates < ResourceProperty
+        class ELBV2ListenerCertificates < ResourceProperty
           property :certificate, 'CertificateArn'
         end
       end

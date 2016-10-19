@@ -17,7 +17,7 @@ module Convection
           property :ssl_policy, 'SslPolicy'
 
           def listener_certificate(&block)
-            certificate = ResourceProperty::LoadbalancerV2ListenerCertificates.new(self)
+            certificate = ResourceProperty::ELBV2ListenerCertificates.new(self)
             certificate.instance_exec(&block) if block
             certificates << certificate
           end

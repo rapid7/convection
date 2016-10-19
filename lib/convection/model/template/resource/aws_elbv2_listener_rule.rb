@@ -9,6 +9,7 @@ module Convection
         ##
         class ELBV2ListenerRule < Resource
           type 'AWS::ElasticLoadBalancingV2::ListenerRule', :elbv2_listener_rule
+          # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-listenerrule.html
           property :actions, 'Actions', :type => :list
           property :conditions, 'Conditions', :type => :list
           property :listener_arn, 'ListenerArn'
