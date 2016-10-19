@@ -23,7 +23,7 @@ module Convection
           property :protocol, 'Protocol'
           property :target_group_attributes, 'TargetGroupAttributes', :type => :list
           property :targets, 'Targets', :type => :list
-          alias_method :target_descriptions, :targets
+          alias target_descriptions targets
           property :unhealthy_threshold_count, 'UnhealthyThresholdCount'
           property :vpc_id, 'VpcId'
 
@@ -40,7 +40,7 @@ module Convection
             target.instance_exec(&block) if block
             targets << target
           end
-          alias_method :target_description, :target
+          alias target_description target
 
           def render(*args)
             super.tap do |resource|

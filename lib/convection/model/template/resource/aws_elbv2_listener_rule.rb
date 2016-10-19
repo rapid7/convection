@@ -28,7 +28,6 @@ module Convection
             condition.instance_exec(&block) if block
             conditions << condition
           end
-
         end
       end
     end
