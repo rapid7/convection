@@ -22,7 +22,7 @@ module Convection
           end
 
           # Append a condition
-          def condition(&block)
+          def rule_condition(&block)
             condition = ResourceProperty::ELBV2ListenerRuleCondition.new(self)
             condition.instance_exec(&block) if block
             conditions << condition

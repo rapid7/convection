@@ -16,7 +16,11 @@ module Convection
           property :protocol, 'Protocol'
           property :ssl_policy, 'SslPolicy'
 
-          # FIXME: handle certificates
+          def listener_certificate(&block)
+            certificate = ResourceProperty::LoadbalancerV2ListenerCertificates.new(self)
+            certificate.instance_exec(&block) if block
+            certificates << certificate
+          end
 
           # Append an action to default_actions
           def default_action(&block)

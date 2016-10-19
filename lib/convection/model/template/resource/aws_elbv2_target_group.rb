@@ -24,7 +24,7 @@ module Convection
           property :target_group_attributes, 'TargetGroupAttributes', :type => :list
           property :targets, 'Targets', :type => :list
           alias_method :target_descriptions, :targets
-          property :unhealthy_threshold_count, 'UnhealthyThresholdCount', :type => :list
+          property :unhealthy_threshold_count, 'UnhealthyThresholdCount'
           property :vpc_id, 'VpcId'
 
           # Append an attribute to target_group_attributes
