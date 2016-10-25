@@ -9,13 +9,15 @@ module Convection
         ##
         class Route53RecordSet < Resource
           type 'AWS::Route53::RecordSet', :route53_recordset
-          property :alias_target, 'AliasTarget'
+          property :alias_tgt, 'AliasTarget'
           property :comment, 'Comment'
           property :failover, 'Failover'
           property :geo_location, 'GeoLocation', :array
           property :health_check_id, 'HealthCheckId'
-          property :zone, 'HostedZoneId'
-          property :zone_name, 'HostedZoneName'
+          property :hosted_zone_id, 'HostedZoneId'
+          alias_method :zone, :hosted_zone_id   # for backward compatability
+          property :hosted_zone_name, 'HostedZoneName'
+          alias_method :zone_name, :hosted_zone_name   # for backward compatability
           property :record_name, 'Name'
           property :region, 'Region'
           property :record, 'ResourceRecords', :array
@@ -23,6 +25,12 @@ module Convection
           property :ttl, 'TTL'
           property :record_type, 'Type'
           property :weight, 'Weight'
+
+          def alias_target(&block)
+            a = ResourceProperty::Route53AliasTarget.new(self)
+            a.instance_exec(&block) if block
+            properties['AliasTarget'].set(a)
+          end
         end
       end
     end
