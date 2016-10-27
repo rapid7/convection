@@ -12,7 +12,7 @@ module Convection
           property :alias_tgt, 'AliasTarget'
           property :comment, 'Comment'
           property :failover, 'Failover'
-          property :geo_location, 'GeoLocation', :array
+          property :geo_loc, 'GeoLocation'
           property :health_check_id, 'HealthCheckId'
           property :hosted_zone_id, 'HostedZoneId'
           alias_method :zone, :hosted_zone_id   # for backward compatability
@@ -30,6 +30,12 @@ module Convection
             a = ResourceProperty::Route53AliasTarget.new(self)
             a.instance_exec(&block) if block
             properties['AliasTarget'].set(a)
+          end
+
+          def geo_location(&block)
+            g = ResourceProperty::Route53GeoLocation.new(self)
+            g.instance_exec(&block) if block
+            properties['GeoLocation'].set(g)
           end
         end
       end
