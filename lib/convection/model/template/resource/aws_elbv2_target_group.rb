@@ -17,7 +17,7 @@ module Convection
           property :health_check_protocol, 'HealthCheckProtocol'
           property :health_check_timeout_seconds, 'HealthCheckTimeoutSeconds'
           property :healthy_threshold_count, 'HealthyThresholdCount'
-          property :matcher, 'Matcher', :type => :hash
+          property :match, 'Matcher'
           property :name, 'Name'
           property :port, 'Port'
           property :protocol, 'Protocol'
@@ -41,6 +41,12 @@ module Convection
             targets << target
           end
           alias target_description target
+
+          def matcher(&block)
+            m = ResourceProperty::ELBV2TargetGroupMatcher.new(self)
+            m.instance_exec(&block) if block
+            properties['Matcher'].set(m)
+          end
 
           def render(*args)
             super.tap do |resource|

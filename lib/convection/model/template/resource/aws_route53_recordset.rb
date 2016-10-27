@@ -15,9 +15,9 @@ module Convection
           property :geo_loc, 'GeoLocation'
           property :health_check_id, 'HealthCheckId'
           property :hosted_zone_id, 'HostedZoneId'
-          alias_method :zone, :hosted_zone_id   # for backward compatability
+          alias zone hosted_zone_id # for backward compatability
           property :hosted_zone_name, 'HostedZoneName'
-          alias_method :zone_name, :hosted_zone_name   # for backward compatability
+          alias zone_name hosted_zone_name # for backward compatability
           property :record_name, 'Name'
           property :region, 'Region'
           property :record, 'ResourceRecords', :array
