@@ -19,7 +19,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
     def converge(stack = nil)
       @outputs = []
       operation('converge', stack)
@@ -57,7 +57,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => true
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
     def diff(stack = nil)
       @outputs = []
       operation('diff', stack)
@@ -73,19 +73,19 @@ module Convection
     end
 
     desc 'describe-tasks [--stacks STACKS]', 'Describe tasks for a given stack'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff', default: []
     def describe_tasks
-      @cloud = Control::Cloud.new
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      init_cloud
 
       describe_stack_tasks(options[:stacks])
     end
 
     desc 'run-tasks [--stack STACK]', 'Run tasks for a given stack'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
     option :stack, :desc => 'The stack to run tasks for', :required => true
     def run_tasks
-      @cloud = Control::Cloud.new
-      @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
+      init_cloud
 
       run_stack_tasks(options[:stack])
     end
@@ -105,9 +105,9 @@ module Convection
       def operation(task_name, stack)
         work_q = Queue.new
         semaphore = Mutex.new
-        if options[:cloudfiles].length > 1 && options[:delayed_output]
-          puts 'For easier reading when using multiple cloudfiles output will be delayed until task completion.'
-          puts 'If you would like immediate output please use the "--delayed_output false" option.'
+        unless options[:delayed_output]
+          puts 'For easier reading when using multiple cloudfiles output can be delayed until task completion.'
+          puts 'If you would like delayed output please use the "--delayed_output true" option.'
         end
         options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
         workers = (0...options[:cloudfiles].length).map do
@@ -219,6 +219,11 @@ module Convection
       end
 
       def init_cloud
+        if options['cloudfile'].nil?
+          warn 'ERROR: The you must specify the --cloudfile option.'
+          exit 1
+        end
+
         @cloud = Control::Cloud.new
         @cloud.configure(File.absolute_path(options['cloudfile'], @cwd))
       end
