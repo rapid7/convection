@@ -9,9 +9,10 @@ module Convection
         ##
         class ELBV2ListenerRule < Resource
           type 'AWS::ElasticLoadBalancingV2::ListenerRule', :elbv2_listener_rule
-          # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-listenerrule.html
           property :actions, 'Actions', :type => :list
-          property :conditions, 'Conditions', :type => :list
+          # @note This name is used because "conditions" is a function already defined
+          #   in {#Convection::Model::Template} and should not be overridden.
+          property :rule_conditions, 'Conditions', :type => :list
           property :listener_arn, 'ListenerArn'
           property :priority, 'Priority'
 
@@ -23,10 +24,13 @@ module Convection
           end
 
           # Append a condition
+          #
+          # @note This name is used because "condition" is a function already defined
+          #   in {#Convection::Model::Template} and should not be overridden.
           def rule_condition(&block)
-            condition = ResourceProperty::ELBV2ListenerRuleCondition.new(self)
-            condition.instance_exec(&block) if block
-            conditions << condition
+            cond = ResourceProperty::ELBV2ListenerRuleCondition.new(self)
+            cond.instance_exec(&block) if block
+            rule_conditions << cond
           end
         end
       end

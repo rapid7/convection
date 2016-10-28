@@ -16,10 +16,10 @@ module Convection
           property :protocol, 'Protocol'
           property :ssl_policy, 'SslPolicy'
 
-          def listener_certificate(&block)
-            certificate = ResourceProperty::ELBV2ListenerCertificates.new(self)
-            certificate.instance_exec(&block) if block
-            certificates << certificate
+          def certificate(&block)
+            cert = ResourceProperty::ELBV2ListenerCertificates.new(self)
+            cert.instance_exec(&block) if block
+            certificates << cert
           end
 
           # Append an action to default_actions
