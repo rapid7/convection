@@ -25,6 +25,7 @@ module Convection
           property :policy, 'Policies', :type => :list
           property :scheme, 'Scheme'
           property :security_group, 'SecurityGroups', :type => :list
+          alias security_groups security_group
           property :subnet, 'Subnets', :type => :list
 
           def render(*args)

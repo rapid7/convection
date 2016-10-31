@@ -17,3 +17,8 @@ mkmf.log
 keys
 VERSION
 attic
+
+.ruby-gemset
+
+*.swp
+*.swo
