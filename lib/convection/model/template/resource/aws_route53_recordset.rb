@@ -49,7 +49,6 @@ module Convection
               properties['GeoLocation'].set(g)
             end
           end
-
         end
       end
     end
