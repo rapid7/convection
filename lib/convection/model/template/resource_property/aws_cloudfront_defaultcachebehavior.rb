@@ -12,6 +12,7 @@ module Convection
           property :compress, 'Compress'
           property :default_ttl, 'DefaultTTL'
           property :forwarded_values, 'ForwardedValues'
+          property :max_ttl, 'MaxTTL'
           property :min_ttl, 'MinTTL'
           property :smooth_streaming, 'SmoothStreaming'
           property :target_origin, 'TargetOriginId'
