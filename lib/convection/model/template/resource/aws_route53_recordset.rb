@@ -26,16 +26,28 @@ module Convection
           property :record_type, 'Type'
           property :weight, 'Weight'
 
+          # Add new resource_property functionality
           def alias_target(&block)
             a = ResourceProperty::Route53AliasTarget.new(self)
             a.instance_exec(&block) if block
             properties['AliasTarget'].set(a)
           end
 
+          # Maintain backwards compatability
+          def alias_target(obj)
+            alias_tgt obj
+          end
+
+          # Add new resource_property functionality
           def geo_location(&block)
             g = ResourceProperty::Route53GeoLocation.new(self)
             g.instance_exec(&block) if block
             properties['GeoLocation'].set(g)
+          end
+
+          # Maintain backwards compatability
+          def geo_location(obj)
+            geo_loc obj
           end
         end
       end
