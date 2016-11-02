@@ -25,6 +25,7 @@ module Convection
           property :notification_configuration, 'NotificationConfiguration'
           property :replication_configuration, 'ReplicationConfiguration'
           property :versioning_configuration, 'VersioningConfiguration'
+          property :website_configuration, 'WebsiteConfiguration'
 
           def cors_configuration(&block)
             config = ResourceProperty::S3CorsConfiguration.new(self)
@@ -41,6 +42,12 @@ module Convection
             config = ResourceProperty::S3ReplicationConfiguration.new(self)
             config.instance_exec(&block) if block
             properties['ReplicationConfiguration'].set(config)
+          end
+
+          def website_configuration(&block)
+            config = ResourceProperty::S3WebsiteConfiguration.new(self)
+            config.instance_exec(&block) if block
+            properties['WebsiteConfiguration'].set(config)
           end
 
           def render(*args)
