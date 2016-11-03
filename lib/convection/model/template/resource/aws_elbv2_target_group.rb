@@ -28,13 +28,13 @@ module Convection
           property :vpc_id, 'VpcId'
 
           # Append an attribute to target_group_attributes
-          def target_group_attribute(key=nil, value=nil, &block)
+          def target_group_attribute(key = nil, value = nil, &block)
             attribute = ResourceProperty::ELBV2TargetGroupAttribute.new(self)
-            if key and value
+            if key && value
               attribute.key key
               attribute.value value
-            else
-              attribute.instance_exec(&block) if block
+            elsif block
+              attribute.instance_exec(&block)
             end
             target_group_attributes << attribute
           end
@@ -47,12 +47,12 @@ module Convection
           end
           alias target_description target
 
-          def matcher(http_code=nil, &block)
+          def matcher(http_code = nil, &block)
             m = ResourceProperty::ELBV2TargetGroupMatcher.new(self)
             if http_code
               m.http_code http_code
-            else
-              m.instance_exec(&block) if block
+            elsif block
+              m.instance_exec(&block)
             end
             match m
           end
