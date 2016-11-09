@@ -19,7 +19,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => Convection.default_delay_output
     def converge(stack = nil)
       @outputs = []
       operation('converge', stack)
@@ -57,7 +57,7 @@ module Convection
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
-    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
+    option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => Convection.default_delay_output
     def diff(stack = nil)
       @outputs = []
       operation('diff', stack)
@@ -105,9 +105,10 @@ module Convection
       def operation(task_name, stack)
         work_q = Queue.new
         semaphore = Mutex.new
-        unless options[:delayed_output]
-          puts 'For easier reading when using multiple cloudfiles output can be delayed until task completion.'
-          puts 'If you would like delayed output please use the "--delayed_output true" option.'
+        if options[:delayed_output].nil?
+          warn 'For easier reading when using multiple cloudfiles output can be delayed until task completion.'
+          warn 'If you would like delayed output please use the "--delayed_output true" option.'
+          warn 'You can also set a global default behaviour and silence this warning by setting the CONVECTION_DELAY_OUTPUT environment variable'
         end
         options[:cloudfiles].each { |cloudfile| work_q.push(cloud: Control::Cloud.new, cloudfile_path: cloudfile) }
         workers = (0...options[:cloudfiles].length).map do
