@@ -186,7 +186,7 @@ module Convection
           if self[key].is_a?(Hash) || self[key].is_a?(Array)
             new_path = "#{path}#{path.empty? ? '' : '.'}#{key}"
             resource_type = self['Type']
-            new_path = "#{new_path}.#{resource_type}" if resource_type
+            new_path = "#{new_path}.#{resource_type}" if resource_type && !resource_type.empty?
             self[key].properties(memo, new_path)
           else
             memo["#{path}.#{key}"] = self[key]
