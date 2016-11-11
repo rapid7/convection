@@ -13,7 +13,7 @@ module Convection
           property :image_id, 'ImageId'
           property :instance_type, 'InstanceType'
           property :kernel_id, 'KernelId'
-	  property :key_name, 'KeyName'
+          property :key_name, 'KeyName'
           property :monitoring, 'Monitoring'
           property :network_interfaces, 'NetworkInterfaces', :type => :array
           property :placement, 'Placement'
@@ -27,7 +27,7 @@ module Convection
           def block_device_mapping(&block)
             block_device_mapping = ResourceProperty::EC2SpotFleetRequestConfigDataLaunchSpecificationsBlockDeviceMapping.new(self)
             block_device_mapping.instance_exec(&block) if block
-            block_device_mappings << block_device_mapping 
+            block_device_mappings << block_device_mapping
           end
 
           def iam_instance_profile(&block)
@@ -35,14 +35,14 @@ module Convection
             iam.instance_exec(&block) if block
             properties['IamInstanceProfile'].set(iam)
           end
-          
+
           def network_interfaces(&block)
             network_interface = ResourceProperty::EC2SpotFleetRequestConfigDataLaunchSpecificationsNetworkInterface.new(self)
             network_interface.instance_exec(&block) if block
             network_interfaces << network_interface
           end
 
-          def security_group (&block)
+          def security_group(&block)
             sec_group = ResourceProperty::EC2SpotFleetRequestConfigDataLaunchSpecificationsSecurityGroups.new(self)
             sec_group.instance_exec(&block) if block
             security_groups << sec_group

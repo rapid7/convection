@@ -8,7 +8,6 @@ module Convection
         # AWS::EC2::SpotFleet
         ##
         class SpotFleet < Resource
-
           type 'AWS::EC2::SpotFleet'
           property :spot_fleet_request_configuration, 'SpotFleetRequestConfigData'
 

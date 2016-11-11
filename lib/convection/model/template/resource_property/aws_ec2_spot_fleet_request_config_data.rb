@@ -17,7 +17,7 @@ module Convection
           property :valid_from, 'ValidFrom'
           property :valid_until, 'ValidUntil'
 
-          def launch_specification (&block)
+          def launch_specification(&block)
             launch_specification = ResourceProperty::EC2SpotFleetRequestConfigDataLaunchSpecifications.new(self)
             launch_specification.instance_exec(&block) if block
             launch_specifications << launch_specification

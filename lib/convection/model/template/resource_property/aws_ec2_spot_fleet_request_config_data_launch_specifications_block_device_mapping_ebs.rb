@@ -13,7 +13,6 @@ module Convection
           property :snapshot_id, 'SnapshotId'
           property :volume_size, 'VolumeSize'
           property :volume_type, 'VolumeType'
-
         end
       end
     end
