@@ -9,7 +9,7 @@ module Convection
             when *options.fetch(:cyan, [:debug, :trace]) then :cyan
             when *options.fetch(:green, [:info, :success, :create]) then :green
             when *options.fetch(:yellow, [:warn, :update]) then :yellow
-            when *options.fetch(:red, [:error, :fail, :delete]) then :red
+            when *options.fetch(:red, [:error, :fail, :delete, :replace]) then :red
             else options.fetch(:default, :green)
             end
           end
