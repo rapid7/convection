@@ -129,9 +129,7 @@ module Convection
           # Find errors during diff
           emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
-            errors = stack.errors.collect { |x| x.exception.message }
-            errors = errors.uniq.flatten
-            block.call(Model::Event.new(:error, "Error diffing stack #{ stack.name} Error(s): #{errors.join(', ')}", :error), stack.errors) if block
+            block.call(Model::Event.new(:error, "Error diffing stack #{ stack.name }", :error), stack.errors) if block
             break
           end
 
