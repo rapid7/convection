@@ -23,6 +23,7 @@ module Convection
           property :notification_configuration, 'NotificationConfiguration'
           property :placement_group, 'PlacementGroup'
           property :termination_policie, 'TerminationPolicies', :array
+          property :target_group_arns, 'TargetGroupARNs', :array
           property :vpc_zone_identifier, 'VPCZoneIdentifier', :array
 
           def render(*args)
@@ -40,6 +41,10 @@ module Convection
 
           def tags
             @tags ||= {}
+          end
+
+          def target_group_arn(arn)
+            target_group_arns << arn
           end
 
           def update_policy(&block)
