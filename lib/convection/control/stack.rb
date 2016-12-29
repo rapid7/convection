@@ -111,7 +111,7 @@ module Convection
         @tags = options.delete(:tags) { |_| {} } # Default empty hash
         options.delete(:disable_rollback) # There can be only one...
         @on_failure = options.delete(:on_failure) { |_| 'DELETE' }
-        @capabilities = options.delete(:capabilities) { |_| ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'] }
+        @capabilities = options.delete(:capabilities) { |_| %w(CAPABILITY_IAM CAPABILITY_NAMED_IAM) }
 
         @attributes = options.delete(:attributes) { |_| Model::Attributes.new }
         @options = options
