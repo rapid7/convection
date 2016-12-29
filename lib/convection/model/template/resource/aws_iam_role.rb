@@ -99,6 +99,7 @@ module Convection
           property :path, 'Path'
           property :policies, 'Policies', :type => :list
           property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
+          property :role_name, 'RoleName'
           alias managed_policy managed_policy_arn
 
           attr_accessor :trust_relationship
