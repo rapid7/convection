@@ -23,7 +23,6 @@ module Convection::Control
         allow(Aws::EC2::Client).to receive(:new).and_return(ec2_client)
       end
       subject do
-        scope = self
         Convection::Control::Stack.new('EC2 VPC Test Stack', template)
       end
 
