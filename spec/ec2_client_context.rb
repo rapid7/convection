@@ -1,6 +1,6 @@
 RSpec.shared_context 'with a mock EC2 client' do
   let(:ec2_availability_zone_description) do
-    zones = %w(eu-central-1 eu-west-1).map do |name|
+    zones = %w(eu-central-1a eu-central-1b).map do |name|
       double("availability zone (#{name})", zone_name: name)
     end
 

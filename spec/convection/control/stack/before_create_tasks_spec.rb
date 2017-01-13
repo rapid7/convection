@@ -39,7 +39,7 @@ module Convection::Control
       it 'is executed on Stack#apply' do
         subject.apply
 
-        expect(task.availability_zones).to include('eu-central-1')
+        expect(task.availability_zones).to include(a_string_starting_with('eu-central-1'))
       end
 
       it 'is deregistered after Stack#apply is called' do
