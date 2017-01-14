@@ -197,7 +197,8 @@ module Convection
         end
 
         errors.each do |error|
-          say "* #{ error.message }"
+          error = RuntimeError.new(error) if error.is_a?(String)
+          say "* #{ error_message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
         end
       end
