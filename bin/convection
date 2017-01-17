@@ -97,6 +97,14 @@ module Convection
       @cloud.stacks[stack].validate
     end
 
+    desc 'describe-subnets', 'Describe subnets for the VPC'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
+    option :format, :type => :string, :default => 'json', :enum => %w(json yaml)
+    def describe_subnets
+      init_cloud
+      describe_vpc_subnets(options[:format])
+    end
+
     no_commands do
       attr_accessor :last_event
 
@@ -175,6 +183,23 @@ module Convection
         else
           say_status(:task_failed, "Task #{task} failed to complete for stack #{stack_name}.", :red)
           exit 1
+        end
+      end
+
+      def describe_vpc_subnets(format)
+        vpc_template = @cloud.stacks['vpc'].instance_variable_get(:@current_template)
+        raise "No template defined for [vpc] stack" if vpc_template.nil?
+
+        subnet_map = {}
+        vpc_template['Resources'].select { |_name,attrs| attrs['Type'] == 'AWS::EC2::Subnet' }.each do |name, attrs|
+          subnet_map[attrs['Properties']['AvailabilityZone']] ||= []
+          subnet_map[attrs['Properties']['AvailabilityZone']] << { name: name, cidr: attrs['Properties']['CidrBlock'] }
+        end
+
+        if format == 'json'
+          puts JSON.pretty_generate subnet_map
+        elsif format == 'yaml'
+          puts subnet_map.to_yaml
         end
       end
 
