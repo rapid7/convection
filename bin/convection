@@ -188,10 +188,10 @@ module Convection
 
       def describe_vpc_subnets(format)
         vpc_template = @cloud.stacks['vpc'].instance_variable_get(:@current_template)
-        raise "No template defined for [vpc] stack" if vpc_template.nil?
+        raise 'No template defined for [vpc] stack' if vpc_template.nil?
 
         subnet_map = {}
-        vpc_template['Resources'].select { |_name,attrs| attrs['Type'] == 'AWS::EC2::Subnet' }.each do |name, attrs|
+        vpc_template['Resources'].select { |_name, attrs| attrs['Type'] == 'AWS::EC2::Subnet' }.each do |name, attrs|
           subnet_map[attrs['Properties']['AvailabilityZone']] ||= []
           subnet_map[attrs['Properties']['AvailabilityZone']] << { name: name, cidr: attrs['Properties']['CidrBlock'] }
         end
