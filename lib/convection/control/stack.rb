@@ -34,6 +34,7 @@ module Convection
 
       ## AWS-SDK
       attr_accessor :region
+      attr_accessor :exclude_availability_zones
       attr_accessor :cloud
       attr_reader :capabilities
       attr_accessor :credentials
@@ -108,6 +109,7 @@ module Convection
         @cloud = options.delete(:cloud)
         @cloud_name = options.delete(:cloud_name)
         @region = options.delete(:region) { |_| 'us-east-1' }
+        @exclude_availability_zones = options.delete(:exclude_availability_zones) { |_| [] } # Default empty Array
         @credentials = options.delete(:credentials)
         @parameters = options.delete(:parameters) { |_| {} } # Default empty hash
         @tags = options.delete(:tags) { |_| {} } # Default empty hash
@@ -434,7 +436,15 @@ module Convection
       #   the call to ec2 client's describe availability zones
       def availability_zones(&block)
         @availability_zones ||=
-          @ec2_client.describe_availability_zones.availability_zones.map(&:zone_name).sort
+          @ec2_client.describe_availability_zones.availability_zones.map(&:zone_name)
+
+        unless @exclude_availability_zones.empty?
+          @exclude_availability_zones.each { |az| @availability_zones.delete(az) }
+        end
+        if @availability_zones.empty? && block
+          fail 'There are no AvailabilityZones, check exclude_availability_zones in the Cloudfile.'
+        end
+        @availability_zones.sort!
 
         @availability_zones.each_with_index(&block) if block
         @availability_zones

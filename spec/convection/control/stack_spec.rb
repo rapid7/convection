@@ -36,6 +36,26 @@ module Convection::Control
         azs.uniq!
         expect(azs.size).to be(1)
       end
+
+      it 'availability_zones can be ignored' do
+        subject.exclude_availability_zones = %w(eu-central-1a)
+        expect(subject.availability_zones).to contain_exactly('eu-central-1b')
+      end
+
+      it 'multiple availability_zones can be ignored' do
+        subject.exclude_availability_zones = %w(eu-central-1a eu-central-1b)
+        expect(subject.availability_zones).to contain_exactly
+      end
+
+      it 'remove all availability_zones fails' do
+        subject.exclude_availability_zones = %w(eu-central-1a eu-central-1b)
+        b = {}
+        expect { subject.availability_zones(&b) }.to raise_exception(RuntimeError, /AvailabilityZones/)
+      end
+
+      it 'can get default availability_zones' do
+        expect(subject.availability_zones).to contain_exactly('eu-central-1a', 'eu-central-1b')
+      end
     end
   end
 end

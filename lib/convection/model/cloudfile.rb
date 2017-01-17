@@ -14,6 +14,7 @@ module Convection
 
       attribute :name
       attribute :region
+      attribute :exclude_availability_zones
       attribute :splay
       attribute :retry_limit
       attribute :thread_count
@@ -32,6 +33,7 @@ module Convection
       # @see Convection::Control::Stack#initialize
       def stack(stack_name, template, options = {}, &block)
         options[:region] ||= region
+        options[:exclude_availability_zones] = exclude_availability_zones
         options[:cloud] = name
         options[:attributes] = attributes
         options[:retry_limit] = retry_limit
