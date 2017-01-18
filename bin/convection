@@ -2,6 +2,8 @@
 require 'thor'
 require_relative '../lib/convection/control/cloud'
 require 'thread'
+require 'yaml'
+
 module Convection
   ##
   # Convection CLI
@@ -97,6 +99,17 @@ module Convection
       @cloud.stacks[stack].validate
     end
 
+    desc 'describe-resources', 'Describe resources for a stack'
+    option :cloudfile, :type => :string, :default => 'Cloudfile'
+    option :stack, :desc => 'The stack to be described', :required => true
+    option :type, :desc => 'An optional filter on the types of resources to be described', default: '*'
+    option :properties, :type => :array, :desc => 'A space-separated list of properties to include in the output', default: %w(*)
+    option :format, :type => :string, :default => 'json', :enum => %w(json yaml)
+    def describe_resources
+      init_cloud
+      describe_stack_resources(options[:stack], options[:format], options[:properties], options[:type])
+    end
+
     no_commands do
       attr_accessor :last_event
 
@@ -175,6 +188,35 @@ module Convection
         else
           say_status(:task_failed, "Task #{task} failed to complete for stack #{stack_name}.", :red)
           exit 1
+        end
+      end
+
+      def describe_stack_resources(stack, format, properties_to_include, type)
+        stack_template = @cloud.stacks[stack].current_template
+        raise "No template defined for [#{stack}] stack" if stack_template.nil?
+
+        stack_resources = stack_template['Resources']
+        stack_resources.select! { |_name, attrs| attrs['Type'] == type } unless type == '*'
+
+        described_resources = {}
+
+        stack_resources.each do |name, attrs|
+          # Only include the resource type if we asked for all resource types
+          attrs.reject! { |attr| attr == 'Type'  } unless type == '*'
+
+          # Only include those properties that were explicitly requested
+          unless properties_to_include.size == 1 && properties_to_include[0] == '*'
+            attrs['Properties'].select! { |prop| properties_to_include.include? prop }
+          end
+
+          described_resources[name] = attrs
+        end
+
+        case format
+        when 'json'
+          puts JSON.pretty_generate(described_resources)
+        when 'yaml'
+          puts described_resources.to_yaml
         end
       end
 
