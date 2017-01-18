@@ -3,18 +3,6 @@ require 'stringio'
 
 module Convection::Model
   describe Cloudfile do
-    let(:template) do
-      Convection.template do
-        description 'EC2 VPC Test Template'
-
-        ec2_vpc 'TargetVPC' do
-          network '10.0.0.0'
-          subnet_length 24
-          enable_dns
-        end
-      end
-    end
-
     describe 'stack' do
       subject do
         klass = Class.new

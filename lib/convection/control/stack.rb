@@ -439,7 +439,7 @@ module Convection
           @ec2_client.describe_availability_zones.availability_zones.map(&:zone_name)
 
         unless @exclude_availability_zones.empty?
-          @exclude_availability_zones.each { |az| @availability_zones.delete(az) }
+          @availability_zones.reject! { |az| @exclude_availability_zones.include?(az) }
         end
         if @availability_zones.empty? && block
           fail 'There are no AvailabilityZones, check exclude_availability_zones in the Cloudfile.'

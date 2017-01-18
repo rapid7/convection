@@ -50,7 +50,6 @@ module Convection::Control
       it 'remove all availability_zones fails' do
         subject.exclude_availability_zones = %w(eu-central-1a eu-central-1b)
         b = proc do
-          puts 'hi'
         end
         expect { subject.availability_zones(&b) }.to raise_exception(RuntimeError, /AvailabilityZones/)
       end
