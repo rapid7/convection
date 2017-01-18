@@ -2,6 +2,8 @@
 require 'thor'
 require_relative '../lib/convection/control/cloud'
 require 'thread'
+require 'yaml'
+
 module Convection
   ##
   # Convection CLI
@@ -97,12 +99,15 @@ module Convection
       @cloud.stacks[stack].validate
     end
 
-    desc 'describe-subnets', 'Describe subnets for the VPC'
+    desc 'describe-resources', 'Describe resources for a stack'
     option :cloudfile, :type => :string, :default => 'Cloudfile'
+    option :stack, :desc => 'The stack to be described', :required => true
+    option :type, :desc => 'An optional filter on the types of resources to be described', default: '*'
+    option :properties, :type => :array, :desc => 'A space-separated list of properties to include in the output', default: %w(*)
     option :format, :type => :string, :default => 'json', :enum => %w(json yaml)
-    def describe_subnets
+    def describe_resources
       init_cloud
-      describe_vpc_subnets(options[:format])
+      describe_stack_resources(options[:stack], options[:format], options[:properties], options[:type])
     end
 
     no_commands do
@@ -186,20 +191,32 @@ module Convection
         end
       end
 
-      def describe_vpc_subnets(format)
-        vpc_template = @cloud.stacks['vpc'].instance_variable_get(:@current_template)
-        raise 'No template defined for [vpc] stack' if vpc_template.nil?
+      def describe_stack_resources(stack, format, properties_to_include, type)
+        stack_template = @cloud.stacks[stack].instance_variable_get(:@current_template)
+        raise "No template defined for [#{stack}] stack" if stack_template.nil?
 
-        subnet_map = {}
-        vpc_template['Resources'].select { |_name, attrs| attrs['Type'] == 'AWS::EC2::Subnet' }.each do |name, attrs|
-          subnet_map[attrs['Properties']['AvailabilityZone']] ||= []
-          subnet_map[attrs['Properties']['AvailabilityZone']] << { name: name, cidr: attrs['Properties']['CidrBlock'] }
+        stack_resources = stack_template['Resources']
+        stack_resources.select! { |_name, attrs| attrs['Type'] == type } unless type == '*'
+
+        described_resources = {}
+
+        stack_resources.each do |name, attrs|
+          # Only include the resource type if we asked for all resource types
+          attrs.reject! { |attr| attr == 'Type'  } unless type == '*'
+
+          # Only include those properties that were explicitly requested
+          unless properties_to_include.size == 1 && properties_to_include[0] == '*'
+            attrs['Properties'].select! { |prop| properties_to_include.include? prop }
+          end
+
+          described_resources[name] = attrs
         end
 
-        if format == 'json'
-          puts JSON.pretty_generate subnet_map
-        elsif format == 'yaml'
-          puts subnet_map.to_yaml
+        case format
+        when 'json'
+          puts JSON.pretty_generate(described_resources)
+        when 'yaml'
+          puts described_resources.to_yaml
         end
       end
 
