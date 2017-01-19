@@ -22,6 +22,8 @@ module Convection
       attr_reader :status
       alias_method :exist?, :exist
 
+      attr_reader :current_template
+
       attr_reader :attributes
       attr_reader :errors
       attr_reader :options
