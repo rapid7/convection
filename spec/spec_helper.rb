@@ -6,6 +6,7 @@ SimpleCov.start do
 end
 
 require_relative '../lib/convection'
+require_relative '../lib/convection/model/cloudfile'
 require_relative './cf_client_context'
 require_relative './collect_availability_zones_task_context'
 require_relative './ec2_client_context'
