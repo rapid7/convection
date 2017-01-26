@@ -33,7 +33,7 @@ module Convection
       # @see Convection::Control::Stack#initialize
       def stack(stack_name, template, options = {}, &block)
         options[:region] ||= region
-        options[:exclude_availability_zones] = exclude_availability_zones
+        options[:exclude_availability_zones] = exclude_availability_zones unless exclude_availability_zones.nil?
         options[:cloud] = name
         options[:attributes] = attributes
         options[:retry_limit] = retry_limit

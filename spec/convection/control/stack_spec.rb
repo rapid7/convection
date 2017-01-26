@@ -57,6 +57,10 @@ module Convection::Control
       it 'can get default availability_zones' do
         expect(subject.availability_zones).to contain_exactly('eu-central-1a', 'eu-central-1b')
       end
+
+      it 'can get default exclude_availability_zones' do
+        expect(subject.exclude_availability_zones).to match_array([])
+      end
     end
   end
 end
