@@ -12,6 +12,7 @@ module Convection
           extend Forwardable
 
           type 'AWS::IAM::Policy'
+          property :policy_name, 'PolicyName'
           property :group, 'Groups', :type => :list,
                                      :transform => (proc do |resource|
                                        depends_on(resource)

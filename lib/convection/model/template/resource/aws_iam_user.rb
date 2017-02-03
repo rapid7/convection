@@ -56,12 +56,13 @@ module Convection
           include DSL::Template::Resource::IAMUser
 
           type 'AWS::IAM::User'
-          property :path, 'Path'
-          property :login_profile, 'LoginProfile'
           property :group, 'Groups', :type => :list
-          property :policies, 'Policies', :type => :list
+          property :login_profile, 'LoginProfile'
           property :managed_policy_arn, 'ManagedPolicyArns', :type => :list
           alias managed_policy managed_policy_arn
+          property :path, 'Path'
+          property :policies, 'Policies', :type => :list
+          property :user_name, 'UserName'
         end
       end
     end
