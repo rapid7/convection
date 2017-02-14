@@ -8,7 +8,7 @@ module Convection
         # AWS::Logs::SubscriptionFilter
         ##
         class SubscriptionFilter < Resource
-          type 'AWS::Logs::SubscriptionFilter'
+          type 'AWS::Logs::SubscriptionFilter', :logs_subscription_filter
           property :destination_arn, 'DestinationArn'
           property :filter_pattern, 'FilterPattern'
           property :log_group_name, 'LogGroupName'
