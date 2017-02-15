@@ -240,7 +240,7 @@ module Convection
 
         errors.each do |error|
           error = RuntimeError.new(error) if error.is_a?(String)
-          say "* #{ error_message }"
+          say "* #{ error.message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
         end
       end
