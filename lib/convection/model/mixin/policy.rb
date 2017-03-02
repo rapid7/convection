@@ -41,10 +41,12 @@ module Convection
         end
 
         def document
-          {
+          doc = {
             'Version' => version,
             'Statement' => statement.map(&:render)
           }
+          doc['Id'] = id if id
+          doc
         end
 
         def render(parent = {})
