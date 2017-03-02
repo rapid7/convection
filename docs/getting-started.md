@@ -423,7 +423,7 @@ do this with a security group.
 Convection provides an `ec2_security_group` method for creating security groups.
 The [AWS::EC2::SecurityGroup][cf-security-group] resource requires a description
 and a reference to our VPC. We can add the `ec2_security_group` method to our
-Cloudfile with a `description` and `vpc` attribute to create a default security
+vpc template with a `description` and `vpc` attribute to create a default security
 group for our NAT router.
 
 Add the below block to your vpc.rb template
