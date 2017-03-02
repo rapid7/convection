@@ -100,7 +100,7 @@ module Convection
             next
           end
 
-          block.call(Model::Event.new(:deleted, "Delete remote stack #{ stack.cloud_name }", :info)) if block
+          block.call(Model::Event.new(:delete, "Delete remote stack #{ stack.cloud_name }", :info)) if block
           stack.delete(&block)
 
           if stack.error?
