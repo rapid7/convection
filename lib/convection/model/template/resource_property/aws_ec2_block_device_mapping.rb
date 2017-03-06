@@ -16,7 +16,7 @@ module Convection
           def ebs(&block)
             ebs = ResourceProperty::EC2BlockStoreBlockDevice.new(self)
             ebs.instance_exec(&block) if block
-            properties['Ebs'].set(config)
+            properties['Ebs'].set(ebs)
           end
         end
       end
