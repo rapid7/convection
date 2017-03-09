@@ -9,6 +9,7 @@ module Convection
           @pause = 'PT5M'
           @min_in_service = 0
           @max_batch = 1
+          @wait_on_res = false
 
           def pause_time(val)
             @pause = val
@@ -22,6 +23,10 @@ module Convection
             @max_batch = val
           end
 
+          def wait_on_resource_signals(val)
+            @wait_on_res = val
+          end
+
           def render(resource)
             resource.tap do |r|
               r['UpdatePolicy'] = {
@@ -31,7 +36,7 @@ module Convection
                 'AutoScalingRollingUpdate' => {
                   'MinInstancesInService' => @min_in_service,
                   'MaxBatchSize' => @max_batch,
-                  'WaitOnResourceSignals' => false,
+                  'WaitOnResourceSignals' => @wait_on_res,
                   'PauseTime' => @pause
                 }
               }
