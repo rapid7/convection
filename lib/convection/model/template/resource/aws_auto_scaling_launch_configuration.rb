@@ -23,6 +23,12 @@ module Convection
           property :security_group, 'SecurityGroups', :array
           property :spot_price, 'SpotPrice'
           property :user_data, 'UserData'
+
+          def block_device_mapping(&block)
+            dev_map = ResourceProperty::EC2BlockDeviceMapping.new(self)
+            dev_map.instance_exec(&block) if block
+            block_device_mappings << dev_map
+          end
         end
       end
     end
