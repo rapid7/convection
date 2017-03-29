@@ -71,6 +71,11 @@ module Convection
     option :cloudfile, :type => :string, :default => 'Cloudfile'
     def print_template(stack)
       init_cloud
+      unless @cloud.stacks.key?(stack)
+        warn "No stack #{stack.inspect} found. Did you define it in #{options[:cloudfile]}?"
+        exit 1
+      end
+
       puts @cloud.stacks[stack].to_json(true)
     end
 
