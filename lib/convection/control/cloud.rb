@@ -67,7 +67,7 @@ module Convection
       def converge(to_stack, options = {}, &block)
         if to_stack && !stacks.include?(to_stack)
           block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
-          return
+          exit 1
         end
 
         exit 1 if stack_initialization_errors?(&block)
@@ -79,11 +79,11 @@ module Convection
           emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
             block.call(Model::Event.new(:error, "Error converging stack #{ stack.name }", :error), stack.errors) if block
-            break
+            exit 1
           end
 
           ## Stop on converge error
-          break unless stack.success?
+          exit 1 unless stack.success?
 
           ## Stop here
           break if !to_stack.nil? && stack.name == to_stack
@@ -105,10 +105,10 @@ module Convection
 
           if stack.error?
             block.call(Model::Event.new(:error, "Error deleting stack #{ stack.name }", :error), stack.errors) if block
-            break
+            exit 1
           end
 
-          break unless stack.delete_success?
+          exit 1 unless stack.delete_success?
 
           sleep rand @cloudfile.splay || 2
         end
@@ -117,7 +117,7 @@ module Convection
       def diff(to_stack, options = {}, &block)
         if to_stack && !stacks.include?(to_stack)
           block.call(Model::Event.new(:error, "Undefined Stack #{ to_stack }", :error)) if block
-          return
+          exit 1
         end
 
         exit 1 if stack_initialization_errors?(&block)
@@ -132,7 +132,7 @@ module Convection
             errors = stack.errors.collect { |x| x.exception.message }
             errors = errors.uniq.flatten
             block.call(Model::Event.new(:error, "Error diffing stack #{ stack.name} Error(s): #{errors.join(', ')}", :error), stack.errors) if block
-            break
+            exit 1
           end
 
           if difference.empty?
