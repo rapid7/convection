@@ -45,7 +45,7 @@ module Convection
       end
 
       def include?(stack, key)
-        @stacks.include?(stack) && @stacks[stack].include?(key)
+        @stacks.include?(stack.to_s) && @stacks[stack.to_s].include?(key.to_s)
       end
 
       def fetch(stack, key, default = nil)
@@ -56,6 +56,7 @@ module Convection
       end
 
       def get(stack, key, default = nil)
+        fail ArgumentError, "Attempted to reference an undefined attribute, #{key}, in stack #{stack} ", caller unless include?(stack, key) || default
         include?(stack, key) ? @stacks[stack.to_s][key.to_s] : default
       end
 
