@@ -45,6 +45,18 @@ module Convection
         }
       end
 
+      def fn_sub(str, *vars)
+        if vars && !vars.empty?
+          {
+            'Fn::Sub' => [str, vars]
+          }
+        else
+          {
+            'Fn::Sub' => str
+          }
+        end
+      end
+
       def find_in_map(map_name, key_1, key_2)
         {
           'Fn::FindInMap' => [map_name, key_1, key_2]
