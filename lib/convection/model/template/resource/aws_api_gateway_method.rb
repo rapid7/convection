@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Method
         ##
         class ApiGatewayMethod < Resource
-
           type 'AWS::ApiGateway::Method'
           property :api_key_required, 'ApiKeyRequired'
           property :authorization_type, 'AuthorizationType'
@@ -32,7 +31,6 @@ module Convection
             r.instance_exec(&block) if block
             method_responses << r
           end
-
         end
       end
     end

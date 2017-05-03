@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Authorizer
         ##
         class ApiGatewayAuthorizer < Resource
-
           type 'AWS::ApiGateway::Authorizer'
           property :authorizer_credentials, 'AuthorizerCredentials'
           property :authorizer_result_ttl_in_seconds, 'AuthorizerResultTtlInSeconds'

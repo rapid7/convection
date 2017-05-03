@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Deployment
         ##
         class ApiGatewayDeployment < Resource
-
           type 'AWS::ApiGateway::Deployment'
           property :description, 'Description'
           property :rest_api_id, 'RestApiId'

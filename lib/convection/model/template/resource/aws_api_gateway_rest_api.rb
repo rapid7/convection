@@ -22,7 +22,6 @@ module Convection
             b.instance_exec(&block) if block
             properties['BodyS3Location'].set(b)
           end
-
         end
       end
     end

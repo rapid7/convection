@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Account
         ##
         class ApiGatewayAccount < Resource
-
           type 'AWS::ApiGateway::Account'
           property :cloud_watch_role_arn, 'CloudWatchRoleArn'
         end

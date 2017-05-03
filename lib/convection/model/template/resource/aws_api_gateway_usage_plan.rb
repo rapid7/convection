@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::UsagePlan
         ##
         class ApiGatewayUsagePlan < Resource
-
           type 'AWS::ApiGateway::UsagePlan'
           property :api_stages, 'ApiStages', :type => :list # [ ApiStage, ... ]
           property :description, 'Description'

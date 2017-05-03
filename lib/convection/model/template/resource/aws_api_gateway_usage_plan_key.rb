@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Method
         ##
         class ApiGatewayMethod < Resource
-
           type 'AWS::ApiGateway::Method'
           property :key_id, 'KeId'
           property :key_type, 'KeyType'

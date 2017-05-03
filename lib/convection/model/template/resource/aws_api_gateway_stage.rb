@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::Stage
         ##
         class ApiGatewayStage < Resource
-
           type 'AWS::ApiGateway::Stage'
           property :cache_cluster_enabled, 'CacheClusterEnabled'
           property :cache_cluster_size, 'CacheClusterSize'
@@ -25,7 +24,6 @@ module Convection
             r.instance_exec(&block) if block
             method_settings << r
           end
-
         end
       end
     end

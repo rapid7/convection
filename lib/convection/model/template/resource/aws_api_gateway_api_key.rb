@@ -8,7 +8,6 @@ module Convection
         # AWS::ApiGateway::ApiKey
         ##
         class ApiGatewayApiKey < Resource
-
           type 'AWS::ApiGateway::ApiKey'
           property :description, 'Description'
           property :enabled, 'Enabled'
