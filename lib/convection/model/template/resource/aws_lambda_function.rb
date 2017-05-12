@@ -14,7 +14,7 @@ module Convection
           property :description, 'Description'
           property :handler, 'Handler'
           property :memory_size, 'MemorySize'
-          property :runtime, 'Runtime', :equal_to => ['nodejs', 'nodejs4.3', 'java8', 'python2.7']
+          property :runtime, 'Runtime'
           property :timeout, 'Timeout'
           property :role, 'Role'
           property :vpc_cfg, 'VpcConfig'
@@ -24,6 +24,12 @@ module Convection
             function_code = ResourceProperty::LambdaFunctionCode.new(self)
             function_code.instance_exec(&block) if block
             properties['Code'].set(function_code)
+          end
+
+          def environment(&block)
+            env = ResourceProperty::LambdaEnvironment.new(self)
+            env.instance_exec(&block) if block
+            properties['Environment'].set(env)
           end
 
           # Add vpc_config block
