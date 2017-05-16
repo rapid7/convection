@@ -9,7 +9,6 @@ module Convection
         ##
         class Lambda < Resource
           type 'AWS::Lambda::Function'
-          property :function_code, 'Code'
           property :function_name, 'FunctionName'
           property :description, 'Description'
           property :handler, 'Handler'
@@ -17,6 +16,9 @@ module Convection
           property :runtime, 'Runtime'
           property :timeout, 'Timeout'
           property :role, 'Role'
+          # psuedo-property definitions. We add the expected name as a nested DSL for these below.
+          property :env, 'Environment'
+          property :function_code, 'Code'
           property :vpc_cfg, 'VpcConfig'
 
           # Add code block
