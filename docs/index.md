@@ -47,5 +47,12 @@ We highly recommend consulting the [getting started guide](./docs/getting-starte
 
 Additionally you can generate the Ruby API documentation by executing `bundle exec rake yard`.
 
+## TODO: Script to automatically create new AWS resources
+Amazon publishes a spec for Cloudformation:
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
+
+We should create a tool that uses that to create convection resource
+code.
+
 ## License
 Convection is distributed under the MIT license - please refer to the [LICENSE](LICENSE.md) for more information.
