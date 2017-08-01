@@ -11,8 +11,12 @@ class Convection::Model::Template::Resource
 
     it 'allows FileSystemTags to be set' do
       expect(subject.render['Properties']['FileSystemTags']).to be_nil
-      subject.file_system_tags ['tag-1', 'tag-2']
-      expect(subject.render['Properties']['FileSystemTags']).to eq(['tag-1', 'tag-2'])
+      subject.file_system_tags({'key-1'=>'value-1', 'key-2'=>'value-2'})
+      expect(subject.render['Properties']['FileSystemTags']).to eq([{
+        'Key'=>'key-1', 'Value'=>'value-1'
+      },{
+        'Key'=>'key-2', 'Value'=>'value-2'
+      }])
     end
 
     it 'allows PerformanceMode to be set' do
@@ -23,14 +27,8 @@ class Convection::Model::Template::Resource
 
     it 'allows individual FileSystemTags to be set' do
       expect(subject.render['Properties']['FileSystemTags']).to be_nil
-      subject.file_system_tag do
-        key 'key-1'
-        value 'value-1'
-      end
-      subject.file_system_tag do
-        key 'key-2'
-        value 'value-2'
-      end
+      subject.file_system_tag 'key-1', 'value-1'
+      subject.file_system_tag 'key-2', 'value-2'
       expect(subject.render['Properties']['FileSystemTags']).to eq([{
         'Key'=>'key-1', 'Value'=>'value-1'
       },{
