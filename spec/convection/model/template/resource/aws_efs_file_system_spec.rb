@@ -10,14 +10,14 @@ class Convection::Model::Template::Resource
     end
 
     it 'allows FileSystemTags to be set' do
+      expected_tags = []
+      expected_tags << { 'Key' => 'key-1', 'Value' => 'value-1' }
+      expected_tags << { 'Key' => 'key-2', 'Value' => 'value-2' }
+
       expect(subject.render['Properties']['FileSystemTags']).to be_nil
       subject.tag 'key-1', 'value-1'
       subject.tag 'key-2', 'value-2'
-      expect(subject.render['Properties']['FileSystemTags']).to eq([{
-        'Key'=>'key-1', 'Value'=>'value-1'
-      },{
-        'Key'=>'key-2', 'Value'=>'value-2'
-      }])
+      expect(subject.render['Properties']['FileSystemTags']).to eq(expected_tags)
     end
 
     it 'allows PerformanceMode to be set' do
