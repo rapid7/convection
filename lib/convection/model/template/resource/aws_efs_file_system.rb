@@ -8,6 +8,7 @@ module Convection
         # Amazon EFS File System}
         class EFSFileSystem < Resource
           include Model::Mixin::Taggable
+          alias file_system_tag tag
 
           type 'AWS::EFS::FileSystem'
           property :performance_mode, 'PerformanceMode'

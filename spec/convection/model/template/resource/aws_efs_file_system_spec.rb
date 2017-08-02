@@ -16,7 +16,7 @@ class Convection::Model::Template::Resource
 
       expect(subject.render['Properties']['FileSystemTags']).to be_nil
       subject.tag 'key-1', 'value-1'
-      subject.tag 'key-2', 'value-2'
+      subject.file_system_tag 'key-2', 'value-2'
       expect(subject.render['Properties']['FileSystemTags']).to eq(expected_tags)
     end
 
