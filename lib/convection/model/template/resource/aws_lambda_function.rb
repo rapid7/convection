@@ -8,6 +8,8 @@ module Convection
         # AWS::Lambda::Function
         ##
         class Lambda < Resource
+          include Model::Mixin::Taggable
+
           type 'AWS::Lambda::Function'
           property :function_name, 'FunctionName'
           property :description, 'Description'
@@ -16,10 +18,12 @@ module Convection
           property :runtime, 'Runtime'
           property :timeout, 'Timeout'
           property :role, 'Role'
+          property :kms_key_arn, 'KmsKeyArn'
           # psuedo-property definitions. We add the expected name as a nested DSL for these below.
           property :env, 'Environment'
           property :function_code, 'Code'
           property :vpc_cfg, 'VpcConfig'
+          property :dead_letter_cfg, 'DeadLetterConfig'
 
           # Add code block
           def code(&block)
@@ -39,6 +43,12 @@ module Convection
             vpc_cfg = ResourceProperty::LambdaVpcConfig.new(self)
             vpc_cfg.instance_exec(&block) if block
             properties['VpcConfig'].set(vpc_cfg)
+          end
+
+          def dead_letter_config(&block)
+            env = ResourceProperty::LambdaDeadLetterConfig.new(self)
+            env.instance_exec(&block) if block
+            properties['DeadLetterConfig'].set(dead_letter_cfg)
           end
         end
       end
