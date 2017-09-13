@@ -9,6 +9,7 @@ module Convection
         class CloudFrontViewerCertificate < ResourceProperty
           property :use_default, 'CloudFrontDefaultCertificate'
           property :iam_certificate, 'IamCertificateId'
+          property :acm_certificate, 'AcmCertificateArn'
           property :minimum_protocol_version, 'MinimumProtocolVersion'
           property :ssl_support_method, 'SslSupportMethod'
         end
