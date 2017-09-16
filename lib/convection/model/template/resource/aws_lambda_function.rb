@@ -46,7 +46,7 @@ module Convection
           end
 
           def dead_letter_config(&block)
-            env = ResourceProperty::LambdaDeadLetterConfig.new(self)
+            env = ResourceProperty::LambdaFunctionDeadLetterConfig.new(self)
             env.instance_exec(&block) if block
             properties['DeadLetterConfig'].set(dead_letter_cfg)
           end
