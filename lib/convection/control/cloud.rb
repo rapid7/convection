@@ -22,31 +22,54 @@ module Convection
       end
 
       def filter_deck(options = {}, &block)
-        # throw an error if the user specifies both a stack group and list of stacks
-        if options[:stack_group] && options[:stacks]
-          block.call(Model::Event.new(:error, 'Cannot specify --stack-group and --stack-list at the same time', :error)) if block
+        # throw an error if the user specifies more than one (stack group, list of stacks, exclusion list of stacks)
+        if (options[:stack_group] && options[:stacks]) ||
+           (options[:stack_group] && options[:exclude_stacks]) ||
+           (options[:stacks] && options[:exclude_stacks])
+          block.call(Model::Event.new(:error, 'Cannot specify --stack-group , --stack-list, or --exclude-stacks at the same time as each other', :error)) if block
           return {}
         end
 
-        # throw an error if the user specifies a nonexistent stack groups
-        if options[:stack_group] && !stack_groups.key?(options[:stack_group])
-          block.call(Model::Event.new(:error, "Unknown stack group: #{options[:stack_group]}", :error)) if block
-          return {}
-        end
+        if options[:stack_group] || options[:stacks]
+          # throw an error if the user specifies a nonexistent stack groups
+          if options[:stack_group] && !stack_groups.key?(options[:stack_group])
+            block.call(Model::Event.new(:error, "Unknown stack group: #{options[:stack_group]}", :error)) if block
+            return {}
+          end
 
-        # throw an error if the user specifies nonexistent stacks
-        if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
-          bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
-          block.call(Model::Event.new(:error, "Undefined Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
-          return {}
-        end
+          # throw an error if the user specifies nonexistent stacks
+          if Array(options[:stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
+            bad_stack_names = options[:stacks].reject { |name| @cloudfile.stacks.key?(name) }
+            block.call(Model::Event.new(:error, "Undefined Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
+            return {}
+          end
 
-        filter = Array(stack_groups[options[:stack_group]] || options[:stacks])
+          filter = Array(stack_groups[options[:stack_group]] || options[:stacks])
+          filter.reduce({}) do |result, stack_name|
+            result.merge(stack_name => @cloudfile.stacks[stack_name])
+          end
 
-        # if no filter is specified, return the entire deck
-        return stacks if filter.empty?
-        filter.reduce({}) do |result, stack_name|
-          result.merge(stack_name => @cloudfile.stacks[stack_name])
+        elsif options[:exclude_stacks]
+          # throw an error if the user specifies nonexistent excluded stacks
+          if Array(options[:exclude_stacks]).any? { |name| !@cloudfile.stacks.key?(name) }
+            bad_stack_names = options[:exclude_stacks].reject { |name| @cloudfile.stacks.key?(name) }
+            block.call(Model::Event.new(:error, "Undefined Stack(s) #{bad_stack_names.join(', ')}", :error)) if block
+            return {}
+          end
+
+          filter = Array(options[:exclude_stacks])
+          result = {}
+          stacks.each do |stack_name, stack|
+            unless filter.include? stack_name
+              result[stack_name] = stack
+            end
+          end
+          return result
+
+        else
+          # if no filter is specified, return the entire deck
+          return stacks
+
         end
       end
 
