@@ -58,13 +58,7 @@ module Convection
           end
 
           filter = Array(options[:exclude_stacks])
-          result = {}
-          stacks.each do |stack_name, stack|
-            unless filter.include? stack_name
-              result[stack_name] = stack
-            end
-          end
-          return result
+          return stacks.reject { |stack_name| filter.include? stack_name }
 
         else
           # if no filter is specified, return the entire deck
