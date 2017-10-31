@@ -18,6 +18,7 @@ module Convection
     desc 'converge STACK', 'Converge your cloud'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to converge'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to converge'
+    option :exclude_stacks, :type => :array, :desc => 'A ordered space separated list of stacks NOT to converge'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress', default: true
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
@@ -56,6 +57,7 @@ module Convection
     desc 'diff STACK', 'Show changes that will be applied by converge'
     option :stack_group, :type => :string, :desc => 'The name of a stack group defined in your cloudfile to diff'
     option :stacks, :type => :array, :desc => 'A ordered space separated list of stacks to diff'
+    option :exclude_stacks, :type => :array, :desc => 'A ordered space separated list of stacks NOT to diff'
     option :verbose, :type => :boolean, :aliases => '--v', :desc => 'Show stack progress'
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
@@ -131,7 +133,7 @@ module Convection
               cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
               cloud = cloud_array[:cloud]
               region = cloud.cloudfile.region
-              cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks]) do |event, errors|
+              cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks], exclude_stacks: options[:exclude_stacks]) do |event, errors|
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else
