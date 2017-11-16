@@ -281,8 +281,8 @@ module Convection
       #   template (in CloudFormation) and the state of the rendered
       #   template (what *would* be converged).
       # @see Convection::Model::Template#diff
-      def diff
-        @template.diff(@current_template)
+      def diff(retain: false)
+        @template.diff(@current_template, retain: retain)
       end
 
       # @return [Boolean] whether the Resources section of the rendered

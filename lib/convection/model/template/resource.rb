@@ -326,9 +326,12 @@ module Convection
         # rubocop:disable Style/TrivialAccessors
         #   We don't want to use an accessor (e.g. deletion_policy=) because
         #   this is a DSL method
-        def deletion_policy(deletion_policy)
+        def deletion_policy(deletion_policy = :unset_deletion_policy)
+          return @deletion_policy if deletion_policy == :unset_deletion_policy
+
           @deletion_policy = deletion_policy
         end
+
         # rubocop:enable Style/TrivialAccessors
 
         def reference
