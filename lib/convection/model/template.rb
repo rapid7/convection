@@ -251,7 +251,7 @@ module Convection
         end
       end
 
-      def render(stack_ = nil)
+      def render(stack_ = nil, retain: false)
         ## Instantiate a new template with the definition block and an other stack
         return clone(stack_).render unless stack_.nil?
 
@@ -263,7 +263,12 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => all_resources.map(&:render),
+          'Resources' => all_resources.map { |resource|
+            if retain && resource.deletion_policy == nil
+              resource.deletion_policy("Retain")
+            end
+            resource.render
+          },
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
@@ -275,8 +280,8 @@ module Convection
         end
       end
 
-      def diff(other, stack_ = nil)
-        render(stack_).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+      def diff(other, stack_ = nil, retain: false)
+        render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
       end
 
       def to_json(stack_ = nil, pretty = false)
