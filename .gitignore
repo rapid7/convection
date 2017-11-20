@@ -23,3 +23,5 @@ attic
 *.swp
 *.swo
 *.gem
+*.iml
+.rakeTasks
