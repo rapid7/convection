@@ -147,7 +147,6 @@ module Convection
         #     clouds use this, for example, to create security groups early
         #     in the dependency tree to avoid the chicken-and-egg problem.
         @template.execute
-
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
@@ -322,9 +321,9 @@ module Convection
       #
       # @param block [Proc] a configuration block to pass any
       #   {Convection::Model::Event}s to.
-      def apply(&block)
+      def apply(retain: false, &block)
         request_options = @options.clone.tap do |o|
-          o[:template_body] = to_json
+          o[:template_body] = to_json(retain: retain)
           o[:parameters] = cf_parameters
           o[:capabilities] = capabilities
         end
@@ -332,7 +331,7 @@ module Convection
         # Get the state of existence before creation
         existing_stack = exist?
         if existing_stack
-          if diff.empty? ## No Changes. Just get resources and move on
+          if diff(retain: retain).empty? ## No Changes. Just get resources and move on
             block.call(Model::Event.new(:complete, "Stack #{ name } has no changes", :info)) if block
             get_status
             return
@@ -552,7 +551,7 @@ module Convection
               collection << event
             end
 
-            break if pages == 0
+            break if pages.zero?
           end
 
           @last_event_seen = collection.first.event_id unless collection.empty?

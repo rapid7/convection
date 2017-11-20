@@ -91,7 +91,7 @@ module Convection
 
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
-          stack.apply(&block)
+          stack.apply(retain: options[:retain], &block)
 
           emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?

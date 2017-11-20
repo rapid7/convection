@@ -263,12 +263,12 @@ module Convection
           'Parameters' => parameters.map(&:render),
           'Mappings' => mappings.map(&:render),
           'Conditions' => conditions.map(&:render),
-          'Resources' => all_resources.map { |resource|
-            if retain && resource.deletion_policy == nil
-              resource.deletion_policy("Retain")
+          'Resources' => all_resources.map do |resource|
+            if retain && resource.deletion_policy.nil?
+              resource.deletion_policy('Retain')
             end
             resource.render
-          },
+          end,
           'Outputs' => outputs.map(&:render),
           'Metadata' => metadata.map(&:render)
         }
@@ -284,8 +284,8 @@ module Convection
         render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
       end
 
-      def to_json(stack_ = nil, pretty = false)
-        rendered_stack = render(stack_)
+      def to_json(stack_ = nil, pretty = false, retain: false)
+        rendered_stack = render(stack_, retain: retain)
         validate(rendered_stack)
         return JSON.generate(rendered_stack) unless pretty
         JSON.pretty_generate(rendered_stack)
