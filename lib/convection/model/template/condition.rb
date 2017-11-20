@@ -38,13 +38,8 @@ module Convection
           end
 
           def render
-            rendered_values = []
-            @function_arguments.each do |function_arg|
-              if function_arg.respond_to? :render # the argument is another conditional function
-                rendered_values << function_arg.render
-              else
-                rendered_values << function_arg
-              end
+            rendered_values = Array(@function_arguments).map do |function_arg|
+              function_arg.respond_to?(:render) ? function_arg.render : function_arg
             end
 
             { CONDITIONAL_FUNCTION_SYNTAX_MAP[@function_name] => rendered_values }
