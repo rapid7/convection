@@ -87,7 +87,6 @@ module Convection
       # Represents a stack task that is currently in progress.
       TASK_IN_PROGRESS = 'TASK_IN_PROGRESS'.freeze
 
-      # rubocop:disable Metrics/LineLength
       # @param name [String] the name of the CloudFormation Stack
       # @param template [Convection::Model::Template] a wrapper of the
       #   CloudFormation template (can be rendered into CF JSON)
@@ -167,7 +166,6 @@ module Convection
       rescue Aws::Errors::ServiceError => e
         @errors << e
       end
-      # rubocop:enable Metrics/LineLength
 
       def cloud_name
         return @cloud_name unless @cloud_name.nil?
