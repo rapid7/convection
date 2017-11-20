@@ -23,6 +23,7 @@ module Convection
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks', default: true
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
+    option :retain, :type => :boolean, :desc => 'Retain stack resources, without deleteing.', :default => false
     def converge(stack = nil)
       @outputs = []
       operation('converge', stack)
@@ -62,6 +63,7 @@ module Convection
     option :'very-verbose', :type => :boolean, :aliases => '--vv', :desc => 'Show unchanged stacks'
     option :cloudfiles, :type => :array, :default => %w(Cloudfile)
     option :delayed_output, :type => :boolean, :desc => 'Delay output until operation completion.', :default => false
+    option :retain, :type => :boolean, :desc => 'Retain stack resources, without deleteing.', :default => false
     def diff(stack = nil)
       @outputs = []
       operation('diff', stack)
@@ -133,7 +135,11 @@ module Convection
               cloud_array[:cloud].configure(File.absolute_path(cloud_array[:cloudfile_path], @cwd))
               cloud = cloud_array[:cloud]
               region = cloud.cloudfile.region
-              cloud.send(task_name, stack, stack_group: options[:stack_group], stacks: options[:stacks], exclude_stacks: options[:exclude_stacks]) do |event, errors|
+              operation_kwargs = {
+                stack_group: options[:stack_group], stacks: options[:stacks],
+                exclude_stacks: options[:exclude_stacks], retain: options[:retain]
+              }
+              cloud.send(task_name, stack, operation_kwargs) do |event, errors|
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else

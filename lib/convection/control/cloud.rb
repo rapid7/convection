@@ -91,7 +91,7 @@ module Convection
 
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:converge, "Stack #{ stack.name }", :info)) if block
-          stack.apply(&block)
+          stack.apply(retain: options[:retain], &block)
 
           emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
@@ -142,7 +142,7 @@ module Convection
         filter_deck(options, &block).each_value do |stack|
           block.call(Model::Event.new(:compare, "Compare local state of stack #{ stack.name } (#{ stack.cloud_name }) with remote template", :info))
 
-          difference = stack.diff
+          difference = stack.diff(retain: options[:retain])
           # Find errors during diff
           emit_credential_error_and_exit!(stack, &block) if stack.credential_error?
           if stack.error?
