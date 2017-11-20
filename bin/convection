@@ -136,10 +136,8 @@ module Convection
               cloud = cloud_array[:cloud]
               region = cloud.cloudfile.region
               operation_kwargs = {
-                stack_group: options[:stack_group],
-                stacks: options[:stacks],
-                exclude_stacks: options[:exclude_stacks],
-                retain: options[:retain]
+                stack_group: options[:stack_group], stacks: options[:stacks],
+                exclude_stacks: options[:exclude_stacks], retain: options[:retain]
               }
               cloud.send(task_name, stack, operation_kwargs) do |event, errors|
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
