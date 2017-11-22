@@ -161,7 +161,7 @@ module Convection
             say line, color
           end
         else
-          say "# Unable to determine for #{resource.class}. Define #{resource.class}#terraform_import_commands to do so.", :yellow
+          say "# Unable to determine terraform import commands for #{resource.class}. Define #{resource.class}#terraform_import_commands to do so.", :yellow
         end
 
         puts # Print an additional new line
