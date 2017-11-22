@@ -146,6 +146,7 @@ module Convection
 
       def import_resources(_resource_name, resource)
         if resource.respond_to?(:to_hcl_json)
+          empty_directory options[:output_directory]
           create_file File.join(options[:output_directory], "#{resource.name.downcase}.tf.json"), resource.to_hcl_json
         else
           say "# Unable to generate terraform configuration for #{resource.class}. Define #{resource.class}#to_hcl_json to do so.", :yellow
