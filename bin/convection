@@ -123,7 +123,7 @@ module Convection
     option :output_directory, desc: 'The directory to create configuration files under', aliases: %w(-d --dir), default: '.'.freeze
     def terraform_export
       if options[:output_directory].empty?
-        say_status :error, "--output-directory must not be empty.", :red
+        say_status :error, '--output-directory must not be empty.', :red
         exit 1
       end
 
