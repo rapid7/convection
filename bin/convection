@@ -135,8 +135,8 @@ module Convection
 
       init_cloud
       template = @cloud.stacks.fetch(stack_name).template
-      template.resource_collections(stack_name: options[:stack]).each(&method(:import_resources))
-      template.resources(stack_name: options[:stack]).each(&method(:import_resources))
+      template.resource_collections.each(&method(:import_resources))
+      template.resources.each(&method(:import_resources))
     end
 
     no_commands do
@@ -146,7 +146,7 @@ module Convection
 
       def import_resources(_resource_name, resource)
         if resource.respond_to?(:to_hcl_json)
-          create_file File.join(dir, "#{resource.name.downcase}.tf.json"), resource.to_hcl_json
+          create_file File.join(options[:output_directory], "#{resource.name.downcase}.tf.json"), resource.to_hcl_json
         else
           say "# Unable to generate terraform configuration for #{resource.class}. Define #{resource.class}#to_hcl_json to do so.", :yellow
         end
