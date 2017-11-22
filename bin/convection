@@ -121,7 +121,7 @@ module Convection
     desc 'terraform-export STACK', 'Create terraform configuration for a given stack (including `terraform import` commands)'
     option :module_path, desc: 'The module path prefix for terraform', default: DEFAULT_MODULE_PATH
     option :output_directory, desc: 'The directory to create configuration files under', aliases: %w(-d --dir), default: '.'.freeze
-    def terraform_export
+    def terraform_export(stack_name)
       if options[:output_directory].empty?
         say_status :error, '--output-directory must not be empty.', :red
         exit 1
