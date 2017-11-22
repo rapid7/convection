@@ -9,6 +9,10 @@ module Convection
   # Convection CLI
   ##
   class CLI < Thor
+    include Thor::Actions
+
+    DEFAULT_MODULE_PATH = 'root'.freeze
+
     def initialize(*args)
       super
       @cwd = Dir.getwd
@@ -114,10 +118,54 @@ module Convection
       describe_stack_resources(options[:stack], options[:format], options[:properties], options[:type])
     end
 
+    desc 'terraform-export STACK', 'Create terraform configuration for a given stack (including `terraform import` commands)'
+    option :module_path, desc: 'The module path prefix for terraform', default: DEFAULT_MODULE_PATH
+    option :output_directory, desc: 'The directory to create configuration files under', aliases: %w(-d --dir), default: '.'.freeze
+    def terraform_export
+      if options[:output_directory].empty?
+        say_status :error, "--output-directory must not be empty.", :red
+        exit 1
+      end
+
+      if options[:module_path] == DEFAULT_MODULE_PATH
+        say_status :warning, '--module-path was set to "root".', :yellow
+        exit 0 unless yes?('Are you sure you want to generate terraform import commands in the root namespace?')
+      end
+
+      init_cloud
+      template = @cloud.stacks.fetch(stack_name).template
+      template.resource_collections(stack_name: options[:stack]).each(&method(:import_resources))
+      template.resources(stack_name: options[:stack]).each(&method(:import_resources))
+    end
+
     no_commands do
       attr_accessor :last_event
 
       private
+
+      def import_resources(_resource_name, resource)
+        if resource.respond_to?(:to_hcl_json)
+          create_file File.join(dir, "#{resource.name.downcase}.tf.json"), resource.to_hcl_json
+        else
+          say "# Unable to generate terraform configuration for #{resource.class}. Define #{resource.class}#to_hcl_json to do so.", :yellow
+        end
+
+        if resource.respond_to?(:terraform_import_commands)
+          resource.terraform_import_commands(module_path: options[:module_path]).each do |line|
+            comment = line.start_with?('#')
+            if options[:omit_comments]
+              next if comment || line.strip.empty?
+            end
+
+            color = comment ? :bold : :cyan
+            say line, color
+          end
+        else
+          say "# Unable to determine for #{resource.class}. Define #{resource.class}#terraform_import_commands to do so.", :yellow
+        end
+
+        puts # Print an additional new line
+      end
 
       def operation(task_name, stack)
         work_q = Queue.new
