@@ -135,6 +135,13 @@ module Convection
 
       init_cloud
       template = @cloud.stacks.fetch(stack_name).template
+      require 'convection/dsl/terraform_intrinsic_functions'
+      # Beware of 🐲  here. This patches all Resources/ResourceCollections with this instance as a [grand-]parent.
+      #
+      # This should only be done in single threaded environment as prevent usage of cloudformation psuedo-functions.
+      #
+      # e.g. #get_att("Bucket", "Arn") returns "aws_s3_bucket.bucket.arn" instead of { "Fn::GetAtt" => ["Bucket", "Arn"] }.
+      template.extend(Convection::DSL::TerraformIntrinsicFunctions)
       template.resource_collections.each(&method(:import_resources))
       template.resources.each(&method(:import_resources))
     end
@@ -145,6 +152,9 @@ module Convection
       private
 
       def import_resources(_resource_name, resource)
+        # Beware of 🐲  here. This patches this instance to include terraform compatible intrinsic functions where possible.
+        resource.extend(Convection::DSL::TerraformIntrinsicFunctions)
+
         if resource.respond_to?(:to_hcl_json)
           empty_directory options[:output_directory]
           create_file File.join(options[:output_directory], "#{resource.name.downcase}.tf.json"), resource.to_hcl_json
