@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(/^(test|spec|features)\//)
   spec.require_paths = ['lib']
 
+  spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'aws-sdk', '>= 2'
   spec.add_runtime_dependency 'httparty', '~> 0.13'
   spec.add_runtime_dependency 'netaddr', '~> 1.5'
