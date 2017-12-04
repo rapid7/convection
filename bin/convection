@@ -140,13 +140,13 @@ module Convection
 
       init_cloud
       template = @cloud.stacks.fetch(stack_name).template
-      # Beware of 🐲. This patches this Template to include terraform compatible intrinsic functions where possible.
+
+      # Beware of 🐲. This patches this instance to include terraform compatible intrinsic functions where possible.
       #
       # This should only be done in single threaded environment in the terraform-export command as it breaks usage of cloudformation psuedo-functions.
-      #
-      # e.g. #get_att("Bucket", "Arn") returns "aws_s3_bucket.bucket.arn" instead of { "Fn::GetAtt" => ["Bucket", "Arn"] }.
       require 'convection/dsl/terraform_intrinsic_functions'
-      template.extend(Convection::DSL::TerraformIntrinsicFunctions)
+      Convection::DSL::TerraformIntrinsicFunctions.overload(Convection::DSL::IntrinsicFunctions.mixers)
+
       template.resource_collections.each(&method(:import_resources))
       template.resources.each(&method(:import_resources))
     end
@@ -161,12 +161,6 @@ module Convection
       # rubocop:disable Style/AsciiComments
 
       def import_resources(_resource_name, resource)
-        # Beware of 🐲. This patches this instance to include terraform compatible intrinsic functions where possible.
-        #
-        # This should only be done in single threaded environment in the terraform-export command as it breaks usage of cloudformation psuedo-functions.
-        require 'convection/dsl/terraform_intrinsic_functions'
-        resource.extend(Convection::DSL::TerraformIntrinsicFunctions)
-
         if resource.respond_to?(:to_hcl_json)
           empty_directory options[:output_directory]
           destination = File.join(options[:output_directory], "#{resource.name.downcase}.tf.json")

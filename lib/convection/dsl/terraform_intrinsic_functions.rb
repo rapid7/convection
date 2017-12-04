@@ -1,8 +1,20 @@
-require 'active_support/core_ext/string/inflections'
-
 module Convection
   module DSL
     module TerraformIntrinsicFunctions
+      # lazily require inflections so loaded when invoking terraform-export.
+      require 'active_support/core_ext/string/inflections'
+
+      def self.extended(base)
+        return base.include(self) if Class === base || Module === base
+
+        super
+      end
+
+      def self.overload(objects)
+        mod = self
+        objects.each { |o| o.extend(mod) }
+      end
+
       def base64(_content)
         %q(base64(#{content.to_json}))
       end
