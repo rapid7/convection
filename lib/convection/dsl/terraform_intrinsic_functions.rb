@@ -3,48 +3,48 @@ require 'active_support/core_ext/string/inflections'
 module Convection
   module DSL
     module TerraformIntrinsicFunctions
-      def base64(content)
+      def base64(_content)
         %q(base64(#{content.to_json}))
       end
 
       def fn_and(*)
         warn "WARNING: Condition functions cannot be inferred when migrating to terraform. Please set count on migrated resources manually. #{self.class}(#{name})"
-        "${todo.fn_and.ATTRIBUTE.set_in_count}"
+        '${todo.fn_and.ATTRIBUTE.set_in_count}'
       end
 
       def fn_equals(*)
         warn "WARNING: Condition functions cannot be inferred when migrating to terraform. Please set count on migrated resources manually. #{self.class}(#{name})"
-        "${todo.fn_equals.ATTRIBUTE.set_in_count}"
+        '${todo.fn_equals.ATTRIBUTE.set_in_count}'
       end
 
       def fn_if(*)
         warn "WARNING: Condition functions cannot be inferred when migrating to terraform. Please set count on migrated resources manually. #{self.class}(#{name})"
-        "${todo.fn_if.ATTRIBUTE.set_in_count}"
+        '${todo.fn_if.ATTRIBUTE.set_in_count}'
       end
 
       def fn_import_value(*)
         warn "WARNING: Fn::ImportValue cannot be inferred when migrated to terraform. Please pull in this input through a variable or local value in your configuration. #{self.class}(#{name})"
-        "${todo.fn_import_value.ATTRIBUTE}"
+        '${todo.fn_import_value.ATTRIBUTE}'
       end
 
       def fn_not(*)
         warn "WARNING: Condition functions cannot be inferred when migrating to terraform. Please set count on migrated resources manually. #{self.class}(#{name})"
-        "${todo.fn_not.ATTRIBUTE.set_in_count}"
+        '${todo.fn_not.ATTRIBUTE.set_in_count}'
       end
 
       def fn_or(*)
         warn "WARNING: Condition functions cannot be inferred when migrating to terraform. Please set count on migrated resources manually. #{self.class}(#{name})"
-        "${todo.fn_or.ATTRIBUTE.set_in_count}"
+        '${todo.fn_or.ATTRIBUTE.set_in_count}'
       end
 
       def fn_sub(*)
         warn "WARNING: Fn::Sub cannot be inferred when migrating to terraform. Please use ${replace(str, search, replace)} instead. #{self.class}(#{name})"
-        "${replace(todo.fn_sub.STRING, todo.fn_sub.SEARCH, todo.fn_sub.REPLACE)}"
+        '${replace(todo.fn_sub.STRING, todo.fn_sub.SEARCH, todo.fn_sub.REPLACE)}'
       end
 
       def find_in_map(*)
         warn "WARNING: Fn::FindInMap cannot be inferred when migrating to terraform. Please consult with the interpolation syntax terraform docs #{self.class}(#{name})"
-        "${lookup(lookup(YOUR_MAP, YOUR_TOP_LEVEL_KEY), YOUR_NESTED_KEY)}"
+        '${lookup(lookup(YOUR_MAP, YOUR_TOP_LEVEL_KEY), YOUR_NESTED_KEY)}'
       end
 
       def get_att(resource_name, attr_name)
@@ -55,7 +55,7 @@ module Convection
 
       def get_azs(*)
         warn "WARNING: Inferring you want to use ${var.availability_zones} instead of Fn::GetAZs. Please consult with the interpolation syntax terraform docs to verify compatablity. Additionally you should attempt to use variables in place of a literal list. #{self.class}(#{name})"
-        "${var.availability_zones}"
+        '${var.availability_zones}'
       end
 
       def join(delimiter, *values)
