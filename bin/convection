@@ -118,6 +118,8 @@ module Convection
       describe_stack_resources(options[:stack], options[:format], options[:properties], options[:type])
     end
 
+    # rubocop:disable Style/AsciiComments
+
     desc 'terraform-export STACK', 'Create terraform configuration for a given stack (including `terraform import` commands)'
     option :module_path, desc: 'The module path prefix for terraform', default: DEFAULT_MODULE_PATH
     option :output_directory, desc: 'The directory to create configuration files under', aliases: %w(-d --dir), default: '.'.freeze
@@ -146,10 +148,14 @@ module Convection
       template.resources.each(&method(:import_resources))
     end
 
+    # rubocop:enable Style/AsciiComments
+
     no_commands do
       attr_accessor :last_event
 
       private
+
+      # rubocop:disable Style/AsciiComments
 
       def import_resources(_resource_name, resource)
         # Beware of 🐲. This patches this instance to include terraform compatible intrinsic functions where possible.
@@ -181,6 +187,8 @@ module Convection
 
         puts # Print an additional new line
       end
+
+      # rubocop:enable Style/AsciiComments
 
       def operation(task_name, stack)
         work_q = Queue.new
