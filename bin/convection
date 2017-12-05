@@ -147,6 +147,8 @@ module Convection
       require 'convection/dsl/terraform_intrinsic_functions'
       Convection::DSL::TerraformIntrinsicFunctions.overload(Convection::DSL::IntrinsicFunctions.mixers)
 
+      # Reload all resources and collection to ensure configuration is up to date. Amazon psuedo functions will have changed their return values.
+      template.execute
       template.resource_collections.each(&method(:import_resources))
       template.resources.each(&method(:import_resources))
     end
@@ -159,9 +161,6 @@ module Convection
       private
 
       def import_resources(_resource_name, resource)
-        # Reload this resource to ensure configuration is up to date. Amazon psuedo functions will have changed their return values.
-        resource.execute
-
         if resource.respond_to?(:to_hcl_json)
           empty_directory options[:output_directory]
           destination = File.join(options[:output_directory], "#{resource.name.downcase}.tf.json")
