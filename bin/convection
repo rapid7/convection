@@ -161,6 +161,9 @@ module Convection
       # rubocop:disable Style/AsciiComments
 
       def import_resources(_resource_name, resource)
+        # Reload this resource to ensure configuration is up to date. Amazon psuedo functions will have changed their return values.
+        resource.execute
+
         if resource.respond_to?(:to_hcl_json)
           empty_directory options[:output_directory]
           destination = File.join(options[:output_directory], "#{resource.name.downcase}.tf.json")
