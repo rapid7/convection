@@ -101,10 +101,10 @@ module Convection
       end
 
       def terraform_resource_type(resource_name)
-        return type.sub(/^AWS::/, 'aws_').underscore if respond_to?(:type)
-        return resources[resource_name].type.underscore if respond_to?(:resources) && resources[resource_name]
-        return all_resources[resource_name].type.underscore if respond_to?(:all_resources) && all_resources[resource_name]
-        return parent.resources[resource_name].type.underscore if respond_to?(:parent) && parent.resources[resource_name]
+        return type if respond_to?(:name) && respond_to?(:type) && resource_name == name
+        return resources[resource_name].type.underscore.tr('/', '_') if respond_to?(:resources) && resources[resource_name]
+        return all_resources[resource_name].type.underscore.tr('/', '_') if respond_to?(:all_resources) && all_resources[resource_name]
+        return parent.resources[resource_name].type.underscore.tr('/', '_') if respond_to?(:parent) && parent.resources[resource_name]
 
         'todo_fixme_see_resource_type'
       end
