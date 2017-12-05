@@ -1,8 +1,20 @@
+require 'set'
+
 module Convection
   module DSL
     ##
     # Formatting helpers for Intrinsic Functions
     module IntrinsicFunctions
+      def self.included(base)
+        mixers << base
+
+        super
+      end
+
+      def self.mixers
+        @mixers ||= Set.new
+      end
+
       def base64(content)
         {
           'Fn::Base64' => content

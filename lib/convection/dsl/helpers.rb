@@ -35,6 +35,8 @@ module Convection
 
       class << self
         def included(mod)
+          DSL::IntrinsicFunctions.mixers << mod
+
           mod.extend(DSL::ClassHelpers)
         end
 

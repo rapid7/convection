@@ -24,14 +24,16 @@ Performance/RedundantBlockCall:
 Style/SignalException:
   Enabled: false
 
+Metrics/LineLength:
+  Exclude:
+    - 'lib/convection/dsl/terraform_intrinsic_functions.rb'
+
 # AbcSize:
 #   Max: 24
 # ClassLength:
 #   Max: 256
 # CyclomaticComplexity:
 #   Max: 12
-# LineLength:
-#   Max: 120
 # MethodLength:
 #   Max: 32
 # PerceivedComplexity:
