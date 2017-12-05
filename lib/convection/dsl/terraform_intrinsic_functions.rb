@@ -1,11 +1,12 @@
 module Convection
   module DSL
+    # AWS psuedo-functions overridden to be terraform compatible, sort of!
     module TerraformIntrinsicFunctions
-      # lazily require inflections so loaded when invoking terraform-export.
+      # Lazily require inflections so loaded when invoking terraform-export.
       require 'active_support/core_ext/string/inflections'
 
       def self.extended(base)
-        return base.include(self) if Class === base || Module === base
+        return base.include(self) if base.is_a?(Class) || base.is_a?(Module)
 
         super
       end
