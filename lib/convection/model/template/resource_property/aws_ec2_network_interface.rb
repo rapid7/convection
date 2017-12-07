@@ -16,6 +16,7 @@ module Convection
           property :private_ip_address, 'PrivateIpAddress'
           property :secondary_private_ip_address_count, 'SecondaryPrivateIpAddressCount'
           property :subnet, 'SubnetId'
+          property :network_interface_id, 'NetworkInterfaceId'
         end
       end
     end
