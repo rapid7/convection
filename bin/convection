@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
-require 'file_utils'
+require 'fileutils'
 require 'thread'
 require 'yaml'
 
@@ -194,19 +194,29 @@ module Convection
           exit 1
         end
 
-        tf_resources["aws_lambda_permission.#{name.downcase}"] = {
+        # Skip creation of state if state for this permission already exists.
+        next if tf_resources["aws_lambda_permission.#{permission_resource_summary.logical_resource_id.underscore}"]
+
+        function_name = resource.function_name.is_a?(Hash) ? function_resource_summary.physical_resource_id : resource.function_name
+        source_logical_name = resource.source_arn.fetch('Fn::GetAtt').first
+        source_resource_summary = stack.resources[source_logical_name] && stack.resources[source_logical_name].physical_resource_id
+        source_arn = resource.source_arn.is_a?(Hash) ? source_resource_summary : resource.source_arn
+        unless source_arn
+          warn "Unable to determine source arn from #{resource.source_arn}"
+        end
+
+        tf_resources["aws_lambda_permission.#{permission_resource_summary.logical_resource_id.underscore}"] = {
           type: 'aws_lambda_permission',
-          depends_on: ["${aws_lambda_function.#{function_resource_summary.logical_resource_id.underscore}}"],
+          depends_on: [],
           primary: {
             id: permission_resource_summary.physical_resource_id,
             attributes: {
               action: resource.action,
-              function_name: resource.function_name,
+              function_name: function_name,
               id: permission_resource_summary.physical_resource_id,
               principal: resource.principal,
               qualifer: resource.qualifer,
-              source_arn: resource.source_arn,
-              source_account: resource.source_account.to_s,
+              source_arn: source_arn,
               statement_id: permission_resource_summary.physical_resource_id,
             }.reject { |_key, value| value.nil? },
             meta: {},
