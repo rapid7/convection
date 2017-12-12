@@ -190,7 +190,7 @@ module Convection
         permission_resource_summary = stack.resources[name]
         function_resource_summary = stack.resources[name.sub(/Permission.*$/, 'Lambda')]
         unless permission_resource_summary && function_resource_summary
-          warn "ERROR: Either the lambda permission or function you were trying to import have not been updated in cloudformation."
+          warn 'ERROR: Either the lambda permission or function you were trying to import have not been updated in cloudformation.'
           exit 1
         end
 
@@ -217,13 +217,13 @@ module Convection
               principal: resource.principal,
               qualifer: resource.qualifer,
               source_arn: source_arn,
-              statement_id: permission_resource_summary.physical_resource_id,
+              statement_id: permission_resource_summary.physical_resource_id
             }.reject { |_key, value| value.nil? },
             meta: {},
-            tainted: false,
+            tainted: false
           },
           deposed: [],
-          provider: '',
+          provider: ''
         }
       end
 
