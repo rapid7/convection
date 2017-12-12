@@ -146,6 +146,7 @@ module Convection
       # This should only be done in single threaded environment in the terraform-export command as it breaks usage of cloudformation psuedo-functions.
       require 'convection/dsl/terraform_intrinsic_functions'
       Convection::DSL::TerraformIntrinsicFunctions.overload(Convection::DSL::IntrinsicFunctions.mixers)
+      require 'convection/terraform/ext/stack'
 
       # Reload all resources and collection to ensure configuration is up to date. Amazon psuedo functions will have changed their return values.
       template.execute
