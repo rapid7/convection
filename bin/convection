@@ -244,12 +244,19 @@ module Convection
       private
 
       def import_resources(_resource_name, resource)
+        empty_directory options[:output_directory] if resource.respond_to?(:to_hcl_json) || resource.respond_to?(:additional_hcl_files)
         if resource.respond_to?(:to_hcl_json)
-          empty_directory options[:output_directory]
-          destination = File.join(options[:output_directory], "#{resource.name.downcase}.tf.json")
+          destination = File.join(options[:output_directory], "#{resource.name.underscore}.tf.json")
           create_file destination, resource.to_hcl_json, force: options[:overwrite], skip: options[:skip_existing]
         else
           say "# Unable to generate terraform configuration for #{resource.class}. Define #{resource.class}#to_hcl_json to do so.", :yellow
+        end
+
+        if resource.respond_to?(:additional_hcl_files)
+          resource.additional_hcl_files.each do |file, content|
+            destination = File.join(options[:output_directory], file)
+            create_file destination, content, force: options[:overwrite], skip: options[:skip_existing]
+          end
         end
 
         if resource.respond_to?(:terraform_import_commands)
