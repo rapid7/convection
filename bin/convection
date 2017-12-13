@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'thor'
 require_relative '../lib/convection/control/cloud'
+require 'fileutils'
 require 'thread'
 require 'yaml'
 
@@ -152,6 +153,84 @@ module Convection
       template.execute
       template.resource_collections.each(&method(:import_resources))
       template.resources.each(&method(:import_resources))
+    end
+
+    desc 'terraform-import-lambda-permissions', 'Import state for a lambda permission resource into terraform management'
+    option :cloudfile, desc: 'The cloudfile to load', default: 'Cloudfile'
+    option :module_path, desc: 'The module path prefix for terraform', default: DEFAULT_MODULE_PATH
+    option :state, desc: 'The source terraform state file', required: true
+    option :state_out, desc: 'The destination state file (default: --state)'
+    def terraform_import_lambda_permissions(stack_name)
+      # Lazy load this since we only want this in the terraform subcommand.
+      require 'active_support/core_ext/string/inflections'
+
+      state = File.expand_path(options[:state])
+      state_out = File.expand_path(options[:state_out]) if options[:state_out]
+      unless state_out
+        state_out = state
+        FileUtils.cp(state, "#{state}.#{Time.now.to_i}.backup")
+      end
+
+      tfstate = JSON.parse(File.read(options[:state]))
+      module_path = options[:module_path].split('.')
+      module_state = tfstate.fetch('modules').find { |mod| mod['path'] == module_path }
+      unless module_state
+        warn "No module found with path #{module_path} defined in #{options[:state]}."
+        exit 1
+      end
+      tf_resources = module_state.fetch('resources')
+
+      init_cloud
+      stack = @cloud.stacks.fetch(stack_name)
+      stack.template.all_resources.each do |name, resource|
+        # Skip over this convection Resource unless it maps to a function permission.
+        next unless resource.type == 'AWS::Lambda::Permission'
+
+        # Get the function and permission resource summaries.
+        permission_resource_summary = stack.resources[name]
+        function_resource_summary = stack.resources[name.sub(/Permission.*$/, 'Lambda')]
+        unless permission_resource_summary && function_resource_summary
+          warn 'ERROR: Either the lambda permission or function you were trying to import have not been created in cloudformation. These resources are expected to exist in the same template.'
+          exit 1
+        end
+
+        # Skip creation of state if state for this permission already exists.
+        if tf_resources["aws_lambda_permission.#{permission_resource_summary.logical_resource_id.underscore}"]
+          warn "WARNING: Skipping resource that was found in state: aws_lambda_permission.#{permission_resource_summary.logical_resource_id.underscore}"
+          next
+        end
+
+        function_name = resource.function_name.is_a?(Hash) ? function_resource_summary.physical_resource_id : resource.function_name
+        source_logical_name = resource.source_arn.fetch('Fn::GetAtt').first
+        source_resource_summary = stack.resources[source_logical_name] && stack.resources[source_logical_name].physical_resource_id
+        source_arn = resource.source_arn.is_a?(Hash) ? source_resource_summary : resource.source_arn
+        unless source_arn
+          warn "Unable to determine source arn from #{resource.source_arn}"
+        end
+
+        tf_resources["aws_lambda_permission.#{permission_resource_summary.logical_resource_id.underscore}"] = {
+          type: 'aws_lambda_permission',
+          depends_on: [],
+          primary: {
+            id: permission_resource_summary.physical_resource_id,
+            attributes: {
+              action: resource.action,
+              function_name: function_name,
+              id: permission_resource_summary.physical_resource_id,
+              principal: resource.principal,
+              qualifer: resource.qualifer,
+              source_arn: source_arn,
+              statement_id: permission_resource_summary.physical_resource_id
+            }.reject { |_key, value| value.nil? },
+            meta: {},
+            tainted: false
+          },
+          deposed: [],
+          provider: ''
+        }
+      end
+
+      create_file state_out, JSON.pretty_generate(tfstate)
     end
 
     # rubocop:enable Style/AsciiComments

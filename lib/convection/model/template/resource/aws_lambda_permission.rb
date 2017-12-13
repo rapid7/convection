@@ -14,6 +14,7 @@ module Convection
           property :principal, 'Principal'
           property :source_account, 'SourceAccount'
           property :source_arn, 'SourceArn'
+          property :qualifer, 'Qualifer'
         end
       end
     end
