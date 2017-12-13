@@ -173,6 +173,9 @@ module Convection
 
       tfstate = JSON.parse(File.read(options[:state]))
       module_path = options[:module_path].split('.')
+      # If the user typed "module" as the prefix use "root" since that is what is written to state
+      # (not the module.NAME target format used for plans/applies).
+      module_path[0] = 'module' if module_path[0] == 'root'
       module_state = tfstate.fetch('modules').find { |mod| mod['path'] == module_path }
       unless module_state
         warn "No module found with path #{module_path} defined in #{options[:state]}."
