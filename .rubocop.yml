@@ -3,12 +3,12 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   Include:
     - lib/**/*
-    - bin/**/*
     - Gemfile
     - Rakefile
     - Thorfile
   Exclude:
     - example/**/*
+    - bin/convection
     - 'lib/convection/model/template/mapping.rb' # Something is causing this file to fail
 
 Encoding:
