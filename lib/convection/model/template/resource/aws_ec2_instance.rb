@@ -24,6 +24,8 @@ module Convection
           property :network_interfaces, 'NetworkInterfaces', :type => :list
           property :block_devices, 'BlockDeviceMappings', :type => :list
           property :volumes, 'Volumes', :type => :list
+          property :ebs_optimized, 'EbsOptimized'
+          property :monitoring, 'Monitoring'
 
           # Append a network interface to network_interfaces
           def network_interface(&block)
