@@ -247,7 +247,7 @@ module Convection
         empty_directory options[:output_directory] if resource.respond_to?(:to_hcl_json) || resource.respond_to?(:additional_hcl_files)
         if resource.respond_to?(:to_hcl_json)
           destination = File.join(options[:output_directory], "#{resource.name.underscore}.tf.json")
-          create_file destination, resource.to_hcl_json, force: options[:overwrite], skip: options[:skip_existing]
+          create_file destination, resource.to_hcl_json(module_path: options[:module_path]), force: options[:overwrite], skip: options[:skip_existing]
         elsif resource.respond_to?(:additional_hcl_files)
           say "# Skipping to HCL generation with #to_hcl_json. Will generate HCL using #additional_hcl_files instead.", :cyan
         else
