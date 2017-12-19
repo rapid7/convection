@@ -256,8 +256,8 @@ module Convection
 
         if resource.respond_to?(:additional_hcl_files)
           resource.additional_hcl_files.each do |file, content|
-            destination = File.join(options[:output_directory], file)
-            create_file destination, content, force: options[:overwrite], skip: options[:skip_existing]
+            destination = File.join(options[:output_directory], file.to_s)
+            create_file destination, content.to_json, force: options[:overwrite], skip: options[:skip_existing]
           end
         end
 
