@@ -243,8 +243,8 @@ module Convection
 
       private
 
-      def import_resources(_resource_name, resource)
-        empty_directory options[:output_directory] if resource.respond_to?(:to_hcl_json) || resource.respond_to?(:additional_hcl_files)
+      def import_resources(resource_name, resource)
+        empty_directory options[:output_directory]
         if resource.respond_to?(:to_hcl_json)
           destination = File.join(options[:output_directory], "#{resource.name.underscore}.tf.json")
           create_file destination, resource.to_hcl_json(module_path: options[:module_path]), force: options[:overwrite], skip: options[:skip_existing]
@@ -263,7 +263,9 @@ module Convection
         end
 
         if resource.respond_to?(:terraform_import_commands)
-          resource.terraform_import_commands(module_path: options[:module_path]).each do |line|
+          destination = File.join(options[:output_directory], "terraform-import-#{resource_name.underscore}-#{stack._original_region}-#{stack._original_cloud}.sh")
+          lines = resource.terraform_import_commands(module_path: options[:module_path])
+          lines.each do |line|
             comment = line.start_with?('#')
             if options[:omit_comments]
               next if comment || line.strip.empty?
@@ -272,6 +274,7 @@ module Convection
             color = comment ? :bold : :cyan
             say line, color
           end
+          create_file destination, lines.join("\n")
         else
           say "# Unable to determine terraform import commands for #{resource.class}. Define #{resource.class}#terraform_import_commands to do so.", :yellow
         end
