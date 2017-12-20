@@ -551,7 +551,9 @@ module Convection
               collection << event
             end
 
-            break if pages.zero?
+            # rubocop:disable Style/NumericPredicate
+            break if pages == 0
+            # rubocop:enable Style/NumericPredicate
           end
 
           @last_event_seen = collection.first.event_id unless collection.empty?
