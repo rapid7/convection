@@ -13,6 +13,7 @@ module Convection
     include Thor::Actions
 
     DEFAULT_MODULE_PATH = 'root'.freeze
+    S3_URI_REGEX = %r(^s3://(?<bucket>[^/]+)/(?<key>.+)).freeze
 
     def initialize(*args)
       super
@@ -117,6 +118,38 @@ module Convection
     def describe_resources
       init_cloud
       describe_stack_resources(options[:stack], options[:format], options[:properties], options[:type])
+    end
+
+    desc 'terraForm-compare-resources', 'Compare resources in CloudFormation and in terraform state'
+    option :stack_name, desc: 'The CloudFormation stack name (Stack#cloud_name)'
+    option :stack_region, desc: 'The region where the stack resides', required: true
+    option :state, desc: 'The source terraform state file (can be an s3:// uri)', required: true
+    option :state_region, desc: 'The region where the state resides (required to load remote state)'
+    def terraform_compare_resources
+      terraform_resources = tfstate['modules'].flat_map { |m|
+        m['resources'].reject { |k, _| k.start_with?('data.') }
+      }.reduce({}, &:merge)
+      cf = Aws::CloudFormation::Client.new(region: options[:stack_region])
+      cf_resources = cf.describe_stack_resources(stack_name: options[:stack_name]).stack_resources
+      cf_resources.each do |cf_resource|
+        say "Resource '#{cf_resource.physical_resource_id}':"
+        say "  * CloudFormation Logical ID #{cf_resource.logical_resource_id}"
+
+        tf_resource_name, tf_resource = terraform_resources.find do |_, tf_resource|
+          next true if tf_resource['primary'].key(cf_resource.physical_resource_id)
+          tf_resource['primary'].values.any? { |v| v.is_a?(String) && v.include?(cf_resource.physical_resource_id) }
+        end
+        tf_key = tf_resource && tf_resource['primary'].key(cf_resource.physical_resource_id)
+        fuzzy_match = tf_key.nil?
+        tf_key ||= tf_resource && tf_resource['primary'].find { |v| v.include?(cf_resource.physical_resource_id) }
+        if tf_key && fuzzy_match
+          say "  * Found physical ID included in Terraform resource #{tf_resource_name} under attribute #{tf_key} with value '#{tf_resource['primary'][tf_key]}'. Please validate this resource is included in state and configuration.", :yellow
+        elsif tf_key && !fuzzy_match
+          say "  * Found physical ID exactly in Terraform resource #{tf_resource_name} under attribute #{tf_key} with value '#{tf_resource['primary'][tf_key]}'.", :cyan
+        else
+          say "  * Unable to find physical ID in the provided Terraform state.", :red
+        end
+      end
     end
 
     # rubocop:disable Style/AsciiComments
@@ -242,6 +275,32 @@ module Convection
       attr_accessor :last_event
 
       private
+
+      def load_local_terraform_state(statefile)
+        JSON.load(File.open(statefile))
+      end
+
+      def load_remote_terraform_state(bucket, key)
+        if options[:state_region] && options[:state_region].empty?
+          say 'ERROR: --state-region must be specified to load remote state.', :red
+          exit 1
+        end
+
+        s3 = Aws::S3::Client.new(region: options[:state_region])
+        object = s3.get_object(bucket: bucket, key: key)
+        JSON.load(object.body)
+      end
+
+      def tfstate
+        return @tfstate if @tfstate
+
+        match_data = options[:state].match(S3_URI_REGEX)
+        if match_data
+          @tfstate = load_remote_terraform_state(match_data['bucket'], match_data['key'])
+        else
+          @tfstate = load_local_terraform_state(options[:state])
+        end
+      end
 
       def import_resources(_resource_name, resource)
         empty_directory options[:output_directory] if resource.respond_to?(:to_hcl_json) || resource.respond_to?(:additional_hcl_files)
