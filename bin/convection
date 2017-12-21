@@ -281,7 +281,7 @@ module Convection
       end
 
       def load_remote_terraform_state(bucket, key)
-        if options[:state_region] && options[:state_region].empty?
+        unless options[:state_region] && !options[:state_region].empty?
           say 'ERROR: --state-region must be specified to load remote state.', :red
           exit 1
         end
