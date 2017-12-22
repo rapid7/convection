@@ -173,7 +173,8 @@ module Convection
       end
 
       init_cloud
-      template = @cloud.stacks.fetch(stack_name).template
+      @stack = @cloud.stacks.fetch(stack_name)
+      template = @stack.template
 
       # Beware of 🐲. This patches this instance to include terraform compatible intrinsic functions where possible.
       #
@@ -322,7 +323,9 @@ module Convection
         end
 
         if resource.respond_to?(:terraform_import_commands)
-          resource.terraform_import_commands(module_path: options[:module_path]).each do |line|
+          destination = File.join(options[:output_directory], "terraform-import-#{resource_name.underscore}-#{@stack._original_region}-#{@stack._original_cloud}.sh")
+          lines = resource.terraform_import_commands(module_path: options[:module_path])
+          lines.each do |line|
             comment = line.start_with?('#')
             if options[:omit_comments]
               next if comment || line.strip.empty?
@@ -331,6 +334,7 @@ module Convection
             color = comment ? :bold : :cyan
             say line, color
           end
+          create_file destination, lines.join("\n")
         else
           say "# Unable to determine terraform import commands for #{resource.class}. Define #{resource.class}#terraform_import_commands to do so.", :yellow
         end
