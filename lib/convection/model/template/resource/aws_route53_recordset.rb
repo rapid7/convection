@@ -58,25 +58,26 @@ module Convection
             commands << '# Import the Route53 record:'
             tf_set_id = "_#{set_identifier}" if set_identifier
             prefix = "#{module_path}." unless module_path == 'root'
-            commands << "terraform import #{prefix}aws_route53_record.#{name.underscore} #{hosted_zone_id}_#{record_name}_#{record_type}#{tf_set_id}"
+            tf_record_name = record_name.sub(/\.$/, '')
+            commands << "terraform import #{prefix}aws_route53_record.#{name.underscore} #{hosted_zone_id}_#{tf_record_name}_#{record_type}#{tf_set_id}"
 
-            commands
+            commands.map { |cmd| cmd.gsub(stack.region, stack._original_region).gsub(stack.cloud, stack._original_cloud) }
           end
 
-          def to_hcl_json(module_path: 'root')
+          def to_hcl_json(*)
             tf_record_attrs = {
               zone_id: hosted_zone_id,
               name: record_name,
               type: record_type,
               ttl: ttl,
               records: tf_records,
-              set_identifier: set_identifier,
+              set_identifier: set_identifier
             }
-            tf_record_attrs.reject! { |_k, v| v.nil?  }
+            tf_record_attrs.reject! { |_k, v| v.nil? }
 
             tf_record = {
               aws_route53_record: {
-                name.underscore => tf_record_attrs,
+                name.underscore => tf_record_attrs
               }
             }
 
