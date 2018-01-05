@@ -344,6 +344,10 @@ module Convection
       end
 
       def lambda_resource_logical_id(permission_resource:)
+        if permission_resource.function_name.is_a?(Hash)
+          return permission_resource.function_name['Ref'] if permission_resource.function_name.key?('Ref')
+        end
+
         permission_resource.name.sub(/Permission.*$/, 'Lambda')
       end
 
