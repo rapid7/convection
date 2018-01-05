@@ -225,7 +225,8 @@ module Convection
 
         # Get the function and permission resource summaries.
         permission_resource_summary = stack.resources[name]
-        function_resource_summary = stack.resources[name.sub(/Permission.*$/, 'Lambda')]
+        lambda_resource_logical_id = lambda_resource_logical_id(permission_resource: permission_resource_summary)
+        function_resource_summary = stack.resources[lambda_resource_logical_id]
         unless permission_resource_summary && function_resource_summary
           warn 'ERROR: Either the lambda permission or function you were trying to import have not been created in cloudformation. These resources are expected to exist in the same template.'
           exit 1
@@ -340,6 +341,10 @@ module Convection
         end
 
         puts # Print an additional new line
+      end
+
+      def lambda_resource_logical_id(permission_resource:)
+        permission_resource.name.sub(/Permission.*$/, 'Lambda')
       end
 
       def operation(task_name, stack)
