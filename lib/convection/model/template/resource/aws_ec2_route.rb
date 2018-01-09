@@ -39,7 +39,7 @@ module Convection
             { resource: tf_record }.to_json
           end
 
-          def terraform_import_commands(module_path: 'root')
+          def terraform_import_commands(*)
             ['# Route import is not supported by Terraform.']
           end
         end
