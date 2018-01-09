@@ -38,6 +38,33 @@ module Convection
               render_tags(resource)
             end
           end
+
+          def to_hcl_json(*)
+            tf_record_tags = tags.reject { |_, v| v.nil? }
+
+            tf_record_attrs = {
+              vpc_id: vpc,
+              tags: tf_record_tags
+            }
+
+            tf_record_attrs.reject! { |_, v| v.nil? }
+
+            tf_record = {
+              aws_route_table: {
+                name.underscore => tf_record_attrs
+              }
+            }
+
+            { resource: tf_record }.to_json
+          end
+
+          def terraform_import_commands(module_path: 'root')
+            prefix = "#{module_path}." unless module_path == 'root'
+            resource_id = stack.resources[name] && stack.resources[name].physical_resource_id
+            commands = ['# Import the Route Table record:']
+            commands << "terraform import #{prefix}aws_route_table.#{name.underscore} #{resource_id}"
+            commands
+          end
         end
       end
     end
