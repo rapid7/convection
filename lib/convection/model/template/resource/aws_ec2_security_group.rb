@@ -160,6 +160,14 @@ module Convection
             # Return the JSON representation of this resource.
             { resource: tf_resources }.to_json
           end
+
+          def terraform_import_commands(module_path: 'root')
+            prefix = "#{module_path}." unless module_path == 'root'
+            resource_id = stack.resources[name] && stack.resources[name].physical_resource_id
+            commands = ['# Import the security group:']
+            commands << "terraform import #{prefix}aws_security_group.#{name.underscore} #{resource_id}"
+            commands
+          end
         end
       end
     end
