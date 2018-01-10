@@ -225,7 +225,9 @@ module Convection
 
         # Get the function and permission resource summaries.
         permission_resource_summary = stack.resources[name]
-        function_resource_summary = stack.resources[name.sub(/Permission.*$/, 'Lambda')]
+	permission_resource = stack.template.resources[name]
+        lambda_resource_logical_id = lambda_resource_logical_id(permission_resource: permission_resource)
+        function_resource_summary = lambda_resource_logical_id && stack.resources[lambda_resource_logical_id]
         unless permission_resource_summary && function_resource_summary
           warn 'ERROR: Either the lambda permission or function you were trying to import have not been created in cloudformation. These resources are expected to exist in the same template.'
           exit 1
@@ -238,7 +240,7 @@ module Convection
         end
 
         function_name = resource.function_name.is_a?(Hash) ? function_resource_summary.physical_resource_id : resource.function_name
-        source_logical_name = resource.source_arn.fetch('Fn::GetAtt').first
+	source_logical_name = resource.source_arn.is_a?(Hash) ? resource.source_arn.fetch('Fn::GetAtt', []).first : resource.source_arn
         source_resource_summary = stack.resources[source_logical_name] && stack.resources[source_logical_name].physical_resource_id
         source_arn = resource.source_arn.is_a?(Hash) ? source_resource_summary : resource.source_arn
         unless source_arn
@@ -257,6 +259,7 @@ module Convection
               principal: resource.principal,
               qualifer: resource.qualifer,
               source_arn: source_arn,
+              source_account: resource.source_account,
               statement_id: permission_resource_summary.physical_resource_id
             }.reject { |_key, value| value.nil? },
             meta: {},
@@ -340,6 +343,16 @@ module Convection
         end
 
         puts # Print an additional new line
+      end
+
+      def lambda_resource_logical_id(permission_resource:)
+        return nil unless permission_resource
+
+        if permission_resource.function_name.is_a?(Hash)
+          return permission_resource.function_name['Ref'] if permission_resource.function_name.key?('Ref')
+        end
+
+        permission_resource.name.sub(/Permission.*$/, 'Lambda')
       end
 
       def operation(task_name, stack)
