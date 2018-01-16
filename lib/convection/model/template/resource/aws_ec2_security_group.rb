@@ -116,6 +116,58 @@ module Convection
               render_tags(resource)
             end
           end
+
+          def to_hcl_json(*)
+            tf_sg_name = name.underscore
+            tf_sg_var_id = "${aws_security_group.#{tf_sg_name}.id}"
+            tf_resources = []
+
+            # Define the security group resource.
+            tf_resources << {
+              aws_security_group: {
+                tf_sg_name => {
+                  vpc_id: vpc,
+                  description: description,
+                  tags: tags.reject { |_, v| v.nil? }
+                }.reject { |_, v| v.nil? }
+              }
+            }
+
+            tf_sg_rules = {}
+
+            # Define helper functions to map Convection rules to Terraform ones.
+            sg_rule_to_tf = lambda do |rule_type, item, index|
+              tf_sg_rule_name = "#{tf_sg_name}_#{rule_type}_#{index}"
+
+              tf_sg_rules[tf_sg_rule_name] = {
+                type: rule_type,
+                security_group_id: tf_sg_var_id,
+                from_port: item.from,
+                to_port: item.to,
+                protocol: item.protocol,
+                cidr_block: item.source,
+                # TODO: Missing attribs & checks. Should probably be defined as a
+                #       seperate function to reuse for egress.
+              }.reject { |_, v| v.nil? }
+            end
+
+            # Map the contained rules to TF.
+            security_group_ingress.each_with_index { |item, obj| sg_rule_to_tf.call('ingress', item, obj) }
+            security_group_egress.each_with_index { |item, obj| sg_rule_to_tf.call('egress', item, obj) }
+
+            tf_resources << { aws_security_group_rule: tf_sg_rules }
+
+            # Return the JSON representation of this resource.
+            { resource: tf_resources }.to_json
+          end
+
+          def terraform_import_commands(module_path: 'root')
+            prefix = "#{module_path}." unless module_path == 'root'
+            resource_id = stack.resources[name] && stack.resources[name].physical_resource_id
+            commands = ['# Import the security group:']
+            commands << "terraform import #{prefix}aws_security_group.#{name.underscore} #{resource_id}"
+            commands
+          end
         end
       end
     end
