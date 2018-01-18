@@ -63,6 +63,61 @@ module Convection
           property :path, 'Path'
           property :policies, 'Policies', :type => :list
           property :user_name, 'UserName'
+
+          def additional_hcl_files(module_path: 'root')
+            module_prefix = module_path.tr('.', '-') if module_path == 'root'
+            result = {}
+
+            user = user_name
+            user ||= stack.resources[name] && stack.resources[name].physical_resource_id
+            result["#{stack._original_region}-#{stack._original_cloud}-#{name.underscore}.tf.json"] = {
+              module: [{
+                name.underscore => {
+                  source: _terraform_module_flag_to_dir(module_path),
+                  managed_policy_arns: managed_policy_arn,
+                  name: user,
+                  path: path,
+                }
+              }]
+            }
+
+            result["#{module_prefix}#{name.underscore}-variables.tf.json"] = {
+              variable: [
+                { managed_policy_arns: { description: 'A list of ARNs for managed policies to attach to this user.', default: [] } },
+                { name: { description: 'The name of the user' } },
+                { path: { description: 'The path for the IAM user', path: '/' } }
+              ]
+            }
+
+            result["#{module_prefix}#{name.underscore}-user.tf.json"] = {
+              resource: [
+                {
+                  aws_iam_user: {
+                    name.underscore => {
+                      managed_policy_arns: '${var.managed_policy_arns}',
+                      name: '${var.name}',
+                      path: '${var.path}'
+                    }
+                  }
+                }
+              ]
+            }
+
+            policy_resources = policies.map do |policy|
+              {
+                aws_iam_user_policy: {
+                  policy.name.underscore => {
+                    name: policy.name,
+                    policy: policy.render.to_json,
+                    user: "${aws_iam_user.#{name.underscore}.id}",
+                  }
+                }
+              }
+            end
+            result["#{module_prefix}#{name.underscore}-policy.tf.json"] = { resource: policy_resources }
+
+            result
+          end
         end
       end
     end

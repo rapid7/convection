@@ -41,6 +41,22 @@ module Convection
             @resource_collection_dsl_methods ||= {}
           end
         end
+
+        def _terraform_module_dir_to_flag(dir)
+          return 'root' if dir.empty?
+
+          parts = dir.split('/')
+          parts[0] = 'module' if parts[0] == 'modules'
+          parts.join('.')
+        end
+
+        def _terraform_module_flag_to_dir(flag)
+          return '' if flag == 'root'
+
+          parts = flag.split('.')
+          parts[0] = 'modules'
+          parts.join('/')
+        end
       end
 
       include DSL::Helpers
