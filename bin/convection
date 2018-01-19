@@ -130,22 +130,19 @@ module Convection
         m['resources'].reject { |k, _| k.start_with?('data.') }
       }.reduce({}, &:merge)
       cf = Aws::CloudFormation::Client.new(region: options[:stack_region])
-      cf_resources = cf.describe_stack_resources(stack_name: options[:stack_name]).stack_resources
+      cf_resources = cf.describe_stack_resources(stack_name: options[:stack_name]).stack_resources.map do |r|
+        { logical_resource_id: r.logical_resource_id, physical_resource_id: r.physical_resource_id, type: r.resource_type }
+      end
       cf_resources.each do |cf_resource|
-        say "Resource '#{cf_resource.physical_resource_id}':"
-        say "  * CloudFormation Logical ID #{cf_resource.logical_resource_id}"
+        response = ask_tf_physical_id(cf_resource)
+        cf_resource[:physical_resource_id] = response unless response.empty?
+        say "Resource #{cf_resource[:physical_resource_id].inspect} #{cf_resource[:logical_resource_id].inspect}:"
 
-        tf_resource_name, tf_resource = terraform_resources.find do |_, tf_resource|
-          next true if tf_resource['primary'].key(cf_resource.physical_resource_id)
-          tf_resource['primary'].values.any? { |v| v.is_a?(String) && v.include?(cf_resource.physical_resource_id) }
-        end
-        tf_key = tf_resource && tf_resource['primary'].key(cf_resource.physical_resource_id)
-        fuzzy_match = tf_key.nil?
-        tf_key ||= tf_resource && tf_resource['primary'].find { |v| v.include?(cf_resource.physical_resource_id) }
-        if tf_key && fuzzy_match
-          say "  * Found physical ID included in Terraform resource #{tf_resource_name} under attribute #{tf_key} with value '#{tf_resource['primary'][tf_key]}'. Please validate this resource is included in state and configuration.", :yellow
-        elsif tf_key && !fuzzy_match
-          say "  * Found physical ID exactly in Terraform resource #{tf_resource_name} under attribute #{tf_key} with value '#{tf_resource['primary'][tf_key]}'.", :cyan
+        tf_resource = tf_resource_for(physical_resource_id: cf_resource[:physical_resource_id], resources: terraform_resources)
+        if tf_resource[:attribute_key] && tf_resource[:partial]
+          say "  * Found physical ID included in Terraform resource #{tf_resource[:logical_resource_id].inspect} under attribute #{tf_resource[:attribute_key].inspect} with value #{tf_resource[:value].inspect}. Please validate this resource is included in state and configuration.", :yellow
+        elsif tf_resource[:attribute_key] && !tf_resource[:partial]
+          say "  * Found physical ID exactly in Terraform resource #{tf_resource[:logical_resource_id].inspect} under attribute #{tf_resource[:attribute_key].inspect} with value #{tf_resource[:value].inspect}.", :green
         else
           say "  * Unable to find physical ID in the provided Terraform state.", :red
         end
@@ -280,6 +277,18 @@ module Convection
 
       private
 
+      def ask_tf_physical_id(cf_resource)
+        question = case cf_resource[:type]
+                   when 'AWS::IAM::Policy'
+                     "What is the <role-name>:<policy-name> for the #{cf_resource[:logical_resource_id].inspect} IAM policy?"
+                   when 'AWS::S3::BucketPolicy'
+                     "What is the name of the bucket that the #{cf_resource[:logical_resource_id].inspect} policy belongs to?"
+                   end
+        return '' unless question
+
+        ask(question, :yellow).chomp
+      end
+
       def load_local_terraform_state(statefile)
         JSON.load(File.open(statefile))
       end
@@ -304,6 +313,20 @@ module Convection
         else
           @tfstate = load_local_terraform_state(options[:state])
         end
+      end
+
+      def tf_resource_for(physical_resource_id:, resources:)
+        logical_id, resource = resources.find do |_, resource|
+          next true if resource['primary'].key(physical_resource_id)
+          resource['primary'].values.any? { |v| v.is_a?(String) && v.include?(physical_resource_id) }
+        end
+        return {} unless logical_id && resource
+
+        key = resource['primary'].key(physical_resource_id)
+        return { attribute_key: key, logical_id: logical_id, partial: false, value: physical_resource_id } if key
+
+        key, value = value['primary'].find { |v| v.include?(physical_resource_id) }
+        return { attribute_key: key, logical_id: logical_id, partial: true, value: value }
       end
 
       def import_resources(resource_name, resource)
