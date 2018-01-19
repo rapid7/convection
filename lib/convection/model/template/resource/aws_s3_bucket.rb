@@ -56,24 +56,23 @@ module Convection
 
             commands << '# Import s3 bucket and s3 bucket policy: '
             commands << "terraform import #{module_prefix}aws_s3_bucket.#{name.underscore} #{stack.resources[name].physical_resource_id}"
-						commands << ''
-						commands
+            commands << ''
+            commands
           end
 
-          def to_hcl_json(module_path: 'root')
+          def to_hcl_json(*)
             bucket_resource = {
               name.underscore => {
                 bucket: stack.resources[name].physical_resource_id,
-                acl: "private",
-                force_destroy: false,
+                acl: 'private',
+                force_destroy: false
               }
             }
 
-            data = [{aws_region: {current: {current: true } } }]
+            data = [{ aws_region: { current: { current: true } } }]
             vars = [{ cloud: { description: 'The cloud name for this resource.' } }]
             { resource: [{ aws_s3_bucket: bucket_resource }], data: data, variable: vars }.to_json
           end
-
 
           def render(*args)
             super.tap do |resource|
