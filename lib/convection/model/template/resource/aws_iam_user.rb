@@ -76,7 +76,7 @@ module Convection
                   source: _terraform_module_flag_to_dir(module_path),
                   managed_policy_arns: managed_policy_arn,
                   name: user,
-                  path: path,
+                  path: path
                 }
               }]
             }
@@ -109,7 +109,7 @@ module Convection
                   policy.name.underscore => {
                     name: policy.name,
                     policy: policy.render.to_json,
-                    user: "${aws_iam_user.#{name.underscore}.id}",
+                    user: "${aws_iam_user.#{name.underscore}.id}"
                   }
                 }
               }
