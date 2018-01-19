@@ -50,6 +50,50 @@ module Convection
             properties['WebsiteConfiguration'].set(config)
           end
 
+          def full_name(terraform_import: false)
+            return "#{name.downcase}.#{stack._original_cloud}.#{stack._original_region}.rapid7.com" if terraform_import
+
+            "#{name.downcase}.#{stack.cloud}.#{stack.region}.rapid7.com"
+          end
+
+          def hcl_imports(module_path: 'root')
+            commands = ['# Run the following commands to import your infrastructure into terraform management.', '# ensure :module_path is set correctly', '']
+            module_prefix = module_path.tr('.', '-') if module_path == 'root'
+            result = {}
+
+            commands << '# Import s3 bucket and s3 bucket policy: '
+            commands << "terraform import #{module_prefix}aws_s3_bucket.#{name.downcase} #{full_name(terraform_import: true)}"
+						commands << ''
+						commands
+          end
+
+          def to_hcl_json(module_path: 'root')
+            bucket_resource = {
+              name.downcase => {
+                bucket: full_name,
+                acl: "private",
+                force_destroy: false,
+              }
+            }
+
+            data = [{aws_region: {current: {current: true } } }]
+            tf_resources = [
+              { aws_s3_bucket: bucket_resource },
+            ]
+
+            bucket_reference = "${aws_s3_bucket.#{name.downcase}.id}"
+              policy_json = resources["#{name}Policy"] && resources["#{name}Policy"].document.document.to_json.gsub(full_name, bucket_reference)
+              policy_resource = {
+                name.downcase => {
+                  bucket: bucket_reference,
+                  policy: policy_json.render.to_json,
+                }
+              }
+
+              tf_resources << { aws_s3_bucket_policy: policy_resource }
+            end
+
+
           def render(*args)
             super.tap do |resource|
               render_tags(resource)
