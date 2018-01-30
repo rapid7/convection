@@ -94,7 +94,6 @@ module Convection
                 {
                   aws_iam_user: {
                     name.underscore => {
-                      managed_policy_arns: '${var.managed_policy_arns}',
                       name: '${var.name}',
                       path: '${var.path}'
                     }
@@ -114,6 +113,15 @@ module Convection
                 }
               }
             end
+            policy_resources << {
+              aws_iam_user_policy_attachment: {
+                "#{name.underscore}_managed" => {
+                  count: managed_policy_arn.count,
+                  user: "${aws_iam_user.#{name.underscore}.id}",
+                  policy_arn: '${element(var.managed_policy_arns, count.index)}'
+                }
+              }
+            }
             result["#{module_prefix}#{name.underscore}-policy.tf.json"] = { resource: policy_resources }
 
             result
