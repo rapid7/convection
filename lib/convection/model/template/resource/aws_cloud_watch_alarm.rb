@@ -27,7 +27,7 @@ module Convection
 
           def terraform_import_commands(module_path: 'root')
             prefix = "#{module_path}." unless module_path == 'root'
-            commands = ['Run the following commands to import your infrastructure into terraform management.', '# ensure :module_path is set correctly', '']
+            commands = ['# Run the following commands to import your infrastructure into terraform management.', '# ensure :module_path is set correctly', '']
             commands << "terraform import #{prefix}aws_cloudwatch_metric_alarm.#{name.underscore} #{stack.resources[name].physical_resource_id}"
             commands << ''
             commands
