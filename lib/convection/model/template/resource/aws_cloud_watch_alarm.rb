@@ -25,7 +25,7 @@ module Convection
           property :threshold, 'Threshold'
           property :unit, 'Unit'
 
-          def terrafom_import_commands(*)
+          def terraform_import_commands(*)
             commands = ['Run the following commands to import your infrastructure into terraform management.', '# ensure :module_path is set correctly', '']
             commands << "terraform import #{module_prefix}aws_cloudwatch_metric_alarm.#{name.underscore} #{stack.resources[name].physical_resource_id}"
             commands << ''
