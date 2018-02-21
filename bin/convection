@@ -508,7 +508,7 @@ module Convection
         Array(errors).flatten.compact.each do |error|
           error = RuntimeError.new(error) if error.is_a?(String)
           say "* #{ error.message }"
-          error.backtrace.each { |trace| say "    #{ trace }" }
+          Array(error.backtrace).each { |trace| say "    #{ trace }" }
         end
       end
 
