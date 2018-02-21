@@ -505,7 +505,7 @@ module Convection
           print_info(event, region: region)
         end
 
-        Array(errors).compact.each do |error|
+        Array(errors).flatten.compact.each do |error|
           error = RuntimeError.new(error) if error.is_a?(String)
           say "* #{ error.message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
