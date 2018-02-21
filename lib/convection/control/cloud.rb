@@ -167,7 +167,7 @@ module Convection
         # Find errors during stack init
         stacks.each_value do |stack|
           if stack.error?
-            errors << stack.errors.collect { |x| x.exception.message }
+            errors += stack.errors.collect { |x| x.exception.message }
           end
         end
 

@@ -402,7 +402,7 @@ module Convection
                 if options[:cloudfiles].length > 1 && options[:delayed_output]
                   output << { event: event, errors: errors }
                 else
-                  emit_events(event, *errors, region: region)
+                  emit_events(event, errors, region: region)
                 end
                 semaphore.synchronize { @errors = errors.any? if errors }
               end
@@ -505,7 +505,7 @@ module Convection
           print_info(event, region: region)
         end
 
-        errors.each do |error|
+        Array(errors).each do |error|
           error = RuntimeError.new(error) if error.is_a?(String)
           say "* #{ error.message }"
           error.backtrace.each { |trace| say "    #{ trace }" }
@@ -523,7 +523,7 @@ module Convection
           puts "Cloud name: #{output[:cloud_name]}. Region: #{output[:region]}."
           puts '********'
           output[:logging].each do |hash|
-            emit_events(hash[:event], *hash[:errors])
+            emit_events(hash[:event], Array(hash[:errors]), region: output[:region])
           end
         end
       end
