@@ -325,7 +325,7 @@ module Convection
         key = resource['primary'].key(physical_resource_id)
         return { attribute_key: key, logical_id: logical_id, partial: false, value: physical_resource_id } if key
 
-        key, value = value['primary'].find { |v| v.include?(physical_resource_id) }
+        key, value = resource['primary'].find { |v| v.include?(physical_resource_id) }
         return { attribute_key: key, logical_id: logical_id, partial: true, value: value }
       end
 
