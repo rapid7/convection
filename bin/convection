@@ -139,6 +139,7 @@ module Convection
         say "Resource #{cf_resource[:physical_resource_id].inspect} #{cf_resource[:logical_resource_id].inspect}:"
 
         tf_resource = tf_resource_for(physical_resource_id: cf_resource[:physical_resource_id], resources: terraform_resources)
+
         if tf_resource[:attribute_key] && tf_resource[:partial]
           say "  * Found physical ID included in Terraform resource #{tf_resource[:logical_resource_id].inspect} under attribute #{tf_resource[:attribute_key].inspect} with value #{tf_resource[:value].inspect}. Please validate this resource is included in state and configuration.", :yellow
         elsif tf_resource[:attribute_key] && !tf_resource[:partial]
@@ -325,7 +326,7 @@ module Convection
         key = resource['primary'].key(physical_resource_id)
         return { attribute_key: key, logical_id: logical_id, partial: false, value: physical_resource_id } if key
 
-        key, value = resource['primary'].find { |v| v.include?(physical_resource_id) }
+        key, value = resource['primary'].find { |k,v| v.include?(physical_resource_id) }
         return { attribute_key: key, logical_id: logical_id, partial: true, value: value }
       end
 
