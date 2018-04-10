@@ -15,6 +15,7 @@ module Convection
           property :default_cache_behavior, 'DefaultCacheBehavior'
           property :default_root_object, 'DefaultRootObject'
           property :enabled, 'Enabled', :default => true
+          property :http_version, 'HttpVersion'
           property :logging, 'Logging'
           property :origins, 'Origins', :type => :list
           property :price_class, 'PriceClass'
