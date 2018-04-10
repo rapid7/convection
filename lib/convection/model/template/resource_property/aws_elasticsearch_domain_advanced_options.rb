@@ -8,6 +8,7 @@ module Convection
         # Advanced Options Property Type}
         class ElasticsearchDomainAdvancedOptions < ResourceProperty
           property :indices_query_bool_max_clause_count, 'indices.query.bool.max_clause_count'
+          property :indices_fielddata_cache_size, 'indices.fielddata.cache.size'
           property :rest_action_multi_allow_explicit_index, 'rest.action.multi.allow_explicit_index'
         end
       end
