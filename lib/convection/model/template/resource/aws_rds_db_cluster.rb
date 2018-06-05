@@ -44,13 +44,13 @@ module Convection
           property :engine, 'Engine'
           property :engine_version, 'EngineVersion'
           property :kms_key_id, 'KmsKeyId'
-          #only specify username and password  if you do not specify SnapshotIdentifier
+          # only specify username and password  if you do not specify SnapshotIdentifier
           property :master_username, 'MasterUsername'
           property :master_password, 'MasterUserPassword'
           property :port, 'Port'
-          #backup window must be in the format hh24:mi-hh24:mi, atleast 30 mins long, UTC, cannot conflict with maintenance window.
+          # backup window must be in the format hh24:mi-hh24:mi, atleast 30 mins long, UTC, cannot conflict with maintenance window.
           property :preferred_backup_window, 'PreferredBackupWindow'
-          #backup window must be in the format ddd:hh24:mi-ddd:hh24:mi, atleast 30 mins long, UTC, cannot conflict with backup window.
+          # backup window must be in the format ddd:hh24:mi-ddd:hh24:mi, atleast 30 mins long, UTC, cannot conflict with backup window.
           property :preferred_maintenance_window, 'PreferredMaintenanceWindow'
           property :replication_source_identifier, 'ReplicationSourceIdentifier'
           property :snapshot_identifier, 'SnapshotIdentifier'
@@ -63,9 +63,7 @@ module Convection
               render_tags(resource)
             end
           end
-
         end
-
       end
     end
   end

@@ -4,10 +4,8 @@ class Convection::Model::Template::Resource
   describe RDSDBCluster do
     let(:template) do
       Convection.template do
-
         rds_cluster 'TestCluster' do
-
-          availability_zone 'us-east-1','us-east-2'
+          availability_zone 'us-east-1', 'us-east-2'
           backup_retention 10
           database_name 'test_database'
           identifier 'cluster1'
@@ -25,17 +23,16 @@ class Convection::Model::Template::Resource
           snapshot_identifier
           storage_encrypted 'false'
           tag 'Name', 'Test'
-          vpc_security_group 'test_security_group_1' ,'test_security_group_2'
-
+          vpc_security_group 'test-security-group-1', 'test-security-group-2'
         end
       end
     end
 
     subject do
       template_json
-          .fetch('Resources')
-          .fetch('TestCluster')
-          .fetch('Properties')
+        .fetch('Resources')
+        .fetch('TestCluster')
+        .fetch('Properties')
     end
 
     it 'sets the DBClusterIdentifier' do
@@ -87,7 +84,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'sets the AvailabilityZones' do
-      expect(subject['AvailabilityZones']).to match_array(['us-east-1','us-east-2'])
+      expect(subject['AvailabilityZones']).to match_array(['us-east-1', 'us-east-2'])
     end
 
     it 'sets the DBSubnetGroupName' do
@@ -99,7 +96,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'sets the VPCSecurityGroupIds' do
-      expect(subject['VPCSecurityGroupIds']).to match_array(['test_security_group_1' ,'test_security_group_2'])
+      expect(subject['VPCSecurityGroupIds']).to match_array(['test-security-group-1', 'test-security-group-2'])
     end
 
     it 'sets the ReplicationSourceIdentifier' do
@@ -119,6 +116,5 @@ class Convection::Model::Template::Resource
     def template_json
       JSON.parse(template.to_json)
     end
-
   end
 end
