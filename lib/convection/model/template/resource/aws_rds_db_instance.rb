@@ -19,7 +19,6 @@ module Convection
           property :license_model, 'LicenseModel'
           property :storage_type, 'StorageType'
           property :storage_encrypted, 'StorageEncrypted'
-
           property :iops, 'Iops'
           property :port, 'Port'
           property :master, 'SourceDBInstanceIdentifier'
