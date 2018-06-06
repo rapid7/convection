@@ -95,8 +95,8 @@ class Convection::Model::Template::Resource
       expect(subject['DBSubnetGroupName']).to eq('subnet_group')
     end
 
-    it 'sets the VPCSecurityGroupIds' do
-      expect(subject['VPCSecurityGroupIds']).to match_array(['test-security-group-1', 'test-security-group-2'])
+    it 'sets the VpcSecurityGroupIds' do
+      expect(subject['VpcSecurityGroupIds']).to match_array(['test-security-group-1', 'test-security-group-2'])
     end
 
     it 'sets the ReplicationSourceIdentifier' do
