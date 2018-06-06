@@ -5,9 +5,9 @@ class Convection::Model::Template::Resource
     let(:template) do
       Convection.template do
         rds_cluster_parameter_group 'DemoRDSClusterParameterGroup' do
-          description 'Describes cluster scaling'
+          description 'A sample parameter group'
           family 'aurora5.6'
-          parameter 'key1', 'value1'
+          parameter 'time_zone', 'US/Eastern'
           tag 'Name', 'Test'
         end
       end
@@ -21,7 +21,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'sets the Description' do
-      expect(subject['Description']).to eq('Describes cluster scaling')
+      expect(subject['Description']).to eq('A sample parameter group')
     end
 
     it 'has a Family' do
@@ -29,7 +29,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'has Parameters' do
-      expect(subject['Parameters']).to eq({'key1'=>'value1'})
+      expect(subject['Parameters']).to eq({'time_zone'=>'US/Eastern'})
     end
 
     it 'sets tags' do
