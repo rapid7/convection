@@ -29,7 +29,7 @@ class Convection::Model::Template::Resource
     end
 
     it 'has Parameters' do
-      expect(subject['Parameters']).to eq({'time_zone'=>'US/Eastern'})
+      expect(subject['Parameters']).to eq('time_zone' => 'US/Eastern')
     end
 
     it 'sets tags' do
