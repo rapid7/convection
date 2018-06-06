@@ -56,7 +56,7 @@ module Convection
           property :snapshot_identifier, 'SnapshotIdentifier'
           property :storage_encrypted, 'StorageEncrypted'
 
-          property :vpc_security_group, 'VPCSecurityGroupIds', :type => :list
+          property :vpc_security_group, 'VpcSecurityGroupIds', :type => :list
 
           def render(*args)
             super.tap do |resource|
