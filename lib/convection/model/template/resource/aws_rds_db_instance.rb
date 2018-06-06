@@ -22,6 +22,7 @@ module Convection
           property :iops, 'Iops'
           property :port, 'Port'
           property :master, 'SourceDBInstanceIdentifier'
+          property :db_cluster_identifier, 'DBClusterIdentifier'
 
           property :database_name, 'DBName'
           property :master_username, 'MasterUsername'
