@@ -19,6 +19,7 @@ module Convection
           property :timeout, 'Timeout'
           property :role, 'Role'
           property :kms_key_arn, 'KmsKeyArn'
+          property :concurrency, 'ReservedConcurrentExecutions'
           # psuedo-property definitions. We add the expected name as a nested DSL for these below.
           property :env, 'Environment'
           property :function_code, 'Code'
