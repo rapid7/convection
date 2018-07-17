@@ -51,6 +51,12 @@ module Convection
             dead_letter_cfg.instance_exec(&block) if block
             properties['DeadLetterConfig'].set(dead_letter_cfg)
           end
+
+          def render(*args)
+            super.tap do |resource|
+              render_tags(resource)
+            end
+          end
         end
       end
     end
