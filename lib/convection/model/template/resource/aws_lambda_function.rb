@@ -47,9 +47,15 @@ module Convection
           end
 
           def dead_letter_config(&block)
-            env = ResourceProperty::LambdaFunctionDeadLetterConfig.new(self)
-            env.instance_exec(&block) if block
+            dead_letter_cfg = ResourceProperty::LambdaFunctionDeadLetterConfig.new(self)
+            dead_letter_cfg.instance_exec(&block) if block
             properties['DeadLetterConfig'].set(dead_letter_cfg)
+          end
+
+          def render(*args)
+            super.tap do |resource|
+              render_tags(resource)
+            end
           end
         end
       end
