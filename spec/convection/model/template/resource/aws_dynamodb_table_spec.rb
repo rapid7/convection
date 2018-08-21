@@ -5,29 +5,29 @@ class Convection::Model::Template::Resource
     let(:template) do
       Convection.template do
         dynamodb_table 'TestTable' do
-          # A attribute definitions {'AttributeName' : String, 'AttributeType' : String}
+          # A attribute definitions { 'AttributeName' : String, 'AttributeType' : String }
           attribute_definitions  'AttributeName' => 'Name', 'AttributeType' => 'Type'
-          # A key schema {'AttributeName' : String, 'KeyType' : 'HASH or RANGE'}
+          # A key schema { 'AttributeName' : String, 'KeyType' : 'HASH or RANGE' }
           key_schema 'AttributeName' => 'Name', 'KeyType' => 'HASH'
-          # Provisioned throughout hash {'ReadCapacityUnits' : Number, 'WriteCapacityUnits' : Number}
+          # Provisioned throughout hash {'ReadCapacityUnits' : Number, 'WriteCapacityUnits' : Number }
           provisioned_throughput 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100
           # optional
-          # A global seconday index { 'IndexName' : String, 'KeySchema' : [ KeySchema, ... ], 'Projection' : { Projection }, \
+          # A global seconday index { 'IndexName' : String, 'KeySchema' : [KeySchema, ...], 'Projection' : { Projection },
           # 'ProvisionedThroughput' : { ProvisionedThroughput }}
-          global_secondary_indexes 'IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH'}],
-                                   'Projection' => { 'NonKeyAttributes' =>[{'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' },
-                                   'ProvisionedThroughput' =>{ 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }
+          global_secondary_indexes 'IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
+                                   'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' },
+                                   'ProvisionedThroughput' => { 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }
           # A local secondary index { 'IndexName' : String, 'KeySchema' : [ KeySchema, ...], 'Projection' : { Projection }}
           local_secondary_indexes 'IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
-                                  'Projection' => { 'NonKeyAttributes' =>[{'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' }
-          # A point in time recovery specification { 'PointInTimeRecoveryEnabled' : Boolean}
+                                  'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' }
+          # A point in time recovery specification { 'PointInTimeRecoveryEnabled' : Boolean }
           point_in_time_recovery_specification 'PointInTimeRecoveryEnabled' => true
-          # A sse specification { 'SSEEnabled' : Boolean}
+          # A sse specification { 'SSEEnabled' : Boolean }
           sse_specification 'SSEEnabled' => false
-          # A stream specification { 'StreamViewType' : String}
+          # A stream specification { 'StreamViewType' : String }
           stream_specification 'StreamViewType' => 'Type'
           table_name 'TableName'
-          # A time to live specification { 'AttributeName' : String, 'Enabled' : Boolean}
+          # A time to live specification { 'AttributeName' : String, 'Enabled' : Boolean }
           time_to_live_specification 'AttributeName' => 'Name', 'Enabled' => true
           tag 'Name', 'Test'
         end
@@ -36,9 +36,9 @@ class Convection::Model::Template::Resource
 
     subject do
       template_json
-          .fetch('Resources')
-          .fetch('TestTable')
-          .fetch('Properties')
+        .fetch('Resources')
+        .fetch('TestTable')
+        .fetch('Properties')
     end
 
     it 'sets the AttributeDefinitions' do
@@ -54,11 +54,18 @@ class Convection::Model::Template::Resource
     end
 
     it 'sets the GlobalSecondaryIndexes' do
-      expect(subject['GlobalSecondaryIndexes']).to include(hash_including('IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }], 'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type'}], 'ProjectionType' => 'Type' }, 'ProvisionedThroughput' => { 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }))
+      expect(subject['GlobalSecondaryIndexes']).to include(hash_including('IndexName' => 'Name',
+                                                                          'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
+                                                                          'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type'}],
+                                                                                            'ProjectionType' => 'Type' },
+                                                                          'ProvisionedThroughput' => { 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }))
     end
 
     it 'sets the LocalSecondaryIndexes' do
-      expect(subject['LocalSecondaryIndexes']).to include(hash_including('IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }], 'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType' => 'Type' }))
+      expect(subject['LocalSecondaryIndexes']).to include(hash_including('IndexName' => 'Name',
+                                                                         'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
+                                                                         'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }],
+                                                                                           'ProjectionType' => 'Type' }))
     end
 
     it 'sets the PointInTimeRecoverySpecification' do

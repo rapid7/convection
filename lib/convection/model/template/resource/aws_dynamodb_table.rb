@@ -44,15 +44,15 @@ module Convection
           # required
           # A attribute definitions {"AttributeName" : String, "AttributeType" : String}
           # type can be s for string, n for numeric, or b for binary data
-          property :attribute_definitions, 'AttributeDefinitions', :type => :list #list of attribute definitions
+          property :attribute_definitions, 'AttributeDefinitions', :type => :list # list of attribute definitions
           # A key schema {"AttributeName" : String, "KeyType" : "HASH or RANGE"}
-          property :key_schema, 'KeySchema', :type => :list #list of key schema
+          property :key_schema, 'KeySchema', :type => :list # list of key schema
           # Provisioned throughout hash {"ReadCapacityUnits" : Number, "WriteCapacityUnits" : Number}
           property :provisioned_throughput, 'ProvisionedThroughput'
           # optional
           # A global seconday index { "IndexName" : String, "KeySchema" : [KeySchema, ... ],
           # "Projection" : { Projection }, "ProvisionedThroughput" : { ProvisionedThroughput }}
-          property :global_secondary_indexes, 'GlobalSecondaryIndexes', :type => :list #list of global secondary indexes
+          property :global_secondary_indexes, 'GlobalSecondaryIndexes', :type => :list # list of global secondary indexes
           # A local secondary index { "IndexName" : String, "KeySchema" : [ KeySchema, ...], "Projection" : { Projection }}
           property :local_secondary_indexes, 'LocalSecondaryIndexes', :type => :list
           # A point in time recovery specification { "PointInTimeRecoveryEnabled" : Boolean}
