@@ -15,11 +15,11 @@ class Convection::Model::Template::Resource
           # A global seconday index { 'IndexName' : String, 'KeySchema' : [KeySchema, ...], 'Projection' : { Projection },
           # 'ProvisionedThroughput' : { ProvisionedThroughput }}
           global_secondary_indexes 'IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
-                                   'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' },
+                                   'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType' => 'Type' },
                                    'ProvisionedThroughput' => { 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }
           # A local secondary index { 'IndexName' : String, 'KeySchema' : [ KeySchema, ...], 'Projection' : { Projection }}
           local_secondary_indexes 'IndexName' => 'Name', 'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
-                                  'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType'=>'Type' }
+                                  'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }], 'ProjectionType' => 'Type' }
           # A point in time recovery specification { 'PointInTimeRecoveryEnabled' : Boolean }
           point_in_time_recovery_specification 'PointInTimeRecoveryEnabled' => true
           # A sse specification { 'SSEEnabled' : Boolean }
@@ -56,7 +56,7 @@ class Convection::Model::Template::Resource
     it 'sets the GlobalSecondaryIndexes' do
       expect(subject['GlobalSecondaryIndexes']).to include(hash_including('IndexName' => 'Name',
                                                                           'KeySchema' => [{ 'AttributeName' => 'Name', 'KeyType' => 'HASH' }],
-                                                                          'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type'}],
+                                                                          'Projection' => { 'NonKeyAttributes' => [{ 'AttributeName' => 'Name2', 'AttributeType' => 'Type' }],
                                                                                             'ProjectionType' => 'Type' },
                                                                           'ProvisionedThroughput' => { 'ReadCapacityUnits' => 100, 'WriteCapacityUnits' => 100 }))
     end
