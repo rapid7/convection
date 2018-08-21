@@ -11,6 +11,7 @@ class Convection::Model::Template::Resource
           handler 'index.handler'
           runtime 'nodejs'
           role 'arn:aws:x:y:z'
+          concurrency 100
 
           code do
             s3_bucket 'testbucket'
@@ -21,6 +22,12 @@ class Convection::Model::Template::Resource
             security_groups %w(group1 group2)
             subnets %w(subnet1a subnet1b)
           end
+
+          dead_letter_config do
+            target_arn 'arn:aws:sqs:us-east-1:XXXXXXXXXXXX:lambda-dlq'
+          end
+
+          tag 'test', 'value'
         end
       end
     end
@@ -59,6 +66,18 @@ class Convection::Model::Template::Resource
 
     it 'SubnetIds is an array of 2 group ids' do
       expect(subject['VpcConfig']['SubnetIds'].size).to eq(2)
+    end
+
+    it 'ReservedConcurrentExecutions matches the value defined in the template' do
+      expect(subject['ReservedConcurrentExecutions']).to eq(100)
+    end
+
+    it 'dead letter config matches the value defined in the template' do
+      expect(subject['DeadLetterConfig']['TargetArn']).to eq('arn:aws:sqs:us-east-1:XXXXXXXXXXXX:lambda-dlq')
+    end
+
+    it 'sets tags' do
+      expect(subject['Tags']).to include(hash_including('Key' => 'test', 'Value' => 'value'))
     end
 
     private

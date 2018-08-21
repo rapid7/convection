@@ -4,7 +4,7 @@ module Convection
   module Model
     class Template
       class ResourceProperty
-        # Represents an {http://docs.aws.amazon.com/lambda/latest/dg/API_Environment.html}
+        # Represents an {https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-environment.html}
         class LambdaEnvironment < ResourceProperty
           property :variables, 'Variables'
         end
