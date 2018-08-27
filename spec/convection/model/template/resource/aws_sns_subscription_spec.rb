@@ -8,6 +8,7 @@ class Convection::Model::Template::Resource
           endpoint 'failures@example.com'
           protocol 'email'
           topic_arn 'arn:aws:sns:us-west-2:123456789012:example-topic'
+          filter_policy 'Type' => 'Notification', 'MessageId' => 'e3c4e17a-819b-5d95-a0e8-b306c25afda0', 'MessageAttributes' => { 'AttributeName' => 'Name', 'KeyType' => 'HASH' }
         end
       end
     end
@@ -29,6 +30,12 @@ class Convection::Model::Template::Resource
 
     it 'sets the TopicArn' do
       expect(subject['TopicArn']).to eq('arn:aws:sns:us-west-2:123456789012:example-topic')
+    end
+
+    it 'sets the FilterPolicy' do
+      expect(subject['FilterPolicy']).to include('Type' => 'Notification',
+                                                 'MessageId' => 'e3c4e17a-819b-5d95-a0e8-b306c25afda0',
+                                                 'MessageAttributes' => { 'AttributeName' => 'Name', 'KeyType' => 'HASH' })
     end
 
     private
