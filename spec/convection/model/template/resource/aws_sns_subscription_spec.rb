@@ -34,8 +34,8 @@ class Convection::Model::Template::Resource
 
     it 'sets the FilterPolicy' do
       expect(subject['FilterPolicy']).to include('Type' => 'Notification',
-                                                                'MessageId' => 'e3c4e17a-819b-5d95-a0e8-b306c25afda0',
-                                                                'MessageAttributes' => { 'AttributeName' => 'Name', 'KeyType' => 'HASH' })
+                                                 'MessageId' => 'e3c4e17a-819b-5d95-a0e8-b306c25afda0',
+                                                 'MessageAttributes' => { 'AttributeName' => 'Name', 'KeyType' => 'HASH' })
     end
 
 
