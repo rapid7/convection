@@ -38,7 +38,6 @@ class Convection::Model::Template::Resource
                                                  'MessageAttributes' => { 'AttributeName' => 'Name', 'KeyType' => 'HASH' })
     end
 
-
     private
 
     def template_json
