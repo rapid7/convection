@@ -10,10 +10,10 @@ module Convection
       extend Mixin::Colorize
 
       attr_reader :key
-      attr_reader :action
+      attr_accessor :action
       attr_reader :ours
       attr_reader :theirs
-      colorize :action, :green => [:create], :yellow => [:update], :red => [:delete, :replace]
+      colorize :action, :green => [:create], :yellow => [:update, :retain], :red => [:delete, :replace]
 
       def initialize(key, ours, theirs)
         @key = key
@@ -40,6 +40,7 @@ module Convection
                   when :update then "#{ key }: #{ theirs } => #{ ours }"
                   when :replace then "#{ key }: #{ theirs } => #{ ours }"
                   when :delete then key
+                  when :retain then key
                   end
 
         [action, message, color]

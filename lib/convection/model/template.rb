@@ -281,6 +281,7 @@ module Convection
           'Conditions' => conditions.map(&:render),
           'Resources' => all_resources.map do |resource|
             if retain && resource.deletion_policy.nil?
+              puts "If you forget to set this in the template, you will get a false retain on next run"
               resource.deletion_policy('Retain')
             end
             resource.render
@@ -297,7 +298,39 @@ module Convection
       end
 
       def diff(other, stack_ = nil, retain: false)
-        render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+        # We want to accurately show when the DeletionPolicy is getting deleted and also when resources are going to be retained.
+        # Sample DeletionPolicy Removal output
+        # us-east-1      compare  Compare local state of stack test-logs-deletion with remote template
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.DeletionPolicy
+        #
+        # Sample Mixed Retain/Delete Resources
+        # us-east-1       retain  Resources.ELBLoggingPolicy.DependsOn.AWS::S3::BucketPolicy.0
+        # us-east-1       retain  Resources.ELBLoggingPolicy.DeletionPolicy
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Type
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.GroupDescription
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.VpcId
+        #
+        events = render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+        retained_resources = events.select { |event| event.key.ends_with?('DeletionPolicy') && event.theirs == 'Retain' }
+
+        retained_resources.map! { |resource| resource.key.split('DeletionPolicy').first }
+        retained_resources.keep_if do |name|
+          events.any? do |event|
+            event.action == :delete && event.key == name
+          end
+        end
+
+        events.each do |event|
+          retained = false
+          retained_resources.each do |resource|
+            if event.key.starts_with?(resource) && event.action == :delete
+              retained = true
+              break
+            end
+          end
+          event.action = :retain if retained
+        end
+        events
       end
 
       def to_json(stack_ = nil, pretty = false, retain: false)
