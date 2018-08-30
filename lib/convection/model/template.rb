@@ -310,7 +310,7 @@ module Convection
         # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.VpcId
         #
         events = render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
-        retained_resources = events.select { |event| event.key.ends_with?('DeletionPolicy') && event.theirs == 'Retain' }
+        retained_resources = events.select { |event| event.key.end_with?('DeletionPolicy') && event.theirs == 'Retain' }
 
         retained_resources.map! { |resource| resource.key.split('DeletionPolicy').first }
         retained_resources.keep_if do |name|
@@ -321,7 +321,7 @@ module Convection
 
         events.each do |event|
           retained = false
-          retained_resources.each do |resource|
+          retained_resources.any? do |resource|
             if event.key.starts_with?(resource) && event.action == :delete
               retained = true
               break
