@@ -281,7 +281,6 @@ module Convection
           'Conditions' => conditions.map(&:render),
           'Resources' => all_resources.map do |resource|
             if retain && resource.deletion_policy.nil?
-              puts "If you forget to set this in the template, you will get a false retain on next run"
               resource.deletion_policy('Retain')
             end
             resource.render
