@@ -312,25 +312,25 @@ module Convection
         suffix = '.DeletionPolicy'.freeze
 
         events = render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
-        retained_resources = events.select { |event| event.key.end_with?(suffix) && event.theirs == 'Retain' }
 
+        retained_resources = events.select { |event| event.key.end_with?(suffix) && event.theirs == 'Retain' }
         retained_resources.map! { |resource| resource.key[0...-suffix.length] }
+
         retained_resources.keep_if do |name|
           events.any? do |event|
-            event.action == :delete && event.key == name
+            event.action == :delete && event.key.start_with?(name) && !event.key.end_with?(suffix)
           end
         end
 
         events.each do |event|
-          retained = false
-          retained_resources.any? do |resource|
-            if event.key.starts_with?(resource) && event.action == :delete
-              retained = true
-              break
-            end
+          retained = retained_resources.any? do |resource|
+            event.action == :delete && event.key.start_with?(resource)
           end
-          event.action = :retain if retained
+          if retained
+            event.action = :retain
+          end
         end
+
         events
       end
 
