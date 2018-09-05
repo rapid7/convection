@@ -7,6 +7,7 @@ module Convection
     # Difference between an item in two templates
     ##
     class Diff
+      include Comparable
       extend Mixin::Colorize
 
       attr_reader :key
@@ -46,11 +47,17 @@ module Convection
         [action, message, color]
       end
 
-      def ==(other)
-        @key == other.key &&
-          @ours == other.ours &&
-          @theirs == other.theirs &&
-          @action == other.action
+      def <=>(other)
+        value = @key <=> other.key
+        return value if value != 0
+
+        value = @ours <=> other.ours
+        return value if value != 0
+
+        value = @theirs <=> other.theirs
+        return value if value != 0
+
+        @action <=> other.action
       end
     end
   end
