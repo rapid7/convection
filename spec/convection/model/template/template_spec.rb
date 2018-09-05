@@ -54,19 +54,46 @@ class Convection::Model::Template
         it 'emits create events when a delete_policy is added' do
           local = Convection.template do
             resource 'TestInstance' do
+              type 'TestResource'
               deletion_policy 'Retain'
             end
           end
 
           remote = Convection.template do
             resource 'TestInstance' do
+              type 'TestResource'
             end
           end
 
           created = [Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', 'Retain', nil)]
+          created.each { |event| event.action = :create }
 
           events = local.diff(remote.render)
           expect(events).to eq(created)
+        end
+
+        it 'emits retain events when a resource with a deletion_policy is removed' do
+          local = Convection.template do
+          end
+
+          remote = Convection.template do
+            resource 'TestInstance' do
+              type 'TestResource'
+              deletion_policy 'Retain'
+            end
+          end
+
+          retained = [
+            Convection::Model::Diff.new('Resources.TestInstance.Type', nil, 'TestResource'),
+            Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', nil, 'Retain')
+          ]
+          retained.each { |event| event.action = :retain }
+          retained.sort!
+
+          events = local.diff(remote.render)
+          events.sort!
+
+          expect(events).to eq(retained)
         end
       end
     end
