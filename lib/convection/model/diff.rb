@@ -45,6 +45,13 @@ module Convection
 
         [action, message, color]
       end
+
+      def ==(other)
+        @key == other.key &&
+          @ours == other.ours &&
+          @theirs == other.theirs &&
+          @action == other.action
+      end
     end
   end
 end
