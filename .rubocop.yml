@@ -28,6 +28,11 @@ Metrics/LineLength:
   Exclude:
     - 'lib/convection/dsl/terraform_intrinsic_functions.rb'
 
+# Ignore block length limits for DSLs
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
 # AbcSize:
 #   Max: 24
 # ClassLength:
