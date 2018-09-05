@@ -119,6 +119,38 @@ class Convection::Model::Template
 
           expect(events).to eq(deleted)
         end
+
+        it 'only checks for DeletionPolicy events' do
+          local = Convection.template do
+          end
+
+          remote = Convection.template do
+            resource 'TestInstanceWithoutDeletionPolicy' do
+              type 'TestResource'
+            end
+
+            resource 'TestInstanceWithDeletionPolicy' do
+              type 'TestResource'
+              deletion_policy 'Retain'
+            end
+          end
+
+          deleted = [
+            Convection::Model::Diff.new('Resources.TestInstanceWithoutDeletionPolicy.Type', nil, 'TestResource')
+          ]
+          deleted.each { |event| event.action = :delete }
+
+          retained = [
+            Convection::Model::Diff.new('Resources.TestInstanceWithDeletionPolicy.Type', nil, 'TestResource'),
+            Convection::Model::Diff.new('Resources.TestInstanceWithDeletionPolicy.DeletionPolicy', nil, 'Retain')
+          ]
+          retained.each { |event| event.action = :retain }
+
+          events = local.diff(remote.render)
+          events.sort!
+
+          expect(events).to eq((deleted + retained).sort)
+        end
       end
     end
 
