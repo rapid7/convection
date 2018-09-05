@@ -326,9 +326,7 @@ module Convection
           retained = retained_resources.any? do |resource|
             event.action == :delete && event.key.start_with?(resource)
           end
-          if retained
-            event.action = :retain
-          end
+          event.action = :retain if retained
         end
 
         events
