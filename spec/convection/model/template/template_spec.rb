@@ -49,6 +49,28 @@ class Convection::Model::Template
       end
     end
 
+    describe '#diff' do
+      context 'when diffing resources with delete_policy' do
+        it 'emits create events when a delete_policy is added' do
+          local = Convection.template do
+            resource 'TestInstance' do
+              deletion_policy 'Retain'
+            end
+          end
+
+          remote = Convection.template do
+            resource 'TestInstance' do
+            end
+          end
+
+          created = [Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', 'Retain', nil)]
+
+          events = local.diff(remote.render)
+          expect(events).to eq(created)
+        end
+      end
+    end
+
     subject do
       template_json
     end
