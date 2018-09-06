@@ -50,159 +50,74 @@ class Convection::Model::Template
     end
 
     describe '#diff' do
-      context 'when diffing resources with delete_policy' do
-        it 'emits create events when a delete_policy is added' do
-          local = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-              deletion_policy 'Retain'
-            end
-          end
-
-          remote = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-            end
-          end
-
-          created = [Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', 'Retain', nil)]
-          created.each { |event| event.action = :create }
-
-          events = local.diff(remote.render)
-          expect(events).to eq(created)
-        end
-
-        it 'emits retain events when a resource with a deletion_policy is removed' do
+      context 'when diffing resources with deletion_policy' do
+        it 'emits retain events when the entire resource is deleted' do
           local = Convection.template do
           end
 
           remote = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
+            resource 'Test' do
+              type 'Test'
+              property 'Key', 'Value'
               deletion_policy 'Retain'
             end
           end
 
           retained = [
-            Convection::Model::Diff.new('Resources.TestInstance.Type', nil, 'TestResource'),
-            Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', nil, 'Retain')
+            Convection::Model::Diff.new('Resources.Test.Properties.Test.Key', nil, 'Value'),
+            Convection::Model::Diff.new('Resources.Test.DeletionPolicy', nil, 'Retain'),
+            Convection::Model::Diff.new('Resources.Test.Type', nil, 'Test')
           ]
           retained.each { |event| event.action = :retain }
-          retained.sort!
 
           events = local.diff(remote.render)
-          events.sort!
-
-          expect(events).to eq(retained)
+          expect(events.sort).to eq(retained.sort)
         end
 
-        it 'emits delete events when a deletion_policy is removed' do
+        it 'emits delete events when only part of the resource is deleted' do
           local = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
+            resource 'Test' do
+              type 'Test'
             end
           end
 
           remote = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-              deletion_policy 'Retain'
-            end
-          end
-
-          deleted = [Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', nil, 'Retain')]
-          deleted.each { |event| event.action = :delete }
-          deleted.sort!
-
-          events = local.diff(remote.render)
-          events.sort!
-
-          expect(events).to eq(deleted)
-        end
-
-        it 'emits delete events when properties are removed and resources are retained' do
-          local = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-              deletion_policy 'Retain'
-            end
-          end
-
-          remote = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
+            resource 'Test' do
+              type 'Test'
               property 'Key', 'Value'
-              deletion_policy 'Retain'
-            end
-          end
-
-          deleted = [Convection::Model::Diff.new('Resources.TestInstance.Properties.TestResource.Key', nil, 'Value')]
-          deleted.each { |event| event.action = :delete }
-          deleted.sort!
-
-          events = local.diff(remote.render)
-          events.sort!
-
-          expect(events).to eq(deleted)
-        end
-
-        it 'emits delete events when properties are removed and resources are not retained' do
-          local = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-              deletion_policy 'Retain'
-            end
-          end
-
-          remote = Convection.template do
-            resource 'TestInstance' do
-              type 'TestResource'
-              property 'Key', 'Value'
-            end
-          end
-
-          created = [Convection::Model::Diff.new('Resources.TestInstance.DeletionPolicy', 'Retain', nil)]
-          created.each { |event| event.action = :create }
-
-          deleted = [Convection::Model::Diff.new('Resources.TestInstance.Properties.TestResource.Key', nil, 'Value')]
-          deleted.each { |event| event.action = :delete }
-
-          events = local.diff(remote.render)
-          events.sort!
-
-          expect(events).to eq((created + deleted).sort)
-        end
-
-        it 'only checks for DeletionPolicy events' do
-          local = Convection.template do
-          end
-
-          remote = Convection.template do
-            resource 'TestInstanceWithoutDeletionPolicy' do
-              type 'TestResource'
-            end
-
-            resource 'TestInstanceWithDeletionPolicy' do
-              type 'TestResource'
               deletion_policy 'Retain'
             end
           end
 
           deleted = [
-            Convection::Model::Diff.new('Resources.TestInstanceWithoutDeletionPolicy.Type', nil, 'TestResource')
+            Convection::Model::Diff.new('Resources.Test.Properties.Test.Key', nil, 'Value'),
+            Convection::Model::Diff.new('Resources.Test.DeletionPolicy', nil, 'Retain')
           ]
           deleted.each { |event| event.action = :delete }
 
-          retained = [
-            Convection::Model::Diff.new('Resources.TestInstanceWithDeletionPolicy.Type', nil, 'TestResource'),
-            Convection::Model::Diff.new('Resources.TestInstanceWithDeletionPolicy.DeletionPolicy', nil, 'Retain')
+          events = local.diff(remote.render)
+          expect(events.sort).to eq(deleted.sort)
+        end
+
+        it 'emits delete events even when properties match Type and DeletePolicy' do
+          local = Convection.template do
+          end
+
+          remote = Convection.template do
+            resource 'Test' do
+              property 'Type', 'Test'
+              property 'DeletionPolicy', 'Retain'
+            end
+          end
+
+          deleted = [
+            Convection::Model::Diff.new('Resources.Test.Properties.Type', nil, 'Test'),
+            Convection::Model::Diff.new('Resources.Test.Properties.DeletionPolicy', nil, 'Retain')
           ]
-          retained.each { |event| event.action = :retain }
+          deleted.each { |event| event.action = :delete }
 
           events = local.diff(remote.render)
-          events.sort!
-
-          expect(events).to eq((deleted + retained).sort)
+          expect(events.sort).to eq(deleted.sort)
         end
       end
     end
