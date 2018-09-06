@@ -309,23 +309,29 @@ module Convection
         # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.GroupDescription
         # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.VpcId
         #
-        suffix = '.DeletionPolicy'.freeze
-
         events = render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
 
-        retained_resources = events.select { |event| event.key.end_with?(suffix) && event.theirs == 'Retain' }
-        retained_resources.map! { |resource| resource.key[0...-suffix.length] }
+        # Top level events (changes to the resource directly) have keys with a format "Resources.{NAME}.{KEY}".
+        # So we can count the number of separators to find them.
+        top_level_events = events.select { |event| event.key.count('.') <= 2 }
 
-        retained_resources.keep_if do |name|
-          events.any? do |event|
-            event.action == :delete && event.key.start_with?(name) && !event.key.end_with?(suffix)
-          end
+        # We know something's a deleted resource when it has a top level "Type" attribute.
+        type_suffix = '.Type'.freeze
+        deleted_resources = top_level_events.select do |event|
+          event.action == :delete && event.key.end_with?(type_suffix)
         end
+        deleted_resources.map! { |event| event.key[0...-type_suffix.length] }
+
+        # We know something's a retainable resource when it has a top level "DeletionPolicy" attribute.
+        delete_policy_suffix = '.DeletionPolicy'.freeze
+        retainable_resources = top_level_events.select do |event|
+          event.action == :delete && event.key.end_with?(delete_policy_suffix) && event.theirs == 'Retain'
+        end
+        retainable_resources.map! { |event| event.key[0...-delete_policy_suffix.length] }
+        retainable_resources.keep_if { |name| deleted_resources.include?(name) }
 
         events.each do |event|
-          retained = retained_resources.any? do |resource|
-            event.action == :delete && event.key.start_with?(resource)
-          end
+          retained = retainable_resources.any? { |name| event.action == :delete && event.key.start_with?(name) }
           event.action = :retain if retained
         end
 
