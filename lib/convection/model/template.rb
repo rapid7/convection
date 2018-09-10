@@ -297,7 +297,45 @@ module Convection
       end
 
       def diff(other, stack_ = nil, retain: false)
-        render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+        # We want to accurately show when the DeletionPolicy is getting deleted and also when resources are going to be retained.
+        # Sample DeletionPolicy Removal output
+        # us-east-1      compare  Compare local state of stack test-logs-deletion with remote template
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.DeletionPolicy
+        #
+        # Sample Mixed Retain/Delete Resources
+        # us-east-1       retain  Resources.ELBLoggingPolicy.DependsOn.AWS::S3::BucketPolicy.0
+        # us-east-1       retain  Resources.ELBLoggingPolicy.DeletionPolicy
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Type
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.GroupDescription
+        # us-east-1       delete  Resources.sgtestConvectionDeletion.Properties.AWS::EC2::SecurityGroup.VpcId
+        #
+        events = render(stack_, retain: retain).diff(other).map { |diff| Diff.new(diff[0], *diff[1]) }
+
+        # Top level events (changes to the resource directly) have keys with a format "Resources.{NAME}.{KEY}".
+        # So we can count the number of separators to find them.
+        top_level_events = events.select { |event| event.key.count('.') <= 2 }
+
+        # We know something's a deleted resource when it has a top level "Type" attribute.
+        type_suffix = '.Type'.freeze
+        deleted_resources = top_level_events.select do |event|
+          event.action == :delete && event.key.end_with?(type_suffix)
+        end
+        deleted_resources.map! { |event| event.key[0...-type_suffix.length] }
+
+        # We know something's a retainable resource when it has a top level "DeletionPolicy" attribute.
+        delete_policy_suffix = '.DeletionPolicy'.freeze
+        retainable_resources = top_level_events.select do |event|
+          event.action == :delete && event.key.end_with?(delete_policy_suffix) && event.theirs == 'Retain'
+        end
+        retainable_resources.map! { |event| event.key[0...-delete_policy_suffix.length] }
+        retainable_resources.keep_if { |name| deleted_resources.include?(name) }
+
+        events.each do |event|
+          retained = retainable_resources.any? { |name| event.action == :delete && event.key.start_with?(name) }
+          event.action = :retain if retained
+        end
+
+        events
       end
 
       def to_json(stack_ = nil, pretty = false, retain: false)

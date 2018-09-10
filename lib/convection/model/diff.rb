@@ -7,13 +7,14 @@ module Convection
     # Difference between an item in two templates
     ##
     class Diff
+      include Comparable
       extend Mixin::Colorize
 
       attr_reader :key
-      attr_reader :action
+      attr_accessor :action
       attr_reader :ours
       attr_reader :theirs
-      colorize :action, :green => [:create], :yellow => [:update], :red => [:delete, :replace]
+      colorize :action, :green => [:create], :yellow => [:update, :retain], :red => [:delete, :replace]
 
       def initialize(key, ours, theirs)
         @key = key
@@ -40,9 +41,23 @@ module Convection
                   when :update then "#{ key }: #{ theirs } => #{ ours }"
                   when :replace then "#{ key }: #{ theirs } => #{ ours }"
                   when :delete then key
+                  when :retain then key
                   end
 
         [action, message, color]
+      end
+
+      def <=>(other)
+        value = @key <=> other.key
+        return value if value != 0
+
+        value = @ours <=> other.ours
+        return value if value != 0
+
+        value = @theirs <=> other.theirs
+        return value if value != 0
+
+        @action <=> other.action
       end
     end
   end
