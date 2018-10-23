@@ -18,7 +18,7 @@ module Convection
           alias security_groups security_group
           property :subnet, 'Subnets', :type => :list
           alias subnets subnet
-          property lb_type, 'Type'
+          property :lb_type, 'Type'
           property :subnet_mappings, 'SubnetMappings', :type => :list
 
           # Append a load_balancer_attribute to load_balancer_attributes
