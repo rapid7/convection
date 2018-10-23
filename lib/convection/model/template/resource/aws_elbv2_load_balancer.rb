@@ -18,12 +18,20 @@ module Convection
           alias security_groups security_group
           property :subnet, 'Subnets', :type => :list
           alias subnets subnet
+          property :lb_type, 'Type'
+          property :subnet_mappings, 'SubnetMappings', :type => :list
 
           # Append a load_balancer_attribute to load_balancer_attributes
           def load_balancer_attribute(&block)
             attribute = ResourceProperty::ELBV2LoadBalancerAttribute.new(self)
             attribute.instance_exec(&block) if block
             load_balancer_attributes << attribute
+          end
+
+          def subnet_mapping(&block)
+            subnet_mapping = ResourceProperty::ELBV2LoadBalancerSubnetMapping.new(self)
+            subnet_mapping.instance_exec(&block) if block
+            subnet_mappings << subnet_mapping
           end
 
           def render(*args)
