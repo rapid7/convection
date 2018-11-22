@@ -39,6 +39,7 @@ module Convection
           property :backup_retention_period, 'BackupRetentionPeriod'
           property :preferred_backup_window, 'PreferredBackupWindow'
           property :preferred_maintenance_window, 'PreferredMaintenanceWindow'
+          property :deletion_protection, 'DeletionProtection'
 
           property :availability_zone, 'AvailabilityZone'
           property :multi_az, 'MultiAZ'
