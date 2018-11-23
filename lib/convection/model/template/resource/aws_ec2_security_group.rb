@@ -82,6 +82,7 @@ module Convection
             attribute :destination_group
             attribute :source_group
             attribute :source_group_owner
+            attribute :description
 
             def render
               {
@@ -94,6 +95,7 @@ module Convection
                 rule['DestinationSecurityGroupId'] = destination_group unless destination_group.nil?
                 rule['SourceSecurityGroupId'] = source_group unless source_group.nil?
                 rule['SourceSecurityGroupOwnerId'] = source_group_owner unless source_group_owner.nil?
+                rule['Description'] = description unless description.nil?
               end
             end
           end
