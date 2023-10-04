@@ -1,0 +1,15 @@
+---
+info:
+  title: Convection
+  description: A fully generic, modular DSL for AWS CloudFormation
+  x-cortex-git:
+    github:
+      alias: r7org
+      repository: rapid7/convection
+  x-cortex-tag: convection
+  x-cortex-type: service
+  x-cortex-domain-parents:
+  - tag: platform-delivery
+openapi: 3.0.1
+servers:
+- url: "/"
